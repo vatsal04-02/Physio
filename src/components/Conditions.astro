@@ -1,12 +1,11 @@
 ---
+import Depth from './Depth.astro';
 import Icon from './Icon.astro';
 import { concernMessage, conditions, whatsappLink, links } from '../data/site';
 ---
 
 <section id="conditions" class="section surface-ivory" data-section data-ambient aria-labelledby="conditions-title">
-  <div class="bg" aria-hidden="true">
-    <span class="orb" style="--s:520px; --c:rgb(15 118 110 / .12); right:-160px; top:0; --dur:42s"></span>
-  </div>
+  <Depth tone="light" glow mirror />
 
   <div class="container-site relative">
     <header class="head reveal">
@@ -24,7 +23,7 @@ import { concernMessage, conditions, whatsappLink, links } from '../data/site';
         conditions.map((c, i) => (
           <li class:list={['cell reveal', { 'cell--wide-sm': c.title === 'Consultation' }]} style={`--i:${i % 4}`}>
             <a
-              class="card spot"
+              class="card"
               href={whatsappLink(concernMessage(c.ask))}
               target="_blank"
               rel="noopener noreferrer"
@@ -105,8 +104,6 @@ import { concernMessage, conditions, whatsappLink, links } from '../data/site';
   }
 
   .card {
-    --mx: 50%;
-    --my: 0%;
     position: relative;
     isolation: isolate;
     display: flex;
@@ -129,30 +126,31 @@ import { concernMessage, conditions, whatsappLink, links } from '../data/site';
       border-color var(--dur-normal) ease,
       box-shadow var(--dur-normal) ease;
   }
-  /* Cursor-tracked highlight — pointer devices only */
+  /* Hover (all inside ~260ms): a soft teal highlight travels once across the card, the icon tips a few
+     degrees and the arrow slides out. The highlight snaps back off-card, so it only ever moves forward. */
   .card::before {
     content: '';
     position: absolute;
     inset: 0;
     z-index: -1;
-    opacity: 0;
-    background: radial-gradient(220px circle at var(--mx) var(--my), rgb(15 118 110 / 0.14), transparent 70%);
-    transition: opacity var(--dur-normal) ease;
+    background: linear-gradient(105deg, transparent 28%, rgb(15 118 110 / 0.11) 50%, transparent 72%);
+    transform: translate3d(-110%, 0, 0);
   }
   .card:hover,
   .card:focus-visible {
-    transform: translateY(-6px);
-    border-color: rgb(15 118 110 / 0.75);
+    transform: translateY(-3px);
+    border-color: rgb(15 118 110 / 0.55);
     box-shadow:
-      0 0 0 1px rgb(15 118 110 / 0.3),
-      0 0 26px rgb(15 118 110 / 0.22),
-      0 22px 30px -20px rgb(12 59 54 / 0.5);
+      0 0 0 1px rgb(15 118 110 / 0.16),
+      0 16px 26px -20px rgb(12 59 54 / 0.45);
   }
-  .card:hover::before {
-    opacity: 1;
+  .card:hover::before,
+  .card:focus-visible::before {
+    transform: translate3d(110%, 0, 0);
+    transition: transform var(--dur-normal) ease-out;
   }
   .card:active {
-    transform: translateY(-1px) scale(0.99);
+    transform: translateY(-1px);
   }
 
   .card__top {
@@ -169,12 +167,15 @@ import { concernMessage, conditions, whatsappLink, links } from '../data/site';
     background: rgb(15 118 110 / 0.1);
     color: var(--color-teal);
     transition:
+      transform var(--dur-normal) var(--ease-soft),
       background-color var(--dur-normal) ease,
       color var(--dur-normal) ease;
   }
-  .card:hover .card__icon {
+  .card:hover .card__icon,
+  .card:focus-visible .card__icon {
     background: var(--color-teal);
     color: #fff;
+    transform: rotate(-4deg);
   }
   .card :global(.card__arrow) {
     color: rgb(12 59 54 / 0.4);
@@ -182,7 +183,8 @@ import { concernMessage, conditions, whatsappLink, links } from '../data/site';
       transform var(--dur-normal) var(--ease-soft),
       color var(--dur-normal) ease;
   }
-  .card:hover :global(.card__arrow) {
+  .card:hover :global(.card__arrow),
+  .card:focus-visible :global(.card__arrow) {
     color: var(--color-teal);
     transform: translate(3px, -3px);
   }

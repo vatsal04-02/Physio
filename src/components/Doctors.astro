@@ -21,11 +21,15 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     <div class="cards">
       {
         doctors.map((d, i) => (
-          <article class="doc reveal" style={`--i:${i}`} aria-labelledby={`doc-${i}-name`}>
+          <article class="doc reveal" data-reveal="group" style={`--i:${i}`} aria-labelledby={`doc-${i}-name`}>
             <figure class="doc__photo">
-              <ClinicImage photo={d.slot} alt={`Portrait of ${d.name}, ${d.role} at Geeta Krishna Physiotherapy`} sizes="(min-width:1024px) 520px, (min-width:640px) 50vw, 100vw">
-                <Placeholder label={`Portrait · ${d.name}`} icon="user-round" tone="sand" />
-              </ClinicImage>
+              <div class="doc__media">
+                <div class="doc__scale">
+                  <ClinicImage photo={d.slot} alt={`Portrait of ${d.name}, ${d.role} at Geeta Krishna Physiotherapy`} sizes="(min-width:1024px) 520px, (min-width:640px) 50vw, 100vw">
+                    <Placeholder label={`Portrait · ${d.name}`} icon="user-round" tone="sand" />
+                  </ClinicImage>
+                </div>
+              </div>
               <span class="doc__idx" aria-hidden="true">{d.n} / 02</span>
               <figcaption class="doc__id">
                 <span class="pill">{d.qualification}</span>
@@ -92,6 +96,8 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     gap: 36px;
   }
   .doc {
+    --r: 24px;
+    --d: calc(var(--i, 0) * 140ms);
     display: grid;
     gap: 1.1rem;
     align-content: start;
@@ -102,11 +108,36 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     position: relative;
     margin: 0;
     height: clamp(320px, 92vw, 420px);
-    overflow: hidden;
-    border-radius: 24px;
-    background: var(--color-sand);
-    box-shadow: 0 28px 44px -30px rgb(12 59 54 / 0.5);
+    border-radius: var(--r);
     isolation: isolate;
+  }
+  /* The shadow lives on its own layer so the portrait's wipe (clip-path) can't cut it off */
+  .doc__photo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--r);
+    box-shadow: 0 28px 44px -30px rgb(12 59 54 / 0.5);
+    transition: opacity 900ms ease-out;
+    transition-delay: calc(var(--d) + 250ms);
+    pointer-events: none;
+  }
+  .doc__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--r);
+    background: var(--color-sand);
+    clip-path: inset(0 0 0 0 round var(--r));
+    transition: clip-path 950ms var(--ease-soft);
+    transition-delay: var(--d);
+  }
+  /* The photograph settles a touch slower than its wipe, so the two layers never move in lockstep */
+  .doc__scale {
+    position: absolute;
+    inset: 0;
+    transition: transform 1500ms var(--ease-soft);
+    transition-delay: var(--d);
   }
   .doc__photo :global(.clinic-img) {
     transition: transform 900ms var(--ease-soft);
@@ -128,6 +159,11 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     font-weight: 800;
     letter-spacing: 0.12em;
     color: var(--color-ivory);
+    /* drifts into place on its own clock, a little after the wipe starts */
+    transition:
+      opacity 900ms ease-out,
+      transform 1300ms var(--ease-soft);
+    transition-delay: calc(var(--d) + 380ms);
   }
   .doc__id {
     position: absolute;
@@ -143,6 +179,10 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     color: var(--color-ivory);
+    transition:
+      opacity 700ms ease-out,
+      transform 700ms ease-out;
+    transition-delay: calc(var(--d) + 620ms);
   }
   .pill {
     padding: 0.2rem 0.65rem;
@@ -160,9 +200,37 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     text-transform: uppercase;
   }
 
+  /* Name and details follow the portrait by ~110ms and travel a shorter, quicker path */
   .doc__info {
     display: grid;
     gap: 0.9rem;
+    transition:
+      opacity 700ms ease-out,
+      transform 700ms ease-out;
+    transition-delay: calc(var(--d) + 110ms);
+  }
+
+  /* Hidden states — only when JS is running; the observer adds .is-in once per entry */
+  :global(.js) .doc:not(.is-in) .doc__media {
+    clip-path: inset(0 0 100% 0 round var(--r));
+  }
+  :global(.js) .doc:not(.is-in) .doc__scale {
+    transform: scale(1.08);
+  }
+  :global(.js) .doc:not(.is-in) .doc__photo::before {
+    opacity: 0;
+  }
+  :global(.js) .doc:not(.is-in) .doc__idx {
+    opacity: 0;
+    transform: translate3d(-10px, -8px, 0);
+  }
+  :global(.js) .doc:not(.is-in) .doc__id {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  :global(.js) .doc:not(.is-in) .doc__info {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
   }
   .doc__facts {
     display: grid;
@@ -220,9 +288,11 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
       grid-column: 5 / span 8;
       gap: 28px;
     }
+    .doc {
+      --r: 26px;
+    }
     .doc__photo {
       height: 460px;
-      border-radius: 26px;
     }
     /* Staggered editorial offset */
     .doc:nth-child(2) {

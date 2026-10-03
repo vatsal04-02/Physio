@@ -7,7 +7,7 @@ There is **no appointment system** in Phase 1 (deferred to Phase 2 by design).
 | | |
 |---|---|
 | Stack | Astro 7 · TypeScript · Tailwind CSS 4 · Lucide icons · self-hosted DM Serif Display + Manrope |
-| Client JS | ~3.7 KB gzipped (one module: header, active nav, menu, reveals, counters, parallax, open-now pill, concern form, one-at-a-time FAQ, optional review slider) |
+| Client JS | ~3.7 KB gzipped (one module: header, active nav, menu, reveals, counters, open-now pill, concern form, one-at-a-time FAQ, optional review slider) · CSS ~21 KB gzipped |
 | Lighthouse (local) | Mobile 100 / 100 / 100 / 100 · Desktop 100 / 100 / 100 / 100 (perf / a11y / best-practices / SEO); mobile LCP 1.7 s, TBT 0, CLS 0 |
 
 ## Commands
@@ -66,12 +66,16 @@ Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3
 - **Typography is deliberately restrained:** hero 36→58px, section headings 30→46px, subheadings 21→28px, body 16–18px. Only the hero uses the largest scale.
 - **Photography leads.** There is no decorative hero graphic; the hero, doctors and gallery are image-ready slots. Decoration is limited to fine lines, dot texture and two soft background circles.
 - **Glassmorphism** is used sparingly on floating layers only (header, mobile menu, sticky CTA bar, hero hours card, review/contact panels). Blur is capped on small screens and has a solid fallback where `backdrop-filter` is unsupported.
-- **Motion** is CSS keyframes/transitions plus one IntersectionObserver-driven script — no animation library. Everything animates `transform`/`opacity` only:
-  - Load: eyebrow → headline → subtext → CTAs → badges rise 24px in 0.7s at 90ms steps (pure CSS, so CTAs never wait on JavaScript); the hero image settles 1.06 → 1.
-  - Scroll: sections fade up once as they enter, grid cards stagger 70ms, the 5.0 / 467+ / 2 numerals count up, the "How it works" line draws as it scrolls into view, and the hero photo has a light parallax (capped at 28px).
-  - Ambient: the ticker between hero and conditions (pauses on hover), a 6s float on the hours card, and slow background orbs. All ambient loops pause when their section is off screen.
-  - Hover: CTAs scale 1.03 with a deeper shadow; cards lift 6px with a teal glow.
-  - `prefers-reduced-motion` turns everything off: reveals show immediately, the ticker becomes a static wrapped list, parallax/float/count-up/autoplay stop.
+- **Motion** is CSS keyframes/transitions, native CSS scroll-driven animations, and one IntersectionObserver-driven script — no animation library. Everything animates `transform`/`opacity` only (plus one `clip-path` wipe on the doctor portraits):
+  - **Load:** eyebrow → headline → subtext → CTAs → badges rise in at 90ms steps (pure CSS, so CTAs never wait on JavaScript); the hero photo settles 1.06 → 1.
+  - **Background depth** (`Depth.astro`): warm base → soft teal/sand glow → faint dots → a barely-there 1px grid (large cells, 5–7% alpha, faded toward the edges) → a few oversized thin circles and a hairline. Used on the hero, conditions, "why", gallery and visit sections. On the hero and conditions sections the glow + circles (`.d-far`, ±14px) and the grid (±6px) drift as the section scrolls past; on the dark and gallery sections the same texture stands still (see Performance). Only decorative layers ever move.
+  - **Per-section choreography** (all once per entry): trust numbers rise one after another and the labels trail them; "why" blocks draw their rule, surface the numeral, then bring in the text; doctor portraits wipe down (clip-path) with name/details ~110ms behind and the `01 / 02` chip drifting on its own clock; gallery tiles arrive from different directions with captions sliding in after them; the "How it works" line draws as you scroll and the active step lifts 3px with a ring while the previous one settles back; the reviews section plays quote mark → text → rating and stars last; pricing rises; the visit text and map arrive from opposite sides (wide screens).
+  - **Hero rhythm:** a dotted ring turns once every 28s behind the photo, a trio of dots and a hairline drift ≤10px, and the shadow under the frame breathes. The photograph itself never moves except a ≤28px scroll parallax.
+  - **Transition moments (two only):** a soft glow passes behind the "why" content, and the contact band's concentric rings settle into place — both one-shot when the section arrives.
+  - **Hover:** buttons lift 1px and the arrow slides 3px; the two main WhatsApp CTAs get a soft glow that belongs to the button (no pulse); cards lift 2–3px; images zoom at most 1.02; condition cards tip the icon 4°, slide the arrow and pass a teal highlight across in ~260ms; the active nav link gets a thin teal underline; the FAQ opens/closes in 280ms.
+  - **Ambient:** the ticker between hero and conditions (pauses on hover), a 6s float on the hours card, the hero ring/dots/shadow. Looping animations pause whenever their section is off screen.
+  - `prefers-reduced-motion` turns it all off: reveals show immediately, no parallax or depth drift, no ambient loops, the ticker becomes a static wrapped list, count-up/autoplay stop.
+  - Scroll-driven animations are a progressive enhancement (`animation-timeline: view()/scroll()`); browsers without them simply show the layers still. **Gotcha:** they are written as animation *longhands* — the CSS minifier folds `animation` + `animation-timeline` into one shorthand that Chromium silently rejects.
 - **Dark sections** share one `DarkFx` layer: a static film-grain tile plus a teal and a warm-orange orb at 20% opacity (radial gradients, no `filter: blur`). The orange orb is a deliberate, subtle exception to "orange is for actions only".
 - **Curved dividers:** any section with the `curve` class rises over the padding of the one above with an elliptical top edge, so light/dark bands never meet in a hard cut (pure `border-radius`, no images).
 - **Live "Open now" pill** is computed in the browser against clinic time (Asia/Kolkata), so a visitor abroad still sees the right status. Without JS it shows the plain hours.
@@ -82,20 +86,24 @@ Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3
 
 ## Performance notes
 
-Scroll smoothness was measured with a scripted full-page scroll in headless Chromium (software rendering, so absolute numbers are pessimistic — the *comparison* between builds is what matters). Share of frames slower than 33 ms:
+Scroll smoothness is measured with scripted full-page scrolls in headless Chromium at 1440×900 and 390×844. That build renders in **software** (no GPU), so absolute numbers are pessimistic — the *comparison* between builds is what matters. Share of frames slower than 33 ms (real mouse-wheel scrolling; 2 runs each):
 
 | Build | Desktop | Mobile (390px) |
 |---|---|---|
-| Before the motion/curve pass | ~15% | — |
-| First cut of the new effects | 66–69% | — |
-| **Shipped** | **0.8–3.9%** (7.9% with CPU throttled 4×) | **0–1.1%** (4× throttle included) |
+| Motion pass (before the depth/choreography pass) | 3–4% | 0% |
+| Depth pass, first cut (every section drifting) | 23–24% | 0.3% |
+| **Shipped** (depth drift on hero + conditions only) | **9–13%** | **0%** |
+
+So on a software compositor the depth pass still costs desktop scrolling roughly 6–9 percentage points; mobile is unaffected. Extra translated layers should be much cheaper in a GPU-composited browser, but that could not be measured in this environment — check on a real laptop before launch. If you want the old numbers back, set `drift={false}` on the `<Depth>` in `Hero.astro` / `Conditions.astro` (the texture stays, the drift stops) or delete the `.hero__orbit` element.
 
 What the profiling found, and the rules that came out of it:
 
 - **Never clip a whole section to a rounded rectangle.** Curved dividers built with `border-radius` + `overflow: clip` on each section cost ~46 points of dropped frames, because clipping a subtree that contains glass to a rounded rect forces extra per-frame compositor work. The dome is now a painted `::before`; only leaf ambient layers (`.fx`, `.bg`) follow the dome shape.
 - **Large `backdrop-filter` panels are the most expensive thing on the page** (~16 points on their own). Panels on dark bands (`.glass-dark`) sit over flat gradients, so they keep the translucent-gradient glass look without the blur. Real blur stays on the header, hero cards and small photo chips, which measured free.
+- **Every layer that animates behind content is its own composited surface, and the cost tracks the number of such layers far more than their size or how far they move.** Measured: merging layers, shrinking them, `will-change`, `contain`, removing masks and rounded clips all made little difference; *removing the animation* (or not promoting the layer) is what helps. Hence: depth drift only where it reads (light sections), one shared drifting layer for glow + circles, a grid that only exists on the busy side of the section, and the two transition moments as one-shot transitions instead of scroll-scrubbed animations. Continuous time-based loops on the same layers were twice as expensive as scroll-linked ones.
+- The gallery's slow push-in on the lead photo is a single 9 s transition, not a scrubbed animation, for the same reason.
 - Film grain (one 160px tile), the ticker, dot textures and the curve domes all measured as free. Orbs are static radial gradients.
-- Re-measure after adding any new full-width effect; a regression this size is invisible in a screenshot and in Lighthouse (which scores load, not scroll).
+- Re-measure after adding any new full-width or animated layer; a regression this size is invisible in a screenshot and in Lighthouse (which scores load, not scroll).
 
 ## Phase 2 (not built)
 

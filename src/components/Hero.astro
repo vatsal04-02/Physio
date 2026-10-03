@@ -1,4 +1,5 @@
 ---
+import Depth from './Depth.astro';
 import ClinicImage from './ClinicImage.astro';
 import Placeholder from './Placeholder.astro';
 import Icon from './Icon.astro';
@@ -9,10 +10,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
 ---
 
 <section id="top" class="hero" data-section data-ambient aria-labelledby="hero-title">
-  <div class="hero__bg" aria-hidden="true">
-    <span class="orb" style="--s:560px; --c:rgb(15 118 110 / .16); right:-140px; top:-80px; --dur:40s"></span>
-    <span class="orb" style="--s:440px; --c:rgb(233 223 201 / .95); left:-160px; bottom:-120px; --dur:46s"></span>
-  </div>
+  <Depth tone="light" glow />
 
   <div class="container-site hero__grid">
     <div class="hero__copy">
@@ -27,7 +25,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
       </p>
 
       <div id="hero-cta" class="hero__cta rise" style="--d:270ms" data-hero-cta>
-        <a class="btn btn-primary" href={links.whatsapp} target="_blank" rel="noopener noreferrer" data-track="whatsapp_click" data-location="hero">
+        <a class="btn btn-primary btn-glow" href={links.whatsapp} target="_blank" rel="noopener noreferrer" data-track="whatsapp_click" data-location="hero">
           <Icon name="message-circle" size={20} />
           WhatsApp the Clinic
           <Icon name="arrow-right" size={18} class="icon-arrow" />
@@ -58,6 +56,18 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     </div>
 
     <div class="hero__visual">
+      <!-- Floating rhythm around the photograph: one slowly turning dotted ring, a few drifting marks,
+           and a soft light that breathes under the frame. The photo itself never moves. -->
+      <span class="hero__orbit drift" aria-hidden="true">
+        <svg viewBox="0 0 400 400" focusable="false">
+          <circle cx="200" cy="200" r="199" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1 9" vector-effect="non-scaling-stroke"></circle>
+          <circle cx="200" cy="200" r="199" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="120 1130" vector-effect="non-scaling-stroke"></circle>
+          <circle cx="200" cy="1" r="4.5" fill="currentColor"></circle>
+        </svg>
+      </span>
+      <span class="hero__marks hero__marks--a drift" aria-hidden="true"></span>
+      <span class="hero__marks hero__marks--b drift" aria-hidden="true"></span>
+      <span class="hero__under drift" aria-hidden="true"></span>
       <span class="hero__outline" aria-hidden="true"></span>
       <figure class="frame">
         <div class="frame__media" data-parallax>
@@ -87,11 +97,6 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     overflow: clip;
     padding-top: calc(var(--header-h) + 12px);
     padding-bottom: clamp(52px, 5vw, 72px);
-  }
-  .hero__bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
   }
   .hero__grid {
     position: relative;
@@ -191,6 +196,81 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     border-radius: 28px;
     pointer-events: none;
   }
+  /* ---- Floating rhythm (transform/opacity loops, paused whenever the hero is off screen) ---- */
+  .hero__orbit {
+    position: absolute;
+    z-index: 0;
+    width: 108%;
+    aspect-ratio: 1;
+    right: -8%;
+    top: -7%;
+    color: rgb(15 118 110 / 0.42);
+    pointer-events: none;
+    animation: orbit-turn 28s linear infinite;
+  }
+  .hero__orbit svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .hero__marks {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* a trio of dots, drifting ~8px */
+  .hero__marks--a {
+    left: -18px;
+    top: 16%;
+    width: 44px;
+    height: 12px;
+    background: radial-gradient(circle, rgb(15 118 110 / 0.55) 2px, transparent 2.6px) 0 50% / 14px 12px repeat-x;
+    animation: mark-drift-a 9s ease-in-out infinite;
+  }
+  /* a short hairline, drifting ~10px */
+  .hero__marks--b {
+    right: -14px;
+    bottom: 22%;
+    width: 52px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(12 59 54 / 0.45));
+    animation: mark-drift-b 11s ease-in-out infinite;
+  }
+  /* the photo's own shadow breathes: a soft pool under the frame swells and settles (the photograph itself never moves) */
+  .hero__under {
+    position: absolute;
+    z-index: 0;
+    left: 8%;
+    right: 8%;
+    bottom: 6px;
+    height: 46px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(12 59 54 / 0.34), transparent);
+    animation: breathe-under 9s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes orbit-turn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes mark-drift-a {
+    50% {
+      transform: translate3d(6px, 8px, 0);
+    }
+  }
+  @keyframes mark-drift-b {
+    50% {
+      transform: translate3d(-10px, -4px, 0);
+    }
+  }
+  @keyframes breathe-under {
+    50% {
+      opacity: 0.55;
+      transform: scaleX(0.93);
+    }
+  }
+
   .frame {
     position: relative;
     margin: 0;

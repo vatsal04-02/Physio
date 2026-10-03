@@ -1,4 +1,5 @@
 ---
+import Depth from './Depth.astro';
 import DarkFx from './DarkFx.astro';
 import Icon from './Icon.astro';
 import { clinic, hours, links } from '../data/site';
@@ -6,11 +7,11 @@ const { address } = clinic;
 ---
 
 <section id="visit" class="section curve surface-pine on-dark" data-section data-ambient data-hide-sticky aria-labelledby="visit-title">
-  <div class="bg" aria-hidden="true"><div class="dots"></div></div>
+  <Depth tone="dark" mirror drift={false} />
   <DarkFx />
 
   <div class="container-site grid">
-    <div class="info reveal">
+    <div class="info reveal" data-reveal="left">
       <p class="eyebrow">10 / Visit us</p>
       <h2 id="visit-title" class="h2">In your neighbourhood, not across town.</h2>
 
@@ -49,7 +50,7 @@ const { address } = clinic;
       </div>
     </div>
 
-    <div class="map reveal" style="--i:1">
+    <div class="map reveal" data-reveal="right" style="--i:1">
       <a class="map__stage" href={links.directions} target="_blank" rel="noopener noreferrer" aria-label={`Open ${clinic.name} in Google Maps (opens in a new tab)`} data-track="directions_click" data-location="visit-map">
         <!-- Lightweight, abstract preview — a plain link, no embedded map or third-party script. -->
         <svg class="map__art" viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">

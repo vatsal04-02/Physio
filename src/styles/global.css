@@ -212,7 +212,8 @@ html {
   overflow: clip;
 }
 .curve > .bg,
-.curve > .fx {
+.curve > .fx,
+.curve > .depth {
   /* follow the dome so texture never shows in the transparent corners or leaves a seam.
      Safe to round here: these are leaf layers with no content or glass inside them. */
   border-top-left-radius: 50% var(--curve);
@@ -330,13 +331,52 @@ html {
   transition: transform var(--dur-normal) var(--ease-soft);
 }
 .btn:hover {
-  transform: scale(1.03);
+  transform: translate3d(0, -1px, 0);
 }
 .btn:hover .icon-arrow {
   transform: translateX(3px);
 }
 .btn:active {
-  transform: scale(0.98);
+  transform: translate3d(0, 0, 0) scale(0.99);
+}
+
+/* The two main WhatsApp CTAs get a soft glow behind them. It belongs to the button (so it lifts and
+   settles with it), appears on hover/focus, and never pulses. Touch devices have no hover, so it
+   rests at a faint level there instead. */
+.btn-glow {
+  position: relative;
+  isolation: isolate;
+}
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  inset: -12px -26px;
+  z-index: -1;
+  border-radius: 30px;
+  background: radial-gradient(closest-side, rgb(234 88 12 / 0.3), transparent);
+  opacity: 0;
+  transform: translate3d(0, 5px, 0) scale(0.9);
+  transition:
+    opacity var(--dur-normal) ease,
+    transform var(--dur-normal) var(--ease-soft);
+  pointer-events: none;
+}
+.btn-glow:hover::before,
+.btn-glow:focus-visible::before {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+@media (hover: none) {
+  .btn-glow::before {
+    opacity: 0.45;
+    transform: none;
+  }
+}
+/* Phones stack full-width buttons right up to the gutters, so keep the glow inside them */
+@media (max-width: 639px) {
+  .btn-glow::before {
+    inset: -10px -8px;
+  }
 }
 
 /* White on CTA orange is 3.55:1 — it passes WCAG AA only as "large text", so primary labels are
@@ -514,6 +554,48 @@ html {
   background-size: 160px 160px;
 }
 
+/* ---------- Scroll-driven depth (native CSS, compositor-only, no scroll listener) ----------
+   Decorative layers (<Depth drift>) drift a few pixels at different rates as their section scrolls
+   through the viewport. Only background layers move — never text, buttons or content. Browsers
+   without scroll-driven animations keep the layers still; reduced-motion users never get this block.
+   Each drifting layer is a composited surface behind the content, so use it sparingly (README → Performance). */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    @keyframes depth-shift {
+      from {
+        transform: translate3d(0, calc(var(--amp, 8px) * var(--dir, 1) * -1), 0);
+      }
+      to {
+        transform: translate3d(0, calc(var(--amp, 8px) * var(--dir, 1)), 0);
+      }
+    }
+    /* Longhands on purpose: the CSS minifier folds `animation` + `animation-timeline` into a single
+       shorthand, and Chromium rejects a timeline function inside that shorthand (silently dropping the
+       whole rule). An incomplete set of longhands can't be merged. */
+    [data-depth] {
+      animation-name: depth-shift;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+    }
+  }
+  @supports (animation-timeline: scroll()) {
+    /* Hero photo drifts down slower than the page (replaces the JS fallback where supported) */
+    @keyframes hero-parallax {
+      to {
+        transform: translate3d(0, 28px, 0);
+      }
+    }
+    .frame__media {
+      animation-name: hero-parallax;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 470px;
+    }
+  }
+}
+
 /* ---------- Entrances ---------- */
 
 /* Hero stagger — pure CSS so CTAs never depend on JavaScript (design.md §10) */
@@ -542,21 +624,78 @@ html {
   animation-delay: var(--d, 0ms);
 }
 
-/* Scroll reveal — only hidden when JS is running, and always revealed by the observer */
+/* Scroll reveal — only hidden when JS is running, and always revealed by the observer.
+   Variants set the direction the element arrives from; "group" lets a container trigger while its
+   children run their own sequence (see the doctors, reviews and timeline sections). */
 .js .reveal {
   opacity: 0;
-  transform: translate3d(0, 24px, 0);
+  transform: translate3d(var(--rx, 0px), var(--ry, 24px), 0) scale(var(--rs, 1));
   transition:
     opacity var(--dur-reveal) ease-out,
     transform var(--dur-reveal) ease-out;
-  transition-delay: calc(var(--i, 0) * 70ms);
+  transition-delay: calc(var(--i, 0) * var(--stagger, 70ms));
+}
+/* Sideways entrances only where there is spare room beside the content (sections are not clipped, so a
+   28px shove on a phone would widen the page). Narrower screens use the default upward reveal. */
+@media (min-width: 1100px) {
+  .js .reveal[data-reveal='left'] {
+    --rx: -28px;
+    --ry: 0px;
+  }
+  .js .reveal[data-reveal='right'] {
+    --rx: 28px;
+    --ry: 0px;
+  }
+}
+.js .reveal[data-reveal='fade'] {
+  --ry: 0px;
+}
+.js .reveal[data-reveal='group'] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+.js .reveal-scale {
+  --rs: 1.01;
 }
 .js .reveal.is-in {
   opacity: 1;
   transform: none;
 }
-.js .reveal-scale {
-  transform: translate3d(0, 12px, 0) scale(1.01);
+
+/* ---------- Transition moments (one-shot, so nothing keeps animating while you scroll) ----------
+   Two section boundaries get a quiet visual hand-off, each played once as the section arrives
+   (the ambient observer adds .is-live). Both are inert without JavaScript. */
+
+/* "Why" band: a soft glow drifts across behind the content */
+.d-sweep {
+  opacity: 0;
+}
+.js .is-live .d-sweep {
+  animation: sweep-pass 2600ms var(--ease-inout) 1 both;
+}
+@keyframes sweep-pass {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  30%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(185%, 0, 0);
+  }
+}
+
+/* Contact band: the concentric rings settle into place behind the panel */
+.js [data-ringshift] {
+  transform: translate3d(-5%, 4%, 0);
+}
+.js .is-live [data-ringshift] {
+  transform: translate3d(3%, -2%, 0);
+  transition: transform 2600ms var(--ease-soft);
 }
 
 /* ---------- Misc ---------- */
@@ -599,7 +738,8 @@ html {
     transition-delay: 0ms !important;
   }
 
-  .js .reveal {
+  .js .reveal,
+  .js .reveal[data-reveal] {
     opacity: 1;
     transform: none;
   }

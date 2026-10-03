@@ -43,7 +43,9 @@ document.addEventListener('click', (event) => {
 
 const header = qs('[data-header]');
 const progress = qs('[data-progress]');
-const parallax = qs('[data-parallax]');
+// Where the browser supports native scroll-driven animations the hero parallax is pure CSS
+// (compositor-only); this small JS version is only the fallback.
+const parallax = typeof CSS !== 'undefined' && CSS.supports('animation-timeline: scroll()') ? null : qs('[data-parallax]');
 let scrollTick = false;
 
 function updateScroll(): void {
@@ -162,17 +164,24 @@ const revealEls = qsa('.reveal');
 if (reduceMotion || !('IntersectionObserver' in window)) {
   revealEls.forEach((el) => el.classList.add('is-in'));
 } else {
+  // A container can wait for a child to scroll into view (data-reveal-on="<selector>") so a
+  // multi-step sequence starts when its main element is visible, not when its top edge is.
+  const revealTarget = new Map<Element, Element>();
   const revealObserver = new IntersectionObserver(
     (entries, obs) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        entry.target.classList.add('is-in');
+        revealTarget.get(entry.target)?.classList.add('is-in');
         obs.unobserve(entry.target);
       }
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0 },
   );
-  revealEls.forEach((el) => revealObserver.observe(el));
+  revealEls.forEach((el) => {
+    const trigger = (el.dataset.revealOn && el.querySelector(el.dataset.revealOn)) || el;
+    revealTarget.set(trigger, el);
+    revealObserver.observe(trigger);
+  });
 }
 
 /* ---------- Ambient animation only while on screen ---------- */
@@ -379,22 +388,6 @@ qsa('[data-slider]').forEach((slider) => {
   );
   build();
 });
-
-/* ---------- Pointer-tracked highlight on glass cards (fine pointers only) ---------- */
-
-if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-  document.addEventListener(
-    'pointermove',
-    (event) => {
-      const card = (event.target as Element | null)?.closest<HTMLElement>('.spot');
-      if (!card) return;
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--mx', `${event.clientX - rect.left}px`);
-      card.style.setProperty('--my', `${event.clientY - rect.top}px`);
-    },
-    { passive: true },
-  );
-}
 
 /* ---------- section_view analytics (once per section) ---------- */
 

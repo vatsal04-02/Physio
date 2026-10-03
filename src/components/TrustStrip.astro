@@ -7,27 +7,29 @@ import { clinic } from '../data/site';
 <section class="trust curve surface-pine on-dark" data-ambient aria-label="Clinic at a glance">
   <DarkFx />
   <div class="container-site trust__inner">
+    <!-- Transition moment: a hairline draws across the container as the strip comes into view -->
+    <span class="trust__rule reveal" data-reveal="group" aria-hidden="true"></span>
     <dl class="trust__grid">
-      <div class="stat reveal" style="--i:0">
+      <div class="stat reveal" data-reveal="group" style="--i:0">
         <dd class="stat__value">
           <span class="num" data-count="5.0" data-decimals="1">{clinic.rating.value}</span>
           <Icon name="star" size={18} class="star" />
         </dd>
         <dt class="stat__label">Google Rating</dt>
       </div>
-      <div class="stat reveal" style="--i:1">
+      <div class="stat reveal" data-reveal="group" style="--i:1">
         <dd class="stat__value">
           <span class="num"><span data-count="467" data-decimals="0">467</span>+</span>
         </dd>
         <dt class="stat__label">Google Reviews</dt>
       </div>
-      <div class="stat reveal" style="--i:2">
+      <div class="stat reveal" data-reveal="group" style="--i:2">
         <dd class="stat__value">
           <span class="num" data-count="2" data-decimals="0">2</span>
         </dd>
         <dt class="stat__label">Clinic Leads</dt>
       </div>
-      <div class="stat reveal" style="--i:3">
+      <div class="stat reveal" data-reveal="group" style="--i:3">
         <dd class="stat__value">
           <span class="num num--place">Gomti Nagar</span>
         </dd>
@@ -45,6 +47,19 @@ import { clinic } from '../data/site';
   }
   .trust__inner {
     position: relative;
+  }
+  .trust__rule {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -2px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(233 223 201 / 0.5) 20%, rgb(233 223 201 / 0.5) 80%, transparent);
+    transform-origin: center;
+    transition: transform 1300ms var(--ease-inout);
+  }
+  :global(.js) .trust__rule:not(.is-in) {
+    transform: scaleX(0);
   }
   .trust__grid {
     display: grid;
@@ -65,6 +80,24 @@ import { clinic } from '../data/site';
   }
   .stat:nth-child(-n + 2) {
     border-bottom: 1px solid rgb(250 248 242 / 0.12);
+  }
+  /* Numbers rise and fade in one after another, labels follow them */
+  .stat__value,
+  .stat__label {
+    transition:
+      opacity 700ms ease-out,
+      transform 700ms ease-out;
+    transition-delay: calc(var(--i, 0) * 90ms);
+  }
+  .stat__label {
+    transition-delay: calc(var(--i, 0) * 90ms + 200ms);
+  }
+  :global(.js) .stat:not(.is-in) .stat__value {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  :global(.js) .stat:not(.is-in) .stat__label {
+    opacity: 0;
   }
   .stat__value {
     margin: 0;

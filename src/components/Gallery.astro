@@ -1,4 +1,5 @@
 ---
+import Depth from './Depth.astro';
 import ClinicImage from './ClinicImage.astro';
 import Placeholder from './Placeholder.astro';
 import { gallery } from '../data/site';
@@ -9,12 +10,13 @@ const meta = {
   'treatment-room': { icon: 'bed-single', tone: 'teal' },
   equipment: { icon: 'dumbbell', tone: 'pine' },
 } as const;
+
+// Each photograph arrives from a slightly different direction, in reading order
+const from = { clinic: 'left', reception: 'right', 'treatment-room': undefined, equipment: 'left' } as const;
 ---
 
 <section id="clinic" class="section curve surface-sand" data-section data-ambient aria-labelledby="clinic-title">
-  <div class="bg" aria-hidden="true">
-    <span class="orb" style="--s:480px; --c:rgb(255 255 255 / .5); right:-140px; bottom:-80px; --dur:46s"></span>
-  </div>
+  <Depth tone="sand" glow drift={false} />
 
   <div class="container-site relative">
     <header class="head reveal">
@@ -28,12 +30,14 @@ const meta = {
     <ul class="mosaic">
       {
         gallery.map((g, i) => (
-          <li class:list={['tile reveal reveal-scale', `tile--${g.key}`]} style={`--i:${i}`}>
+          <li class:list={['tile reveal reveal-scale', `tile--${g.key}`]} data-reveal={from[g.key]} style={`--i:${i}; --stagger:110ms`}>
             <figure>
               <div class="tile__media">
-                <ClinicImage photo={g.slot} alt={g.alt} sizes="(min-width:1024px) 720px, (min-width:640px) 50vw, 100vw">
-                  <Placeholder label="Photograph" icon={meta[g.key].icon} tone={meta[g.key].tone} tag="[TBD - clinic photo]" />
-                </ClinicImage>
+                <div class="tile__zoom">
+                  <ClinicImage photo={g.slot} alt={g.alt} sizes="(min-width:1024px) 720px, (min-width:640px) 50vw, 100vw">
+                    <Placeholder label="Photograph" icon={meta[g.key].icon} tone={meta[g.key].tone} tag="[TBD - clinic photo]" />
+                  </ClinicImage>
+                </div>
               </div>
               <figcaption class="tile__cap glass">{g.label}</figcaption>
             </figure>
@@ -94,6 +98,33 @@ const meta = {
   }
   .tile:hover .tile__media :global(.clinic-img) {
     transform: scale(1.02);
+  }
+  /* The lead photograph already moves slowly while in view (global.css), so it skips the hover zoom */
+  .tile--clinic:hover .tile__media :global(.clinic-img) {
+    transform: none;
+  }
+  .tile__zoom {
+    position: absolute;
+    inset: 0;
+  }
+  /* The lead photograph eases in by 2% over several seconds once it is on screen — a single slow
+     transition, so nothing keeps running while you scroll */
+  :global(.js) .tile--clinic .tile__zoom {
+    transition: transform 9s var(--ease-soft);
+  }
+  :global(.js) .tile--clinic.is-in .tile__zoom {
+    transform: scale(1.02);
+  }
+  /* Captions arrive just after their photograph, sliding in from the side */
+  .tile__cap {
+    transition:
+      opacity 600ms ease-out,
+      transform 600ms ease-out;
+    transition-delay: calc(var(--i, 0) * 110ms + 380ms);
+  }
+  :global(.js) .tile:not(.is-in) .tile__cap {
+    opacity: 0;
+    transform: translate3d(-10px, 0, 0);
   }
   .tile__cap {
     position: absolute;
