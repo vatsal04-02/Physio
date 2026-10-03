@@ -266,21 +266,6 @@ qsa('[data-slider]').forEach((slider) => {
   qs('[data-slider-next]', slider)?.addEventListener('click', () => go(1));
 });
 
-/* ---------- Click-to-load map (keeps third-party weight off the initial load) ---------- */
-
-qs<HTMLButtonElement>('[data-map-load]')?.addEventListener('click', (event) => {
-  const btn = event.currentTarget as HTMLButtonElement;
-  const stage = btn.closest('[data-map-stage]');
-  if (!stage || !btn.dataset.src) return;
-  const frame = document.createElement('iframe');
-  frame.src = btn.dataset.src;
-  frame.title = btn.dataset.title ?? 'Map';
-  frame.loading = 'lazy';
-  frame.referrerPolicy = 'no-referrer-when-downgrade';
-  stage.appendChild(frame);
-  btn.remove();
-});
-
 /* ---------- Pointer-tracked highlight on glass cards (fine pointers only) ---------- */
 
 if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {

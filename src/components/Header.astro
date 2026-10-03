@@ -102,8 +102,8 @@ import { clinic, hours, links, nav } from '../data/site';
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    height: 68px;
-    padding: 0 12px 0 14px;
+    height: 60px;
+    padding: 0 10px 0 12px;
     border-radius: 18px;
     transition: height var(--dur-normal) var(--ease-soft);
   }
@@ -125,7 +125,7 @@ import { clinic, hours, links, nav } from '../data/site';
     transition: opacity var(--dur-normal) ease;
   }
   :global(.site-header.is-scrolled) .bar {
-    height: 58px;
+    height: 54px;
   }
   :global(.site-header.is-scrolled) .bar::before {
     opacity: 1;
@@ -142,12 +142,12 @@ import { clinic, hours, links, nav } from '../data/site';
   .brand__mark {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     background: linear-gradient(145deg, var(--color-teal), var(--color-pine));
     color: var(--color-ivory);
-    font: 400 1.125rem/1 var(--font-serif);
+    font: 400 1.0625rem/1 var(--font-serif);
     letter-spacing: 0.02em;
     box-shadow: 0 6px 14px -6px rgb(12 59 54 / 0.6);
   }
@@ -157,7 +157,7 @@ import { clinic, hours, links, nav } from '../data/site';
     line-height: 1.1;
   }
   .brand__name {
-    font: 400 1.1875rem/1.1 var(--font-serif);
+    font: 400 1.125rem/1.1 var(--font-serif);
     letter-spacing: -0.005em;
   }
   .brand__sub {
@@ -230,9 +230,9 @@ import { clinic, hours, links, nav } from '../data/site';
   .icon-btn {
     display: grid;
     place-items: center;
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
     border: 1px solid rgb(12 59 54 / 0.12);
     background: rgb(255 255 255 / 0.55);
     color: var(--color-pine);
@@ -323,10 +323,10 @@ import { clinic, hours, links, nav } from '../data/site';
       display: none;
     }
     .bar {
-      height: 76px;
+      height: 66px;
     }
     :global(.site-header.is-scrolled) .bar {
-      height: 62px;
+      height: 56px;
     }
   }
 
@@ -336,7 +336,7 @@ import { clinic, hours, links, nav } from '../data/site';
     inset: 0;
     z-index: 45;
     display: grid;
-    padding: calc(env(safe-area-inset-top, 0px) + 86px) 12px calc(env(safe-area-inset-bottom, 0px) + 12px);
+    padding: calc(env(safe-area-inset-top, 0px) + 76px) 12px calc(env(safe-area-inset-bottom, 0px) + 12px);
     background: rgb(12 59 54 / 0.55);
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);

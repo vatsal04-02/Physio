@@ -2,15 +2,11 @@
 import { steps } from '../data/site';
 ---
 
-<section id="how-it-works" class="section surface-ivory" data-section data-ambient aria-labelledby="how-title">
-  <div class="bg" aria-hidden="true">
-    <span class="orb" style="--s:560px; --c:rgb(15 118 110 / .14); right:-160px; top:-40px; --dur:36s"></span>
-    <span class="orb" style="--s:480px; --c:rgb(233 223 201 / 1); left:-140px; bottom:-60px; --dur:42s"></span>
-  </div>
+<section id="how-it-works" class="section surface-sand" data-section data-ambient aria-labelledby="how-title">
 
   <div class="container-site relative">
     <header class="head reveal">
-      <p class="eyebrow">How it works</p>
+      <p class="eyebrow">06 / How it works</p>
       <h2 id="how-title" class="h2">A clear path, from first assessment onward.</h2>
     </header>
 
@@ -25,7 +21,7 @@ import { steps } from '../data/site';
                   <span class="step__fill" />
                 </span>
               )}
-              <div class="step__card glass">
+              <div class="step__card">
                 <h3 class="step__title">{s.title}</h3>
                 <p class="step__body">{s.body}</p>
               </div>
@@ -50,7 +46,7 @@ import { steps } from '../data/site';
     display: grid;
     gap: 1.1rem;
     max-width: 40rem;
-    margin-bottom: clamp(36px, 5vw, 64px);
+    margin-bottom: clamp(24px, 3.5vw, 40px);
   }
 
   .timeline {
@@ -107,7 +103,7 @@ import { steps } from '../data/site';
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    border: 1.5px solid rgb(12 59 54 / 0.25);
+    border: 1.5px solid rgb(12 59 54 / 0.28);
     background: var(--color-ivory);
     color: var(--color-pine);
     font: 400 1.125rem/1 var(--font-serif);
@@ -132,8 +128,10 @@ import { steps } from '../data/site';
   }
 
   .step__card {
-    padding: 1.2rem 1.25rem 1.3rem;
-    border-radius: 20px;
+    padding: 1rem 1.1rem 1.1rem;
+    border-radius: 16px;
+    background: rgb(250 248 242 / 0.8);
+    border: 1px solid rgb(12 59 54 / 0.1);
   }
   .step__title {
     font-family: var(--font-sans);
@@ -178,8 +176,7 @@ import { steps } from '../data/site';
       gap: 22px;
     }
     .step__card {
-      padding: 1.5rem 1.5rem 1.6rem;
-      min-height: 150px;
+      padding: 1.15rem 1.25rem 1.25rem;
     }
   }
 </style>

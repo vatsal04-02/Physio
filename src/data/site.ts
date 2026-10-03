@@ -60,9 +60,6 @@ export const links = {
   directions: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${clinic.name}, ${clinic.address.street}, ${clinic.address.area}, ${clinic.address.city} ${clinic.address.postalCode}`,
   )}`,
-  mapEmbed: `https://www.google.com/maps?q=${encodeURIComponent(
-    `${clinic.name}, ${clinic.address.street}, Gomti Nagar, ${clinic.address.city} ${clinic.address.postalCode}`,
-  )}&output=embed`,
   reviews: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${clinic.name}, Gomti Nagar, ${clinic.address.city}`,
   )}`,
@@ -89,11 +86,10 @@ export interface Condition {
   /** Used in the WhatsApp pre-fill: "…would like to know more about {ask}." */
   ask: string;
   icon: 'bone' | 'activity' | 'footprints' | 'hand' | 'zap' | 'dumbbell' | 'person-standing' | 'flame' | 'stethoscope' | 'heart-pulse' | 'shield-check' | 'layers';
-  featured?: boolean;
 }
 
 export const conditions: Condition[] = [
-  { title: 'Back Pain', blurb: 'Stiffness, aches and everyday movement.', ask: 'physiotherapy for back pain', icon: 'bone', featured: true },
+  { title: 'Back Pain', blurb: 'Stiffness, aches and everyday movement.', ask: 'physiotherapy for back pain', icon: 'bone' },
   { title: 'Neck Pain', blurb: 'Neck and upper-back discomfort.', ask: 'physiotherapy for neck pain', icon: 'activity' },
   { title: 'Shoulder Pain / Frozen Shoulder', blurb: 'Shoulder stiffness and restricted movement.', ask: 'physiotherapy for shoulder pain / frozen shoulder', icon: 'hand' },
   { title: 'Knee Pain / Arthritis', blurb: 'Knee and joint discomfort.', ask: 'physiotherapy for knee pain / arthritis', icon: 'footprints' },
@@ -108,13 +104,24 @@ export const conditions: Condition[] = [
   { title: 'Consultation', blurb: 'Talk through your concern with the clinic.', ask: 'a consultation', icon: 'stethoscope' },
 ];
 
+/** "Care at a glance" band — short editorial labels, not another card grid. */
+export const glance = ['Back pain', 'Neck pain', 'Knee pain', 'Shoulder pain', 'Sports injuries', 'Rehabilitation'] as const;
+
 /* ---------- Why this approach (PRD §13) ---------- */
 
 export const principles = [
-  { n: '01', title: 'Assess First', body: 'Care begins with understanding your concern — what you feel, and how it affects your day.' },
-  { n: '02', title: 'Individualised Care', body: 'Treatment is based on your clinical assessment, not a one-size-fits-all routine.' },
-  { n: '03', title: 'Clear Next Steps', body: 'Progress is reviewed and the next steps are discussed with you.' },
-  { n: '04', title: 'Local & Accessible', body: 'A neighbourhood clinic in Gomti Nagar, Lucknow, near Deva Palace.' },
+  { n: '01', title: 'Assess First', body: 'Understand your concern before care is recommended.' },
+  { n: '02', title: 'Individualised Care', body: 'Care is based on clinical assessment.' },
+  { n: '03', title: 'Clear Next Steps', body: 'Progress and next steps are discussed with you.' },
+  { n: '04', title: 'Local & Accessible', body: 'Gomti Nagar, Lucknow.' },
+] as const;
+
+/* ---------- What we do (kept deliberately short — no clinical claims) ---------- */
+
+export const whatWeDo = [
+  { icon: 'activity', title: 'Pain & Mobility', body: 'Support for common pain and movement concerns.' },
+  { icon: 'heart-pulse', title: 'Rehabilitation', body: 'Post-surgical and injury rehabilitation support.' },
+  { icon: 'dumbbell', title: 'Exercise & Recovery', body: 'Therapeutic exercise and guided movement care.' },
 ] as const;
 
 /* ---------- Doctors (PRD §14) — unknown details stay TBD ---------- */
@@ -145,11 +152,10 @@ export const doctors = [
 /* ---------- Clinic gallery slots (PRD §15) ---------- */
 
 export const gallery = [
-  { slot: 'exterior', label: 'Clinic exterior', alt: 'Exterior of Geeta Krishna Physiotherapy in Viram Khand, Gomti Nagar' },
-  { slot: 'reception', label: 'Reception', alt: 'Reception area at Geeta Krishna Physiotherapy' },
-  { slot: 'treatment-room', label: 'Treatment room', alt: 'Treatment room at Geeta Krishna Physiotherapy' },
-  { slot: 'equipment', label: 'Equipment', alt: 'Physiotherapy equipment at Geeta Krishna Physiotherapy' },
-  { slot: 'signage', label: 'Clinic signage', alt: 'Geeta Krishna Physiotherapy clinic signage' },
+  { slot: ['clinic', 'exterior'], key: 'clinic', label: 'The clinic', alt: 'Inside Geeta Krishna Physiotherapy in Viram Khand, Gomti Nagar' },
+  { slot: ['reception'], key: 'reception', label: 'Reception', alt: 'Reception area at Geeta Krishna Physiotherapy' },
+  { slot: ['treatment-room'], key: 'treatment-room', label: 'Treatment room', alt: 'Treatment room at Geeta Krishna Physiotherapy' },
+  { slot: ['equipment'], key: 'equipment', label: 'Equipment', alt: 'Physiotherapy equipment at Geeta Krishna Physiotherapy' },
 ] as const;
 
 /* ---------- How it works (PRD §16) ---------- */
@@ -175,7 +181,8 @@ export const reviews: Review[] = [];
 
 export const pricing = {
   label: 'Physiotherapy',
-  startingFrom: `₹${TBD}`,
+  /** Set to the clinic-confirmed amount (e.g. '₹800') and the placeholder disappears. */
+  confirmedAmount: null as string | null,
   unit: 'per session',
   extras: [
     { label: 'Consultation', value: TBD },
@@ -214,16 +221,14 @@ export const faqs: Faq[] = [
     a: `${clinic.name}, ${clinic.address.street}, ${clinic.address.area}, ${clinic.address.city}, ${clinic.address.region} ${clinic.address.postalCode}.`,
     confirmed: true,
   },
-  { q: 'Do you offer home visits?', a: TBD, confirmed: false },
-  { q: 'What is the starting price?', a: TBD, confirmed: false },
-  { q: 'How long is a session?', a: TBD, confirmed: false },
-  { q: 'Do I need previous reports?', a: TBD, confirmed: false },
-  { q: 'Do I need a referral?', a: TBD, confirmed: false },
   {
     q: 'Do you treat sports injuries?',
     a: 'Yes — sports injuries are one of the concerns the clinic provides physiotherapy for. Message or call the clinic to discuss your situation.',
     confirmed: true,
   },
+  { q: 'Do you offer home visits?', a: TBD, confirmed: false },
+  { q: 'What is the starting price?', a: TBD, confirmed: false },
+  { q: 'How long is a session?', a: TBD, confirmed: false },
 ];
 
 /* ---------- SEO (PRD §34) ---------- */

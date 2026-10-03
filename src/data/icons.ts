@@ -32,6 +32,7 @@ import i_armchair from 'lucide-static/icons/armchair.svg?raw';
 import i_bed_single from 'lucide-static/icons/bed-single.svg?raw';
 import i_signpost from 'lucide-static/icons/signpost.svg?raw';
 import i_map from 'lucide-static/icons/map.svg?raw';
+import i_user_round from 'lucide-static/icons/user-round.svg?raw';
 
 export const icons = {
   'bone': i_bone,
@@ -65,6 +66,7 @@ export const icons = {
   'bed-single': i_bed_single,
   'signpost': i_signpost,
   'map': i_map,
+  'user-round': i_user_round,
 } as const;
 
 export type IconName = keyof typeof icons;

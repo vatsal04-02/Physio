@@ -1,24 +1,14 @@
 ---
 import ClinicImage from './ClinicImage.astro';
-import GoniometerArt from './GoniometerArt.astro';
+import Placeholder from './Placeholder.astro';
 import Icon from './Icon.astro';
 import { clinic, hours, links } from '../data/site';
 ---
 
 <section id="top" class="hero" data-section data-ambient aria-labelledby="hero-title">
-  <!-- Ambient background: soft circles + drifting rings (design.md §8, §28) -->
   <div class="hero__bg" aria-hidden="true">
-    <span class="orb" style="--s:640px; --c:rgb(15 118 110 / .2); right:-120px; top:-60px; --dur:34s"></span>
-    <span class="orb" style="--s:480px; --c:rgb(233 223 201 / .9); left:-160px; bottom:-120px; --dur:40s"></span>
-    <svg class="hero__rings drift" viewBox="0 0 800 800" focusable="false">
-      <g fill="none" stroke="#0F766E" stroke-opacity=".2">
-        <circle cx="400" cy="400" r="150"></circle>
-        <circle cx="400" cy="400" r="240" stroke-dasharray="3 10"></circle>
-        <circle cx="400" cy="400" r="330"></circle>
-        <circle cx="400" cy="400" r="390" stroke-dasharray="1 9"></circle>
-      </g>
-    </svg>
-    <div class="dots" style="mask-image: radial-gradient(ellipse at 80% 40%, #000 0%, transparent 60%); -webkit-mask-image: radial-gradient(ellipse at 80% 40%, #000 0%, transparent 60%);"></div>
+    <span class="orb" style="--s:560px; --c:rgb(15 118 110 / .16); right:-140px; top:-80px; --dur:40s"></span>
+    <span class="orb" style="--s:440px; --c:rgb(233 223 201 / .95); left:-160px; bottom:-120px; --dur:46s"></span>
   </div>
 
   <div class="container-site hero__grid">
@@ -48,7 +38,7 @@ import { clinic, hours, links } from '../data/site';
 
       <div class="rating glass rise" style="--d:620ms">
         <span class="stars" aria-hidden="true">
-          {Array.from({ length: 5 }).map(() => <Icon name="star" size={16} class="star" />)}
+          {Array.from({ length: 5 }).map(() => <Icon name="star" size={15} class="star" />)}
         </span>
         <span class="rating__text">
           <strong>{clinic.rating.value}</strong> · {clinic.rating.count} Google reviews
@@ -58,21 +48,18 @@ import { clinic, hours, links } from '../data/site';
     </div>
 
     <div class="hero__visual">
-      <div class="frame" style="animation-delay:350ms">
-        <ClinicImage slot="hero" alt="Inside Geeta Krishna Physiotherapy, Gomti Nagar, Lucknow" sizes="(min-width:1024px) 560px, 100vw" priority>
-          <GoniometerArt />
-          <span class="ph-tag" data-placeholder>Clinic photo · [TBD - clinic to provide]</span>
+      <span class="hero__outline" aria-hidden="true"></span>
+      <figure class="frame">
+        <ClinicImage photo="hero" alt="Inside Geeta Krishna Physiotherapy, Gomti Nagar, Lucknow" sizes="(min-width:1024px) 560px, 100vw" priority>
+          <Placeholder label="Clinic photograph" icon="camera" tone="pine" />
         </ClinicImage>
-        <span class="frame__sheen" aria-hidden="true"></span>
-      </div>
+        <figcaption class="frame__cap">
+          <Icon name="map-pin" size={13} /> Viram Khand, Gomti Nagar
+        </figcaption>
+      </figure>
 
-      <div class="chip-location glass rise" style="--d:760ms">
-        <Icon name="map-pin" size={16} />
-        <span>Gomti Nagar, Lucknow</span>
-      </div>
-
-      <div class="hours-card glass rise" style="--d:820ms">
-        <p class="hours-card__label"><Icon name="clock" size={14} /> Clinic Hours</p>
+      <div class="hours-card glass rise" style="--d:760ms">
+        <p class="hours-card__label"><Icon name="clock" size={13} /> Clinic Hours</p>
         <p class="hours-card__main">{hours.days} · {hours.sessions[0]}</p>
         <p class="hours-card__sub">{hours.sessions[1]} · {hours.closed}</p>
       </div>
@@ -84,26 +71,18 @@ import { clinic, hours, links } from '../data/site';
   .hero {
     position: relative;
     overflow: clip;
-    padding-top: calc(var(--header-h) + 20px);
-    padding-bottom: clamp(56px, 7vw, 92px);
+    padding-top: calc(var(--header-h) + 12px);
+    padding-bottom: clamp(44px, 5vw, 64px);
   }
   .hero__bg {
     position: absolute;
     inset: 0;
     pointer-events: none;
   }
-  .hero__rings {
-    position: absolute;
-    right: -260px;
-    top: -120px;
-    width: 780px;
-    animation: spin-slow 180s linear infinite;
-  }
-
   .hero__grid {
     position: relative;
     display: grid;
-    gap: 44px;
+    gap: 36px;
     align-items: center;
   }
 
@@ -114,22 +93,22 @@ import { clinic, hours, links } from '../data/site';
     align-items: flex-start;
   }
   .hero__title {
-    margin-top: 1.1rem;
+    margin-top: 0.9rem;
     color: var(--color-ink);
   }
   .hero__title > span {
     display: block;
   }
   .hero__lead {
-    max-width: 34rem;
-    margin-top: 1.4rem;
+    max-width: 32rem;
+    margin-top: 1.1rem;
   }
   .hero__cta {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.7rem;
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 1.6rem;
   }
   .hero__cta .btn {
     width: 100%;
@@ -138,11 +117,11 @@ import { clinic, hours, links } from '../data/site';
   .rating {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-    padding: 0.6rem 1rem 0.6rem 0.9rem;
+    gap: 0.65rem;
+    margin-top: 1.25rem;
+    padding: 0.5rem 0.95rem 0.5rem 0.8rem;
     border-radius: 999px;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
   }
   .stars {
     display: inline-flex;
@@ -154,29 +133,37 @@ import { clinic, hours, links } from '../data/site';
     stroke-width: 1.5;
   }
   .rating strong {
-    font: 400 1.25rem/1 var(--font-serif);
+    font: 400 1.1875rem/1 var(--font-serif);
   }
 
-  /* ---- Visual ---- */
+  /* ---- Photo-led visual ---- */
   .hero__visual {
     position: relative;
-    padding-bottom: 28px;
+    padding: 0 0 26px 0;
+  }
+  /* Fine-line offset frame: controlled overlap, no heavy decoration */
+  .hero__outline {
+    position: absolute;
+    inset: 14px -10px 12px 14px;
+    border: 1px solid rgb(15 118 110 / 0.35);
+    border-radius: 28px;
+    pointer-events: none;
   }
   .frame {
     position: relative;
-    height: clamp(340px, 92vw, 460px);
+    margin: 0;
+    height: clamp(300px, 78vw, 380px);
     overflow: hidden;
-    border-radius: 150px 150px 28px 28px;
-    background: radial-gradient(120% 80% at 50% 0%, #14574f 0%, var(--color-pine) 56%, #082e2a 100%);
-    box-shadow:
-      0 40px 70px -36px rgb(12 59 54 / 0.6),
-      inset 0 0 0 1px rgb(250 248 242 / 0.1);
+    border-radius: 24px;
+    background: var(--color-pine);
+    box-shadow: 0 30px 50px -30px rgb(12 59 54 / 0.55);
     animation: settle 900ms var(--ease-soft) both;
+    animation-delay: 300ms;
     isolation: isolate;
   }
   .frame :global(.clinic-img) {
     animation: settle-img 1100ms var(--ease-soft) both;
-    animation-delay: 350ms;
+    animation-delay: 300ms;
   }
   @keyframes settle-img {
     from {
@@ -186,70 +173,32 @@ import { clinic, hours, links } from '../data/site';
       transform: scale(1);
     }
   }
-  .frame__sheen {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    background: linear-gradient(115deg, rgb(255 255 255 / 0.1), transparent 34%);
-  }
-  .ph-tag {
+  .frame__cap {
     position: absolute;
     z-index: 3;
-    top: 18px;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: calc(100% - 36px);
-    padding: 0.3rem 0.75rem;
-    border-radius: 999px;
-    border: 1px dashed rgb(233 223 201 / 0.5);
-    background: rgb(12 59 54 / 0.55);
-    color: var(--color-sand);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .chip-location {
-    position: absolute;
-    z-index: 4;
-    top: 62px;
-    right: -6px;
-    display: none;
+    right: 12px;
+    top: 12px;
+    display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.55rem 0.9rem;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
     border-radius: 999px;
-    font-size: 0.8125rem;
-    font-weight: 700;
-    color: var(--color-pine);
-    animation-name: rise, float-y;
-    animation-duration: 700ms, 7s;
-    animation-delay: var(--d), 1.6s;
-    animation-iteration-count: 1, infinite;
-    animation-timing-function: var(--ease-soft), ease-in-out;
-    animation-fill-mode: both, none;
-  }
-  .chip-location :global(.icon) {
-    color: var(--color-teal);
+    background: rgb(12 59 54 / 0.72);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ivory);
   }
 
   .hours-card {
     position: absolute;
     z-index: 4;
-    left: 14px;
+    left: 12px;
     bottom: 0;
-    padding: 0.9rem 1.1rem 0.95rem;
-    border-radius: 18px;
+    padding: 0.75rem 1rem 0.8rem;
+    border-radius: 16px;
     line-height: 1.35;
-    animation-name: rise, float-y;
-    animation-duration: 700ms, 8s;
-    animation-delay: var(--d), 1.8s;
-    animation-iteration-count: 1, infinite;
-    animation-timing-function: var(--ease-soft), ease-in-out;
-    animation-fill-mode: both, none;
   }
   .hours-card p {
     margin: 0;
@@ -258,7 +207,7 @@ import { clinic, hours, links } from '../data/site';
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    margin-bottom: 0.35rem !important;
+    margin-bottom: 0.3rem !important;
     font-size: 0.6875rem;
     font-weight: 800;
     letter-spacing: 0.16em;
@@ -284,46 +233,32 @@ import { clinic, hours, links } from '../data/site';
       width: auto;
     }
     .frame {
-      height: 480px;
-      border-radius: 220px 220px 32px 32px;
-    }
-    .chip-location {
-      display: inline-flex;
-    }
-    .hours-card {
-      left: -10px;
+      height: 400px;
     }
   }
 
   @media (min-width: 1024px) {
     .hero {
-      padding-top: calc(var(--header-h) + 28px);
+      padding-top: calc(var(--header-h) + 20px);
     }
     .hero__grid {
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 32px;
+      gap: 40px;
     }
     .hero__copy {
       grid-column: 1 / span 7;
     }
     .hero__visual {
       grid-column: 8 / span 5;
-      margin-right: -8px;
     }
     .frame {
-      height: clamp(500px, 74vh, 640px);
-      border-radius: 260px 260px 36px 36px;
+      height: clamp(400px, 52vh, 470px);
+      border-radius: 28px;
     }
     .hours-card {
-      left: -64px;
-      bottom: 18px;
-    }
-    .chip-location {
-      right: -22px;
-      top: 78px;
-    }
-    .hero__lead {
-      margin-top: 1.6rem;
+      left: -48px;
+      bottom: 6px;
+      padding: 0.85rem 1.1rem 0.9rem;
     }
   }
 </style>

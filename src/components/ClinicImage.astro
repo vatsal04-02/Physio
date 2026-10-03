@@ -3,7 +3,8 @@ import { Picture } from 'astro:assets';
 import { getPhoto } from '../lib/photos';
 
 interface Props {
-  slot: string;
+  /** File name(s) in src/assets/clinic/ — first match wins. */
+  photo: string | readonly string[];
   alt: string;
   sizes?: string;
   /** Above-the-fold image: eager, high priority. */
@@ -11,14 +12,14 @@ interface Props {
   class?: string;
 }
 
-const { slot, alt, sizes = '100vw', priority = false, class: className } = Astro.props;
-const photo = getPhoto(slot);
+const { photo: name, alt, sizes = '100vw', priority = false, class: className } = Astro.props;
+const image = getPhoto(name);
 ---
 
 {
-  photo ? (
+  image ? (
     <Picture
-      src={photo}
+      src={image}
       alt={alt}
       formats={['avif', 'webp']}
       widths={[480, 768, 1100, 1600]}

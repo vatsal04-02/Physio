@@ -5,19 +5,17 @@ import { principles } from '../data/site';
 
 <section id="why" class="section surface-pine on-dark" data-section data-ambient aria-labelledby="why-title">
   <div class="bg" aria-hidden="true">
-    <span class="orb" style="--s:640px; --c:rgb(15 118 110 / .55); right:-180px; top:-120px; --dur:34s"></span>
-    <span class="orb" style="--s:520px; --c:rgb(15 118 110 / .35); left:-200px; bottom:-160px; --dur:44s"></span>
+    <span class="orb" style="--s:560px; --c:rgb(15 118 110 / .5); right:-180px; top:-140px; --dur:44s"></span>
     <div class="dots"></div>
   </div>
 
-  <div class="container-site grid">
+  <div class="container-site relative">
     <header class="head reveal">
-      <p class="eyebrow">Why this approach</p>
-      <h2 id="why-title" class="h2">Physiotherapy that starts with understanding.</h2>
-      <p class="lead">
-        Every plan begins with listening, so the care you receive fits the person — not just the pain.
-      </p>
-      <a class="link-arrow" href="#doctors">
+      <div class="head__title">
+        <p class="eyebrow">02 / Why this approach</p>
+        <h2 id="why-title" class="h2">Physiotherapy that starts with understanding.</h2>
+      </div>
+      <a class="link-arrow head__link" href="#doctors">
         Meet the clinic leads
         <Icon name="arrow-right" size={18} />
       </a>
@@ -26,8 +24,9 @@ import { principles } from '../data/site';
     <ol class="items">
       {
         principles.map((p, i) => (
-          <li class="item reveal glass-dark" style={`--i:${i}`}>
-            <span class="item__num" aria-hidden="true">{p.n}</span>
+          <li class="item reveal" style={`--i:${i}`}>
+            <span class="item__ghost" aria-hidden="true">{p.n}</span>
+            <span class="item__n">{p.n}</span>
             <h3 class="item__title">{p.title}</h3>
             <p class="item__body">{p.body}</p>
           </li>
@@ -43,20 +42,23 @@ import { principles } from '../data/site';
     inset: 0;
     pointer-events: none;
   }
-  .grid {
+  .relative {
     position: relative;
-    display: grid;
-    gap: clamp(36px, 5vw, 64px);
   }
   .head {
     display: grid;
-    justify-items: start;
-    gap: 1.1rem;
-    align-content: start;
+    gap: 1rem;
+    margin-bottom: clamp(28px, 4vw, 48px);
   }
+  .head__title {
+    display: grid;
+    gap: 0.8rem;
+    max-width: 36rem;
+  }
+
   .items {
     display: grid;
-    gap: 14px;
+    gap: 0 28px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -64,59 +66,59 @@ import { principles } from '../data/site';
   .item {
     position: relative;
     overflow: hidden;
-    padding: 1.5rem 1.4rem 1.6rem;
-    border-radius: 24px;
+    padding: 1.1rem 0 1.4rem;
+    border-top: 1px solid rgb(250 248 242 / 0.18);
   }
-  /* Oversized, low-opacity numerals (design.md §13) */
-  .item__num {
+  /* Oversized background numerals — subtle, never competing with the text */
+  .item__ghost {
     position: absolute;
-    right: 1.1rem;
-    top: 0.4rem;
-    font: 400 clamp(4.5rem, 3.6rem + 3vw, 6.25rem) / 1 var(--font-serif);
-    color: transparent;
-    -webkit-text-stroke: 1px rgb(250 248 242 / 0.22);
+    right: -0.15rem;
+    top: 0.1rem;
+    font: 400 5.5rem/1 var(--font-serif);
+    color: rgb(250 248 242 / 0.06);
     pointer-events: none;
     user-select: none;
   }
+  .item__n {
+    position: relative;
+    font: 400 1.25rem/1 var(--font-serif);
+    color: var(--color-sand);
+  }
   .item__title {
     position: relative;
-    margin-top: 3.9rem;
-    font-size: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
+    margin-top: 0.85rem;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ivory);
   }
   .item__body {
     position: relative;
-    margin-top: 0.7rem;
-    max-width: 26rem;
-    font-size: 0.9688rem;
+    margin-top: 0.5rem;
+    max-width: 17rem;
+    font-size: 0.9375rem;
+    line-height: 1.55;
     color: rgb(250 248 242 / 0.74);
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 600px) {
     .items {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
     }
   }
   @media (min-width: 1024px) {
-    .grid {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
-      gap: 32px;
-    }
     .head {
-      grid-column: 1 / span 5;
-      position: sticky;
-      top: calc(var(--header-h) + 16px);
+      grid-template-columns: 1fr auto;
+      align-items: end;
     }
     .items {
-      grid-column: 7 / span 6;
-    }
-    /* Staggered offset for the right column — asymmetry, not a flat 2×2 */
-    .item:nth-child(even) {
-      margin-top: 36px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0 32px;
     }
     .item {
-      padding: 1.75rem 1.6rem 1.9rem;
+      padding-bottom: 0.4rem;
     }
   }
 </style>

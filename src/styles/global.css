@@ -32,7 +32,7 @@
   --dur-reveal: 650ms;
   --dur-editorial: 850ms;
 
-  --header-h: 84px;
+  --header-h: 76px;
   --teal-light: color-mix(in srgb, #0f766e 55%, white); /* tint of brand teal for dark surfaces */
   --focus-ring: #0f766e;
   color-scheme: light;
@@ -121,14 +121,14 @@
   }
 }
 
-/* 64–88px mobile, 96–128px desktop (design.md §5) */
+/* 64–80px mobile, up to ~100px desktop — tightened per the refinement brief */
 .section {
   position: relative;
   overflow: clip;
-  padding-block: clamp(64px, 8vw + 24px, 120px);
+  padding-block: clamp(64px, 4.5vw + 34px, 100px);
 }
 .section-tight {
-  padding-block: clamp(48px, 6vw + 16px, 88px);
+  padding-block: clamp(44px, 4vw + 24px, 72px);
 }
 
 .surface-ivory {
@@ -147,7 +147,7 @@
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -162,7 +162,7 @@
 .eyebrow::before {
   content: '';
   flex: none;
-  width: 28px;
+  width: 20px;
   height: 1.5px;
   background: currentColor;
   opacity: 0.7;
@@ -172,21 +172,21 @@
 }
 
 .display {
-  font-size: clamp(2.375rem, 1.5rem + 3.9vw, 4.25rem); /* 38 → 68 */
-  line-height: 1.04;
-  letter-spacing: -0.018em;
+  font-size: clamp(2.25rem, 1.3rem + 3.2vw, 3.625rem); /* 36 → 58 — hero only */
+  line-height: 1.06;
+  letter-spacing: -0.016em;
 }
 .h2 {
-  font-size: clamp(1.875rem, 1.25rem + 2.7vw, 3.25rem); /* 30 → 52 */
-  line-height: 1.08;
+  font-size: clamp(1.875rem, 1.2rem + 1.9vw, 2.875rem); /* 30 → 46 */
+  line-height: 1.12;
 }
 .h3 {
-  font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem); /* 22 → 30 */
-  line-height: 1.15;
+  font-size: clamp(1.3125rem, 1.1rem + 0.6vw, 1.75rem); /* 21 → 28 */
+  line-height: 1.2;
 }
 .lead {
-  font-size: clamp(1rem, 0.94rem + 0.32vw, 1.1875rem);
-  line-height: 1.7;
+  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem); /* 16 → 18 */
+  line-height: 1.65;
   color: color-mix(in srgb, var(--color-ink) 78%, transparent);
 }
 .on-dark .lead {
@@ -414,21 +414,6 @@
     transform: translate3d(28px, -22px, 0) scale(1.06);
   }
 }
-@keyframes spin-slow {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes float-y {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, -7px, 0);
-  }
-}
-
 /* ---------- Entrances ---------- */
 
 /* Hero stagger — pure CSS so CTAs never depend on JavaScript (design.md §10) */

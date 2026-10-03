@@ -13,7 +13,7 @@ const { address } = clinic;
 
   <div class="container-site grid">
     <div class="info reveal">
-      <p class="eyebrow">Visit us</p>
+      <p class="eyebrow">10 / Visit us</p>
       <h2 id="visit-title" class="h2">Find the clinic in Gomti Nagar.</h2>
 
       <address class="addr">
@@ -51,9 +51,9 @@ const { address } = clinic;
       </div>
     </div>
 
-    <div class="map reveal" style="--i:1" data-map>
-      <div class="map__stage" data-map-stage>
-        <!-- Lightweight, abstract preview. The interactive map loads only on request. -->
+    <div class="map reveal" style="--i:1">
+      <a class="map__stage" href={links.directions} target="_blank" rel="noopener noreferrer" aria-label={`Open ${clinic.name} in Google Maps (opens in a new tab)`} data-track="directions_click" data-location="visit-map">
+        <!-- Lightweight, abstract preview — a plain link, no embedded map or third-party script. -->
         <svg class="map__art" viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
           <defs>
             <radialGradient id="map-bg" cx="50%" cy="45%" r="75%">
@@ -81,8 +81,8 @@ const { address } = clinic;
             <path d="M300 -10 L 305 530" stroke-opacity=".1" stroke-width="5"></path>
           </g>
           <g transform="translate(300 250)">
-            <circle class="map__pulse drift" r="22" fill="none" stroke="#E9DFC9" stroke-opacity=".6" stroke-width="1.5"></circle>
-            <circle class="map__pulse map__pulse--2 drift" r="22" fill="none" stroke="#E9DFC9" stroke-opacity=".6" stroke-width="1.5"></circle>
+            <circle r="24" fill="none" stroke="#E9DFC9" stroke-opacity=".5" stroke-width="1.5"></circle>
+            <circle r="40" fill="none" stroke="#E9DFC9" stroke-opacity=".22" stroke-width="1" stroke-dasharray="2 6"></circle>
             <circle r="9" fill="#EA580C" stroke="#FAF8F2" stroke-width="3"></circle>
           </g>
         </svg>
@@ -95,11 +95,12 @@ const { address } = clinic;
           </div>
         </div>
 
-        <button class="map__load btn btn-glass btn-sm" type="button" data-map-load data-src={links.mapEmbed} data-title={`Map showing ${clinic.name}, Gomti Nagar, Lucknow`}>
+        <span class="map__open btn btn-glass btn-sm">
           <Icon name="map" size={18} />
-          Load interactive map
-        </button>
-      </div>
+          Open in Google Maps
+          <Icon name="arrow-up-right" size={16} class="icon-arrow" />
+        </span>
+      </a>
     </div>
   </div>
 </section>
@@ -202,6 +203,7 @@ const { address } = clinic;
   }
   .map__stage {
     position: relative;
+    display: block;
     height: 100%;
     min-height: 340px;
     overflow: hidden;
@@ -216,25 +218,6 @@ const { address } = clinic;
     inset: 0;
     width: 100%;
     height: 100%;
-  }
-  .map__pulse {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: map-ping 3s ease-out infinite;
-  }
-  .map__pulse--2 {
-    animation-delay: 1.5s;
-  }
-  @keyframes map-ping {
-    0% {
-      transform: scale(0.5);
-      opacity: 0.9;
-    }
-    80%,
-    100% {
-      transform: scale(2.6);
-      opacity: 0;
-    }
   }
   .map__label {
     position: absolute;
@@ -260,27 +243,21 @@ const { address } = clinic;
   .map__label span {
     color: color-mix(in srgb, var(--color-ink) 70%, transparent);
   }
-  .map__load {
+  .map__open {
     position: absolute;
     left: 50%;
     bottom: 16px;
     z-index: 2;
     transform: translateX(-50%);
     background: rgb(12 59 54 / 0.6);
+    transition: background-color var(--dur-normal) ease, border-color var(--dur-normal) ease;
   }
-  .map__load:hover {
-    transform: translateX(-50%) translateY(-1px);
+  .map__stage:hover .map__open {
+    background: rgb(12 59 54 / 0.85);
+    border-color: rgb(250 248 242 / 0.5);
   }
-  .map__load:active {
-    transform: translateX(-50%) scale(0.98);
-  }
-  .map :global(iframe) {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    width: 100%;
-    height: 100%;
-    border: 0;
+  .map__stage:hover .map__open :global(.icon-arrow) {
+    transform: translate(2px, -2px);
   }
 
   @media (min-width: 640px) {
@@ -302,7 +279,7 @@ const { address } = clinic;
     }
     .map {
       grid-column: 7 / span 6;
-      min-height: 520px;
+      min-height: 440px;
     }
   }
 </style>
