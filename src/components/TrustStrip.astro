@@ -12,14 +12,14 @@ import { clinic } from '../data/site';
     <dl class="trust__grid">
       <div class="stat reveal" data-reveal="group" style="--i:0">
         <dd class="stat__value">
-          <span class="num" data-count="5.0" data-decimals="1">{clinic.rating.value}</span>
+          <span class="num" data-count="5.0" data-decimals="1" data-live-rating>{clinic.rating.value}</span>
           <Icon name="star" size={18} class="star" />
         </dd>
         <dt class="stat__label">Google Rating</dt>
       </div>
       <div class="stat reveal" data-reveal="group" style="--i:1">
         <dd class="stat__value">
-          <span class="num"><span data-count="467" data-decimals="0">467</span>+</span>
+          <span class="num"><span data-count="467" data-decimals="0" data-live-count>467</span><span data-live-plus>+</span></span>
         </dd>
         <dt class="stat__label">Google Reviews</dt>
       </div>

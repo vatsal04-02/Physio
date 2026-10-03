@@ -1,8 +1,8 @@
 ---
 import ClinicImage from './ClinicImage.astro';
-import Placeholder from './Placeholder.astro';
 import Icon from './Icon.astro';
-import { doctorMessage, doctors, whatsappLink } from '../data/site';
+import { getPhoto } from '../lib/photos';
+import { doctorMessage, doctors, doctorsPhoto, whatsappLink } from '../data/site';
 ---
 
 <section id="doctors" class="section curve surface-ivory" data-section data-ambient aria-labelledby="doctors-title">
@@ -14,23 +14,38 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     <div class="layout">
     <header class="head reveal">
       <p class="eyebrow">03 / Doctors</p>
-      <h2 id="doctors-title" class="h2">You’ll know your doctor’s name.</h2>
+      <h2 id="doctors-title" class="h2">Meet the doctors behind your recovery.</h2>
       <p class="lead">Dr. Sandeep Tiwari and Dr. Mahesh Tiwari lead Geeta Krishna Physiotherapy, both qualified MPT (PT).</p>
+      {
+        getPhoto(doctorsPhoto.slot) && (
+          <figure class="pair">
+            <div class="pair__frame">
+              <ClinicImage photo={doctorsPhoto.slot} alt={doctorsPhoto.alt} sizes="(min-width:1024px) 300px, 80vw" />
+            </div>
+            <figcaption class="pair__cap">
+              <span class="tbd">{doctorsPhoto.caption}</span>
+            </figcaption>
+          </figure>
+        )
+      }
     </header>
 
     <div class="cards">
       {
         doctors.map((d, i) => (
           <article class="doc reveal" data-reveal="group" style={`--i:${i}`} aria-labelledby={`doc-${i}-name`}>
-            <figure class="doc__photo">
+            <figure class:list={['doc__photo', { 'doc__photo--mono': !getPhoto(d.slot) }]}>
               <div class="doc__media">
                 <div class="doc__scale">
                   <ClinicImage photo={d.slot} alt={`Portrait of ${d.name}, ${d.role} at Geeta Krishna Physiotherapy`} sizes="(min-width:1024px) 520px, (min-width:640px) 50vw, 100vw">
-                    <Placeholder label={`Portrait · ${d.name}`} icon="user-round" tone="sand" />
+                    <!-- No portrait supplied yet: a monogram on deep pine, replaced automatically by src/assets/clinic/{d.slot}.* -->
+                    <div class="mono" aria-hidden="true">
+                      <span class="mono__dots"></span>
+                      <span class="mono__ring"><span class="mono__circle">{d.initials}</span></span>
+                    </div>
                   </ClinicImage>
                 </div>
               </div>
-              <span class="doc__idx" aria-hidden="true">{d.n} / 02</span>
               <figcaption class="doc__id">
                 <span class="pill">{d.qualification}</span>
                 <span class="role">{d.role}</span>
@@ -91,6 +106,31 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     max-width: 38rem;
   }
 
+  /* Joint photograph (native size is small, so it is kept modest) */
+  .pair {
+    position: relative;
+    margin: 0.4rem 0 0;
+    width: min(100%, 300px);
+  }
+  .pair__frame {
+    position: relative;
+    aspect-ratio: 249 / 222;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 24px 40px -28px rgb(12 59 54 / 0.55);
+    background: var(--color-sand);
+  }
+  .pair__frame :global(.clinic-img) {
+    display: block;
+  }
+  .pair__cap {
+    position: relative;
+    margin-top: 0.9rem;
+  }
+  .pair__cap :global(.tbd) {
+    font-size: 0.75rem;
+  }
+
   .cards {
     display: grid;
     gap: 36px;
@@ -127,7 +167,7 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     inset: 0;
     overflow: hidden;
     border-radius: var(--r);
-    background: var(--color-sand);
+    background: var(--color-pine);
     clip-path: inset(0 0 0 0 round var(--r));
     transition: clip-path 950ms var(--ease-soft);
     transition-delay: var(--d);
@@ -145,26 +185,57 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
   .doc:hover .doc__photo :global(.clinic-img) {
     transform: scale(1.02);
   }
-  .doc__idx {
+  /* Monogram portrait (until a real photograph is supplied) */
+  .mono {
     position: absolute;
-    z-index: 3;
-    top: 14px;
-    left: 14px;
-    padding: 0.25rem 0.7rem;
-    border-radius: 999px;
-    background: rgb(12 59 54 / 0.78);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    color: var(--color-ivory);
-    /* drifts into place on its own clock, a little after the wipe starts */
-    transition:
-      opacity 900ms ease-out,
-      transform 1300ms var(--ease-soft);
-    transition-delay: calc(var(--d) + 380ms);
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding-bottom: 2.2rem;
+    background:
+      radial-gradient(90% 70% at 80% 0%, rgb(45 156 146 / 0.3), transparent 62%),
+      linear-gradient(165deg, #14574f 0%, var(--color-pine) 58%, #082e2a 100%);
   }
+  .mono__dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgb(250 248 242 / 0.5) 1px, transparent 1.4px);
+    background-size: 22px 22px;
+    opacity: 0.18;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, #000 20%, transparent 90%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, #000 20%, transparent 90%);
+  }
+  .mono__ring {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: clamp(150px, 46%, 188px);
+    aspect-ratio: 1;
+    border: 1px dashed rgb(233 223 201 / 0.4);
+    border-radius: 50%;
+  }
+  .mono__circle {
+    display: grid;
+    place-items: center;
+    width: 78%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid rgb(233 223 201 / 0.55);
+    background: radial-gradient(circle at 30% 25%, #1c6f66, #0f4a44);
+    box-shadow: inset 0 1px 0 rgb(250 248 242 / 0.18), 0 18px 34px -16px rgb(0 0 0 / 0.55);
+    font: 400 clamp(2.6rem, 2rem + 2vw, 3.6rem) / 1 var(--font-serif);
+    letter-spacing: 0.02em;
+    color: var(--color-ivory);
+  }
+  /* With the monogram the qualification plate sits centred beneath the circle */
+  .doc__photo--mono .doc__id {
+    left: 0;
+    right: 0;
+    bottom: 22px;
+    width: fit-content;
+    margin-inline: auto;
+  }
+
   .doc__id {
     position: absolute;
     z-index: 3;
@@ -219,10 +290,6 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
   }
   :global(.js) .doc:not(.is-in) .doc__photo::before {
     opacity: 0;
-  }
-  :global(.js) .doc:not(.is-in) .doc__idx {
-    opacity: 0;
-    transform: translate3d(-10px, -8px, 0);
   }
   :global(.js) .doc:not(.is-in) .doc__id {
     opacity: 0;

@@ -51,55 +51,29 @@ const { address } = clinic;
     </div>
 
     <div class="map reveal" data-reveal="right" style="--i:1">
-      <a class="map__stage" href={links.directions} target="_blank" rel="noopener noreferrer" aria-label={`Open ${clinic.name} in Google Maps (opens in a new tab)`} data-track="directions_click" data-location="visit-map">
-        <!-- Lightweight, abstract preview — a plain link, no embedded map or third-party script. -->
-        <svg class="map__art" viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-          <defs>
-            <radialGradient id="map-bg" cx="50%" cy="45%" r="75%">
-              <stop offset="0" stop-color="#14574f"></stop>
-              <stop offset="1" stop-color="#0a332f"></stop>
-            </radialGradient>
-          </defs>
-          <rect width="600" height="520" fill="url(#map-bg)"></rect>
-          <g fill="#E9DFC9" fill-opacity=".05">
-            <rect x="40" y="40" width="150" height="90" rx="10"></rect>
-            <rect x="220" y="40" width="110" height="120" rx="10"></rect>
-            <rect x="360" y="60" width="190" height="80" rx="10"></rect>
-            <rect x="40" y="170" width="110" height="130" rx="10"></rect>
-            <rect x="420" y="180" width="130" height="110" rx="10"></rect>
-            <rect x="60" y="340" width="170" height="120" rx="10"></rect>
-            <rect x="380" y="350" width="170" height="110" rx="10"></rect>
-          </g>
-          <ellipse cx="170" cy="250" rx="62" ry="40" fill="#0F766E" fill-opacity=".28"></ellipse>
-          <g fill="none" stroke="#E9DFC9" stroke-linecap="round">
-            <path d="M-10 150 C 140 140, 260 170, 610 120" stroke-opacity=".22" stroke-width="10"></path>
-            <path d="M-10 320 C 180 300, 360 340, 610 300" stroke-opacity=".22" stroke-width="10"></path>
-            <path d="M200 -10 C 190 150, 230 330, 210 530" stroke-opacity=".2" stroke-width="9"></path>
-            <path d="M400 -10 C 410 140, 380 340, 405 530" stroke-opacity=".2" stroke-width="9"></path>
-            <path d="M-10 420 L 610 440" stroke-opacity=".1" stroke-width="5"></path>
-            <path d="M300 -10 L 305 530" stroke-opacity=".1" stroke-width="5"></path>
-          </g>
-          <g transform="translate(300 250)">
-            <circle r="24" fill="none" stroke="#E9DFC9" stroke-opacity=".5" stroke-width="1.5"></circle>
-            <circle r="40" fill="none" stroke="#E9DFC9" stroke-opacity=".22" stroke-width="1" stroke-dasharray="2 6"></circle>
-            <circle r="9" fill="#EA580C" stroke="#FAF8F2" stroke-width="3"></circle>
-          </g>
-        </svg>
+      <div class="map__stage" data-map>
+        <!-- Real Google Map. Lazy-loaded; a tint layer keeps it in the palette. -->
+        <iframe
+          class="map__frame"
+          title={`Map showing ${clinic.name}, Viram Khand, Gomti Nagar, Lucknow`}
+          src={links.embed}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+        <span class="map__tint" aria-hidden="true"></span>
 
-        <div class="map__label glass">
-          <Icon name="map-pin" size={16} />
-          <div>
-            <strong>{clinic.name}</strong>
-            <span>Near Deva Palace, Gomti Nagar</span>
-          </div>
-        </div>
+        <!-- Keeps a page scroll from being swallowed by the map; one tap/click hands it over -->
+        <button type="button" class="map__guard" data-map-guard aria-label="Activate the map to pan and zoom">
+          <span class="map__hint glass"><Icon name="map-pin" size={15} /> Tap to explore the map</span>
+        </button>
 
-        <span class="map__open btn btn-glass btn-sm">
+        <a class="map__open btn btn-glass btn-sm" href={links.directions} target="_blank" rel="noopener noreferrer" aria-label={`Open ${clinic.name} in Google Maps (opens in a new tab)`} data-track="directions_click" data-location="visit-map">
           <Icon name="map" size={18} />
           Open in Google Maps
           <Icon name="arrow-up-right" size={16} class="icon-arrow" />
-        </span>
-      </a>
+        </a>
+      </div>
     </div>
   </div>
 </section>
@@ -212,52 +186,68 @@ const { address } = clinic;
     background: #0a332f;
     isolation: isolate;
   }
-  .map__art {
+  .map__frame {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
+    border: 0;
   }
-  .map__label {
+  /* Plain translucent teal wash over the map: it sits in the palette and keeps the red pin readable.
+     (A blend mode, or a CSS filter on the iframe, made scrolling past the map 4–20% slower.) */
+  .map__tint {
     position: absolute;
-    left: 14px;
-    top: 14px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    max-width: calc(100% - 28px);
-    padding: 0.6rem 0.9rem;
-    border-radius: 16px;
-    color: var(--color-pine);
-    font-size: 0.8125rem;
-    line-height: 1.3;
+    inset: 0;
+    z-index: 1;
+    background: rgb(20 130 120 / 0.34);
+    pointer-events: none;
   }
-  .map__label :global(.icon) {
+  .map__guard {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    align-items: start;
+    justify-items: start;
+    padding: 14px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .map__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-pine);
+    transition: opacity var(--dur-normal) ease;
+  }
+  .map__hint :global(.icon) {
     color: var(--color-teal);
   }
-  .map__label div {
-    display: grid;
+  .map__guard:hover .map__hint {
+    opacity: 0.85;
   }
-  .map__label span {
-    color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  .map__stage[data-active='true'] .map__guard {
+    display: none;
   }
   .map__open {
     position: absolute;
     inset-inline: 0;
     bottom: 16px;
-    z-index: 2;
+    z-index: 3;
     width: fit-content;
     margin-inline: auto;
-    background: rgb(12 59 54 / 0.6);
+    background: rgb(12 59 54 / 0.78);
     transition: background-color var(--dur-normal) ease, border-color var(--dur-normal) ease;
   }
-  .map__stage:hover .map__open {
-    background: rgb(12 59 54 / 0.85);
+  .map__open:hover {
+    background: rgb(12 59 54 / 0.92);
     border-color: rgb(250 248 242 / 0.5);
-  }
-  .map__stage:hover .map__open :global(.icon-arrow) {
-    transform: translate(2px, -2px);
   }
 
   @media (min-width: 640px) {

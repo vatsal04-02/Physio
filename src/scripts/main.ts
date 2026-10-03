@@ -5,6 +5,8 @@
  * an inline script in <head>, and every observer below falls back to showing content).
  */
 
+import { initGoogleReviews } from './google-reviews';
+
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
@@ -201,10 +203,13 @@ if ('IntersectionObserver' in window) {
 if (!reduceMotion && 'IntersectionObserver' in window) {
   const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
   qsa('.num [data-count], .num[data-count]').forEach((el) => {
-    const target = parseFloat(el.dataset.count ?? '');
+    // Read live: google-reviews.ts may replace data-count with the real figure before or during the count
+    const target = () => parseFloat(el.dataset.count ?? '');
     const decimals = Number(el.dataset.decimals ?? 0);
-    if (Number.isNaN(target)) return;
-    const render = (v: number) => (el.textContent = v.toFixed(decimals));
+    if (Number.isNaN(target())) return;
+    const render = (v: number) =>
+      (el.textContent = v.toLocaleString('en-IN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }));
+    el.dataset.counting = '1';
     render(0);
 
     const io = new IntersectionObserver(
@@ -215,9 +220,12 @@ if (!reduceMotion && 'IntersectionObserver' in window) {
         const duration = 1300;
         const frame = (now: number) => {
           const t = Math.min(1, (now - start) / duration);
-          render(target * easeOut(t));
+          render(target() * easeOut(t));
           if (t < 1) requestAnimationFrame(frame);
-          else render(target);
+          else {
+            render(target());
+            el.dataset.counted = '1';
+          }
         };
         requestAnimationFrame(frame);
       },
@@ -281,7 +289,8 @@ qsa('[data-slider]').forEach((slider) => {
   const dotsWrap = qs('[data-slider-dots]', slider);
   const pauseBtn = qs<HTMLButtonElement>('[data-slider-pause]', slider);
   if (!viewport || !controls || !dotsWrap) return;
-  const slides = Array.from(viewport.children) as HTMLElement[];
+  // Read live: the cards can be swapped for live Google reviews after load
+  const slides = () => Array.from(viewport.children) as HTMLElement[];
 
   let pages = 1;
   let index = 0;
@@ -293,9 +302,10 @@ qsa('[data-slider]').forEach((slider) => {
 
   const metrics = () => {
     const gap = parseFloat(getComputedStyle(viewport).columnGap) || 0;
-    const step = slides[0].offsetWidth + gap;
+    const list = slides();
+    const step = (list[0]?.offsetWidth ?? 1) + gap;
     const perView = Math.max(1, Math.round((viewport.clientWidth + gap) / step));
-    return { step, pages: Math.max(1, slides.length - perView + 1) };
+    return { step, pages: Math.max(1, list.length - perView + 1) };
   };
   const paint = () => {
     Array.from(dotsWrap.children).forEach((d, i) => d.setAttribute('aria-current', String(i === index)));
@@ -312,7 +322,27 @@ qsa('[data-slider]').forEach((slider) => {
     viewport.scrollTo({ left: index * m.step, behavior: reduceMotion ? 'auto' : 'smooth' });
     paint();
   };
+  // "Read more" is only offered on cards whose text is actually cut off at three lines
+  const checkClamp = () => {
+    for (const card of slides()) {
+      const text = qs('.card__text', card);
+      const more = qs<HTMLButtonElement>('.card__more', card);
+      if (!text || !more || card.classList.contains('is-open')) continue;
+      more.hidden = text.scrollHeight <= text.clientHeight + 1;
+    }
+  };
+  viewport.addEventListener('click', (event) => {
+    const more = (event.target as Element | null)?.closest<HTMLButtonElement>('.card__more');
+    const card = more?.closest<HTMLElement>('.card');
+    if (!more || !card) return;
+    const open = !card.classList.contains('is-open');
+    card.classList.toggle('is-open', open);
+    more.setAttribute('aria-expanded', String(open));
+    more.textContent = open ? 'Show less' : 'Read more';
+    track('review_interaction', { action: open ? 'expand' : 'collapse' });
+  });
   const build = () => {
+    checkClamp();
     pages = metrics().pages;
     controls.hidden = pages <= 1;
     dotsWrap.replaceChildren(
@@ -386,7 +416,33 @@ qsa('[data-slider]').forEach((slider) => {
     },
     { passive: true },
   );
+  // Web fonts change line breaks, so re-check which cards are cut off once they have loaded
+  void document.fonts?.ready.then(checkClamp);
+  // Fired when the cards are swapped (skeletons → live reviews → …)
+  slider.addEventListener('slider:refresh', () => {
+    index = 0;
+    viewport.scrollTo({ left: 0, behavior: 'auto' });
+    build();
+  });
   build();
+});
+
+/* ---------- Live Google rating + reviews (no-op until a key and place ID are pasted in google-reviews.ts) ---------- */
+
+initGoogleReviews();
+
+/* ---------- Map: hand the embedded map over on tap/click so it never traps page scrolling ---------- */
+
+qsa('[data-map]').forEach((stage) => {
+  const guard = qs('[data-map-guard]', stage);
+  guard?.addEventListener('click', () => {
+    stage.dataset.active = 'true';
+    track('map_interaction');
+  });
+  // Tapping anywhere else puts the guard back
+  document.addEventListener('pointerdown', (event) => {
+    if (stage.dataset.active && !stage.contains(event.target as Node)) delete stage.dataset.active;
+  });
 });
 
 /* ---------- section_view analytics (once per section) ---------- */

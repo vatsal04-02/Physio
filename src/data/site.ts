@@ -72,6 +72,10 @@ export const links = {
   directions: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${clinic.name}, ${clinic.address.street}, ${clinic.address.area}, ${clinic.address.city} ${clinic.address.postalCode}`,
   )}`,
+  // Keyless Google Maps embed for the clinic's listing (the iframe on the Visit section)
+  embed: `https://www.google.com/maps?q=${encodeURIComponent(
+    `${clinic.name}, Viram Khand, Gomti Nagar, ${clinic.address.city}`,
+  )}&z=16&hl=en&output=embed`,
   reviews: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${clinic.name}, Gomti Nagar, ${clinic.address.city}`,
   )}`,
@@ -163,14 +167,26 @@ export const doctors = [
   },
 ] as const;
 
-/* ---------- Clinic gallery slots (PRD §15) ---------- */
+/* ---------- Clinic gallery (PRD §15) ----------
+ * Photos are picked up by filename from src/assets/clinic/ (gallery-1, gallery-2, …). To add one, drop
+ * the file in and add a line here with a plain description of what it shows. Slots still waiting on a
+ * photo are listed in `galleryPending` and shown as "coming soon".
+ */
 
 export const gallery = [
-  { slot: ['clinic', 'exterior'], key: 'clinic', label: 'The clinic', alt: 'Inside Geeta Krishna Physiotherapy in Viram Khand, Gomti Nagar' },
-  { slot: ['reception'], key: 'reception', label: 'Reception', alt: 'Reception area at Geeta Krishna Physiotherapy' },
-  { slot: ['treatment-room'], key: 'treatment-room', label: 'Treatment room', alt: 'Treatment room at Geeta Krishna Physiotherapy' },
-  { slot: ['equipment'], key: 'equipment', label: 'Equipment', alt: 'Physiotherapy equipment at Geeta Krishna Physiotherapy' },
+  { slot: 'gallery-1', label: 'Treatment session', alt: 'A physiotherapist in a white coat treating a patient lying on a couch while a colleague looks on from behind' },
+  { slot: 'gallery-2', label: 'Treatment area', alt: 'A therapist standing beside a patient lying face down on a wooden treatment couch, with other couches behind' },
+  { slot: 'gallery-3', label: 'Treatment session', alt: 'A masked therapist working with a patient lying on a couch in the treatment area' },
 ] as const;
+
+export const galleryPending = ['reception', 'equipment'] as const;
+
+/** Joint photo shown with the doctors. Who is pictured is for the clinic to confirm — see caption. */
+export const doctorsPhoto = {
+  slot: 'doctors-together',
+  alt: 'Two men in white shirts standing side by side in front of a flowering plant',
+  caption: '[TBD - confirm who is pictured]',
+} as const;
 
 /* ---------- How it works (PRD §16) ---------- */
 
@@ -181,15 +197,30 @@ export const steps = [
 ] as const;
 
 /* ---------- Reviews (PRD §17) ----------
- * Only add reviews the clinic has approved for republishing, with attribution.
- * Never fabricate. While empty, the section shows a clearly-marked placeholder.
+ * Only add reviews the clinic has approved for republishing, with attribution. Never fabricate.
+ * These are the fallback cards: they render whenever live Google reviews are not configured or fail to
+ * load (see src/scripts/google-reviews.ts), so the section is never empty.
  */
 export interface Review {
   quote: string;
   author: string;
   source?: string;
 }
-export const reviews: Review[] = [];
+export const reviews: Review[] = [
+  {
+    quote:
+      'Best physiotherapy centre in Gomtinagar. Nice behaviour of doctor Sandeep Tiwari and his staff. Actual diagnosis and proper treatment was done by Dr Tiwari only — within 3 days he became quite normal.',
+    author: 'Advocate V Tripathi',
+  },
+  {
+    quote: 'Staff behaviour is very polite. Neat and clean place, and you can feel relief from the first day.',
+    author: 'Garima Pandey',
+  },
+  {
+    quote: 'Very nice and soft-spoken staff, highly dedicated in work. Very clean and disciplined premises.',
+    author: 'Amit Kumar',
+  },
+];
 
 /* ---------- Pricing (PRD §18) — never invent a price ---------- */
 

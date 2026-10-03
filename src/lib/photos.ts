@@ -2,7 +2,7 @@ import type { ImageMetadata } from 'astro';
 
 /**
  * Real clinic photography is picked up by filename from src/assets/clinic/.
- * Slots: hero, clinic (or exterior), reception, treatment-room, equipment,
+* Slots: hero, gallery-1…N (see `gallery` in site.ts), doctors-together,
  *        doctor-sandeep, doctor-mahesh  (.jpg .jpeg .png .webp .avif)
  *
  * No stock or generated imagery is ever substituted — an empty slot renders a clearly

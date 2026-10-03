@@ -14,6 +14,10 @@ interface Props {
 
 const { photo: name, alt, sizes = '100vw', priority = false, class: className } = Astro.props;
 const image = getPhoto(name);
+// Never ask for more pixels than the file has: small source photos get one native-size variant
+// instead of blurry up-scaled copies.
+const widths = image ? [480, 768, 1100, 1600].filter((w) => w <= image.width) : [];
+if (image && widths.length === 0) widths.push(image.width);
 ---
 
 {
@@ -22,7 +26,7 @@ const image = getPhoto(name);
       src={image}
       alt={alt}
       formats={['avif', 'webp']}
-      widths={[480, 768, 1100, 1600]}
+      widths={widths}
       sizes={sizes}
       loading={priority ? 'eager' : 'lazy'}
       fetchpriority={priority ? 'high' : 'auto'}

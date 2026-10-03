@@ -1,7 +1,6 @@
 ---
 import Depth from './Depth.astro';
 import ClinicImage from './ClinicImage.astro';
-import Placeholder from './Placeholder.astro';
 import Icon from './Icon.astro';
 import { clinic, hours, links, schedule } from '../data/site';
 
@@ -17,7 +16,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
       <p class="eyebrow rise" style="--d:0ms">Local Physiotherapy • Gomti Nagar</p>
 
       <h1 id="hero-title" class="display hero__title rise" style="--d:90ms">
-        Your pain has an <em class="accent-italic">expiry date.</em>
+        Physiotherapy that puts an <em class="accent-italic">expiry date</em> on your pain.
       </h1>
 
       <p class="lead hero__lead rise" style="--d:180ms">
@@ -42,9 +41,9 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
             {Array.from({ length: 5 }).map(() => <Icon name="star" size={15} class="star" />)}
           </span>
           <span class="rating__text">
-            <strong>{clinic.rating.value}</strong> · {clinic.rating.count} Google reviews
+            <strong data-live-rating>{clinic.rating.value}</strong> · <span data-live-count>{clinic.rating.count}</span> Google reviews
           </span>
-          <span class="sr-only">Rated {clinic.rating.value} out of 5 stars from {clinic.rating.count} Google reviews</span>
+          <span class="sr-only" data-live-text="Rated {rating} out of 5 stars from {count} Google reviews">Rated {clinic.rating.value} out of 5 stars from {clinic.rating.count} Google reviews</span>
         </div>
 
         <!-- Live status, computed in the browser against clinic time (IST) -->
@@ -72,8 +71,29 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
       <figure class="frame">
         <div class="frame__media" data-parallax>
           <div class="frame__scale">
+            <!-- Until a real hero photo (src/assets/clinic/hero.*) exists, this designed panel fills the frame. -->
             <ClinicImage photo="hero" alt="Inside Geeta Krishna Physiotherapy, Gomti Nagar, Lucknow" sizes="(min-width:1024px) 560px, 100vw" priority>
-              <Placeholder label="Clinic photograph" icon="camera" tone="pine" />
+              <div class="panel">
+                <span class="panel__dots" aria-hidden="true"></span>
+                <svg class="panel__arcs" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
+                  <g fill="none" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke">
+                    <circle cx="400" cy="0" r="150"></circle>
+                    <circle cx="400" cy="0" r="230"></circle>
+                    <circle cx="400" cy="0" r="310" stroke-dasharray="2 8"></circle>
+                  </g>
+                </svg>
+                <div class="panel__inner">
+                <p class="panel__badge">
+                  <span class="panel__score"><strong data-live-rating>{clinic.rating.value}</strong><Icon name="star" size={15} class="panel__star" /></span>
+                  <span class="panel__rule" aria-hidden="true"></span>
+                  <span class="panel__src"><span data-live-count>{clinic.rating.count}</span> Google reviews</span>
+                </p>
+                <div class="panel__body">
+                  <p class="panel__eyebrow">{clinic.name}</p>
+                  <p class="panel__line">Gomti Nagar’s <em>trusted</em> physio clinic</p>
+                </div>
+                </div>
+              </div>
             </ClinicImage>
           </div>
         </div>
@@ -113,7 +133,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
   }
   .hero__title {
     margin-top: 0.9rem;
-    max-width: 14ch;
+    max-width: 17ch;
     color: var(--color-ink);
   }
   .hero__lead {
@@ -196,6 +216,102 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     border-radius: 28px;
     pointer-events: none;
   }
+  /* ---- Designed panel (fills the frame until a real photograph is supplied) ---- */
+  .panel {
+    position: absolute;
+    inset: 0;
+    color: var(--color-ivory);
+    background:
+      radial-gradient(90% 70% at 85% 0%, rgb(45 156 146 / 0.32), transparent 62%),
+      radial-gradient(120% 90% at 10% 100%, rgb(233 223 201 / 0.07), transparent 60%),
+      linear-gradient(160deg, #14574f 0%, var(--color-pine) 55%, #082e2a 100%);
+  }
+  /* The parallax layer is 14% taller than the frame, so the content box is inset back to the frame's own edges */
+  .panel__inner {
+    position: absolute;
+    inset: 6.1% 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.2rem;
+    padding: 3.5rem 1.2rem 6.2rem;
+  }
+  .panel__dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgb(250 248 242 / 0.5) 1px, transparent 1.4px);
+    background-size: 22px 22px;
+    opacity: 0.2;
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 75% 25%, #000 0%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 70% at 75% 25%, #000 0%, transparent 100%);
+  }
+  .panel__arcs {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 78%;
+    aspect-ratio: 1;
+    color: rgb(233 223 201 / 0.2);
+  }
+  .panel__body {
+    position: relative;
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  .panel__eyebrow {
+    display: none;
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgb(233 223 201 / 0.78);
+  }
+  .panel__line {
+    margin: 0;
+    max-width: 14ch;
+    font: 400 clamp(1.7rem, 1.1rem + 2.6vw, 2.7rem) / 1.08 var(--font-serif);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .panel__line em {
+    font-style: italic;
+    color: var(--color-sand);
+  }
+  .panel__badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0.45rem 0.95rem 0.45rem 0.8rem;
+    border: 1px solid rgb(250 248 242 / 0.22);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgb(250 248 242 / 0.14), rgb(250 248 242 / 0.05));
+    font-size: 0.8125rem;
+    color: rgb(250 248 242 / 0.86);
+  }
+  .panel__score {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .panel__score strong {
+    font: 400 1.3rem/1 var(--font-serif);
+    color: var(--color-ivory);
+  }
+  .panel__score :global(.panel__star) {
+    fill: var(--color-sand);
+    color: var(--color-sand);
+    stroke-width: 1.5;
+  }
+  .panel__rule {
+    width: 1px;
+    height: 1.1rem;
+    background: rgb(250 248 242 / 0.28);
+  }
+
   /* ---- Floating rhythm (transform/opacity loops, paused whenever the hero is off screen) ---- */
   .hero__orbit {
     position: absolute;
@@ -369,6 +485,12 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
   }
 
   @media (min-width: 640px) {
+    .panel__inner {
+      padding: 1.3rem 1.4rem 6.2rem;
+    }
+    .panel__eyebrow {
+      display: block;
+    }
     .hero__cta {
       flex-direction: row;
       width: auto;
@@ -393,7 +515,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
       grid-column: 1 / span 7;
     }
     .hero__title {
-      max-width: 15ch;
+      max-width: 19ch;
     }
     .hero__visual {
       grid-column: 8 / span 5;

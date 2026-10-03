@@ -7,7 +7,7 @@ There is **no appointment system** in Phase 1 (deferred to Phase 2 by design).
 | | |
 |---|---|
 | Stack | Astro 7 · TypeScript · Tailwind CSS 4 · Lucide icons · self-hosted DM Serif Display + Manrope |
-| Client JS | ~3.7 KB gzipped (one module: header, active nav, menu, reveals, counters, open-now pill, concern form, one-at-a-time FAQ, optional review slider) · CSS ~21 KB gzipped |
+| Client JS | ~5 KB gzipped (header, active nav, menu, reveals, counters, open-now pill, concern form, FAQ, review slider, map guard, optional live Google reviews) · CSS ~22 KB gzipped |
 | Lighthouse (local) | Mobile 100 / 100 / 100 / 100 · Desktop 100 / 100 / 100 / 100 (perf / a11y / best-practices / SEO); mobile LCP 1.7 s, TBT 0, CLS 0 |
 
 ## Commands
@@ -39,37 +39,60 @@ scripts/make-brand-assets.mjs   Regenerates public/og.png and the iOS icon
 
 ## Adding real photography
 
-Put approved photos in `src/assets/clinic/` named exactly:
+Put approved photos in `src/assets/clinic/` (`.jpg .jpeg .png .webp .avif`). The file name is the slot:
 
-`hero` · `clinic` (or `exterior`) · `reception` · `treatment-room` · `equipment` · `doctor-sandeep` · `doctor-mahesh`
-(`.jpg .jpeg .png .webp .avif`)
+| File name | Where it appears |
+|---|---|
+| `hero` | Hero frame — until it exists, a designed pine panel ("Gomti Nagar's trusted physio clinic") fills the frame |
+| `doctor-sandeep`, `doctor-mahesh` | Doctor cards — until they exist, an ST / MT monogram is shown |
+| `doctors-together` | Joint photo beside the doctors' intro (caption is a `[TBD]` until the clinic confirms who is pictured) |
+| `gallery-1`, `gallery-2`, … | The clinic banner. Each one also needs a line in `gallery` in `src/data/site.ts` (label + a plain description for the alt text); `galleryPending` lists what is still to come |
 
-Each is picked up automatically, converted to AVIF/WebP with responsive `srcset`, given fixed dimensions (no layout shift), and the placeholder for that slot disappears. The hero is loaded eagerly with high fetch priority; everything else is lazy. Photo-overlay labels (location caption, `01 / 02`, qualification badge) sit on solid pine so they stay legible on any image.
-No stock or generated imagery is ever substituted — empty slots show a clearly-marked placeholder.
+Each is converted to AVIF/WebP, given fixed dimensions (no layout shift), and **never up-scaled**: a small source is served at its own size. The supplied treatment and doctor photos are only ~250 px wide, so they are shown at about their native size; send the originals (1200 px+ wide) before putting any of them in a large slot. Photo-overlay labels sit on solid pine so they stay legible on any image.
+No stock or generated imagery is ever substituted. **Patient photos need the patients' consent before publishing.**
+
+## Live Google reviews
+
+`src/scripts/google-reviews.ts` — the first two lines are:
+
+```ts
+const GOOGLE_PLACES_API_KEY = 'PASTE_KEY_HERE';
+const GOOGLE_PLACE_ID = 'PASTE_PLACE_ID_HERE';
+```
+
+While either is still a placeholder the module does nothing (no request, no console noise) and the section shows the three built-in reviews from `reviews` in `src/data/site.ts`. Once both are set, on page load it fetches `places.googleapis.com/v1/places/<id>?fields=rating,userRatingCount,reviews` once per visit (kept in `sessionStorage`), shows shimmer skeletons while waiting, then:
+
+- updates the hero badge, the hero panel badge, the stats strip and the reviews score with the live rating and review count (exact count, so the "+" goes away);
+- replaces the cards with up to 5 live reviews (author linked to their Google profile, stars, "x months ago", text clamped to 3 lines with Read more / Show less);
+- falls back silently to the built-in cards on any failure (bad key, quota, blocked referrer, offline, no reviews, or no answer within 8 s);
+- points "Read all reviews on Google" at the clinic's listing (`place_id:`).
+
+Things to know: the key is visible in the page source, so **restrict it** in Google Cloud (HTTP referrer = your domain, API = Places API (New) only). Place Details with reviews is a billable SKU and this calls it for every new visit, so watch the quota — fetching at build time or through a small proxy would cache it centrally. Google's terms ask that review authors stay attributed (they do) and that the content isn't stored long-term (only the tab's session storage is used). The structured data (`aggregateRating`) is generated at build time from `clinic.rating`, so update that occasionally too.
 
 ## Launch checklist — details the clinic must confirm
 
 Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3, §41). Search the repo for `TBD` to find each one.
 
-- [ ] Hero photo, gallery photos (clinic, reception, treatment room, equipment), both doctor portraits
+- [ ] Hero photo, both doctor portraits, reception + equipment photos; higher-resolution originals of the supplied photos; confirm who is in the joint doctors photo (and fix its `[TBD]` caption); patient consent for the treatment photos
 - [ ] Doctor specialisation, experience, certifications and bios (`doctors` in `src/data/site.ts`)
-- [ ] Approved Google reviews / patient stories (`reviews` — the section shows a placeholder until at least one is added; 2+ activates the swipe slider)
+- [ ] Paste the Google Places API key + place ID (see *Live Google reviews*); confirm the three built-in fallback reviews are approved for use
 - [ ] Pricing: starting session price (`pricing.confirmedAmount` — until set, the card shows a clearly-marked `₹ XXXX` placeholder), consultation, home visit
 - [ ] FAQ answers: home visits, starting price, session length (`faqs` — unconfirmed ones are excluded from FAQ structured data)
-- [ ] Sign-off on promise-style headlines — "Your pain has an expiry date.", "No surprise bills. Ever." (pricing is still TBD) and "Fix the cause, not just the ache." read as outcome/billing commitments, which PRD §37 steers away from
-- [ ] Clinic's Google Business Profile and review URLs (`links.directions`, `links.reviews` currently use a Maps search built from the verified address)
+- [ ] Sign-off on promise-style copy — "Physiotherapy that puts an expiry date on your pain.", "Gomti Nagar's trusted physio clinic", the first built-in review ("within 3 days he became quite normal"), "No surprise bills. Ever." (pricing is still TBD) and "Fix the cause, not just the ache." read as outcome/billing commitments, which PRD §37 steers away from
+- [ ] Clinic's Google Business Profile URL (`links.directions` and `links.reviews` use a Maps search built from the verified address until a place ID is set; the map embed searches for the clinic by name and area — check it lands on the right pin)
 - [ ] Production domain → `PUBLIC_SITE_URL`; confirm title/meta description copy
 - [ ] GA4 + Search Console approval
 
 ## Design & accessibility notes
 
 - **Typography is deliberately restrained:** hero 36→58px, section headings 30→46px, subheadings 21→28px, body 16–18px. Only the hero uses the largest scale.
-- **Photography leads.** There is no decorative hero graphic; the hero, doctors and gallery are image-ready slots. Decoration is limited to fine lines, dot texture and two soft background circles.
+- **Photography leads where it exists.** Real photos replace their slot automatically; until then the hero shows a designed typographic panel, the doctors show monograms, and the gallery is one banner holding the photos supplied so far. Decoration is limited to fine lines, dot texture and soft background circles.
+- **Map:** a real, lazy-loaded Google Maps iframe with a translucent teal wash over it. It is covered by a "Tap to explore" layer so a page scroll can't be swallowed by the map on phones; one tap hands it over, tapping elsewhere takes it back. "Open in Google Maps" stays as a plain link.
 - **Glassmorphism** is used sparingly on floating layers only (header, mobile menu, sticky CTA bar, hero hours card, review/contact panels). Blur is capped on small screens and has a solid fallback where `backdrop-filter` is unsupported.
 - **Motion** is CSS keyframes/transitions, native CSS scroll-driven animations, and one IntersectionObserver-driven script — no animation library. Everything animates `transform`/`opacity` only (plus one `clip-path` wipe on the doctor portraits):
   - **Load:** eyebrow → headline → subtext → CTAs → badges rise in at 90ms steps (pure CSS, so CTAs never wait on JavaScript); the hero photo settles 1.06 → 1.
   - **Background depth** (`Depth.astro`): warm base → soft teal/sand glow → faint dots → a barely-there 1px grid (large cells, 5–7% alpha, faded toward the edges) → a few oversized thin circles and a hairline. Used on the hero, conditions, "why", gallery and visit sections. On the hero and conditions sections the glow + circles (`.d-far`, ±14px) and the grid (±6px) drift as the section scrolls past; on the dark and gallery sections the same texture stands still (see Performance). Only decorative layers ever move.
-  - **Per-section choreography** (all once per entry): trust numbers rise one after another and the labels trail them; "why" blocks draw their rule, surface the numeral, then bring in the text; doctor portraits wipe down (clip-path) with name/details ~110ms behind and the `01 / 02` chip drifting on its own clock; gallery tiles arrive from different directions with captions sliding in after them; the "How it works" line draws as you scroll and the active step lifts 3px with a ring while the previous one settles back; the reviews section plays quote mark → text → rating and stars last; pricing rises; the visit text and map arrive from opposite sides (wide screens).
+  - **Per-section choreography** (all once per entry): trust numbers rise one after another and the labels trail them; "why" blocks draw their rule, surface the numeral, then bring in the text; doctor portraits wipe down (clip-path) with name/details ~110ms behind; gallery tiles arrive from different directions with captions sliding in after them; the "How it works" line draws as you scroll and the active step lifts 3px with a ring while the previous one settles back; the reviews section plays quote mark → text → rating and stars last; pricing rises; the visit text and map arrive from opposite sides (wide screens).
   - **Hero rhythm:** a dotted ring turns once every 28s behind the photo, a trio of dots and a hairline drift ≤10px, and the shadow under the frame breathes. The photograph itself never moves except a ≤28px scroll parallax.
   - **Transition moments (two only):** a soft glow passes behind the "why" content, and the contact band's concentric rings settle into place — both one-shot when the section arrives.
   - **Hover:** buttons lift 1px and the arrow slides 3px; the two main WhatsApp CTAs get a soft glow that belongs to the button (no pulse); cards lift 2–3px; images zoom at most 1.02; condition cards tip the icon 4°, slide the arrow and pass a teal highlight across in ~260ms; the active nav link gets a thin teal underline; the FAQ opens/closes in 280ms.
@@ -101,7 +124,7 @@ What the profiling found, and the rules that came out of it:
 - **Never clip a whole section to a rounded rectangle.** Curved dividers built with `border-radius` + `overflow: clip` on each section cost ~46 points of dropped frames, because clipping a subtree that contains glass to a rounded rect forces extra per-frame compositor work. The dome is now a painted `::before`; only leaf ambient layers (`.fx`, `.bg`) follow the dome shape.
 - **Large `backdrop-filter` panels are the most expensive thing on the page** (~16 points on their own). Panels on dark bands (`.glass-dark`) sit over flat gradients, so they keep the translucent-gradient glass look without the blur. Real blur stays on the header, hero cards and small photo chips, which measured free.
 - **Every layer that animates behind content is its own composited surface, and the cost tracks the number of such layers far more than their size or how far they move.** Measured: merging layers, shrinking them, `will-change`, `contain`, removing masks and rounded clips all made little difference; *removing the animation* (or not promoting the layer) is what helps. Hence: depth drift only where it reads (light sections), one shared drifting layer for glow + circles, a grid that only exists on the busy side of the section, and the two transition moments as one-shot transitions instead of scroll-scrubbed animations. Continuous time-based loops on the same layers were twice as expensive as scroll-linked ones.
-- The gallery's slow push-in on the lead photo is a single 9 s transition, not a scrubbed animation, for the same reason.
+- The map's teal tint is a plain translucent overlay: a `mix-blend-mode` over the iframe, or a CSS `filter` on it, each made scrolling past the map 4–20% slower; both together were worst.
 - Film grain (one 160px tile), the ticker, dot textures and the curve domes all measured as free. Orbs are static radial gradients.
 - Re-measure after adding any new full-width or animated layer; a regression this size is invisible in a screenshot and in Lighthouse (which scores load, not scroll).
 
