@@ -1,0 +1,256 @@
+---
+import ClinicImage from './ClinicImage.astro';
+import Icon from './Icon.astro';
+import { doctorMessage, doctors, whatsappLink } from '../data/site';
+---
+
+<section id="doctors" class="section surface-ivory" data-section data-ambient aria-labelledby="doctors-title">
+  <div class="bg" aria-hidden="true">
+    <span class="orb" style="--s:620px; --c:rgb(233 223 201 / 1); left:-200px; top:10%; --dur:40s"></span>
+    <span class="orb" style="--s:520px; --c:rgb(15 118 110 / .14); right:-180px; bottom:-60px; --dur:34s"></span>
+  </div>
+
+  <div class="container-site relative">
+    <header class="head reveal">
+      <p class="eyebrow">Your doctors</p>
+      <h2 id="doctors-title" class="h2">Meet the clinic leads.</h2>
+      <p class="lead">
+        Dr. Sandeep Tiwari and Dr. Mahesh Tiwari lead Geeta Krishna Physiotherapy, both qualified MPT (PT).
+      </p>
+    </header>
+
+    <div class="cards">
+      {
+        doctors.map((d, i) => (
+          <article class="doc reveal" style={`--i:${i}`} aria-labelledby={`doc-${i}-name`}>
+            <div class="doc__portrait">
+              <ClinicImage slot={d.slot} alt={`Portrait of ${d.name}, ${d.role} at Geeta Krishna Physiotherapy`} sizes="(min-width:1024px) 520px, (min-width:640px) 50vw, 100vw">
+                <div class="ph">
+                  <span class="ph__mono" aria-hidden="true">{d.initials}</span>
+                  <svg class="ph__ring drift" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+                    <circle cx="100" cy="100" r="96" fill="none" stroke="#E9DFC9" stroke-opacity=".22" stroke-dasharray="2 8"></circle>
+                    <circle cx="100" cy="100" r="68" fill="none" stroke="#E9DFC9" stroke-opacity=".14"></circle>
+                  </svg>
+                  <span class="ph-tag" data-placeholder>Portrait · [TBD - clinic to provide]</span>
+                </div>
+              </ClinicImage>
+              <span class="doc__num" aria-hidden="true">{d.n}</span>
+            </div>
+
+            <div class="doc__info glass">
+              <div class="doc__meta">
+                <span class="pill">{d.qualification}</span>
+                <span class="role">{d.role}</span>
+              </div>
+              <h3 id={`doc-${i}-name`} class="h3 doc__name">{d.name}</h3>
+
+              <dl class="doc__facts">
+                <div>
+                  <dt>Specialisation</dt>
+                  <dd><span class="tbd">{d.specialisation}</span></dd>
+                </div>
+                <div>
+                  <dt>About</dt>
+                  <dd><span class="tbd">{d.bio}</span></dd>
+                </div>
+              </dl>
+
+              <a
+                class="btn btn-primary btn-block"
+                href={whatsappLink(doctorMessage(d.name))}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-track="whatsapp_click"
+                data-location={`doctor-${i + 1}`}
+              >
+                <Icon name="message-circle" size={19} />
+                <span>Ask about care with {d.name}</span>
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .relative {
+    position: relative;
+  }
+  .head {
+    display: grid;
+    gap: 1.1rem;
+    max-width: 42rem;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+
+  .cards {
+    display: grid;
+    gap: 44px;
+  }
+  .doc {
+    position: relative;
+  }
+  .doc__portrait {
+    position: relative;
+    height: clamp(340px, 96vw, 460px);
+    overflow: hidden;
+    border-radius: 28px;
+    background: radial-gradient(110% 80% at 30% 0%, #14574f 0%, var(--color-pine) 60%, #082e2a 100%);
+    box-shadow: 0 34px 60px -34px rgb(12 59 54 / 0.55);
+    isolation: isolate;
+  }
+  .doc__portrait :global(.clinic-img) {
+    transition: transform 900ms var(--ease-soft);
+  }
+  .doc:hover .doc__portrait :global(.clinic-img) {
+    transform: scale(1.02);
+  }
+  .ph {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+  .ph__mono {
+    position: relative;
+    z-index: 1;
+    font: 400 clamp(6rem, 5rem + 6vw, 9rem) / 1 var(--font-serif);
+    letter-spacing: -0.02em;
+    color: rgb(250 248 242 / 0.9);
+    text-shadow: 0 10px 40px rgb(0 0 0 / 0.25);
+  }
+  .ph__ring {
+    position: absolute;
+    width: 84%;
+    max-width: 440px;
+    animation: spin-slow 140s linear infinite;
+  }
+  .ph-tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 2;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    border: 1px dashed rgb(233 223 201 / 0.5);
+    background: rgb(12 59 54 / 0.55);
+    color: var(--color-sand);
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+  .doc__num {
+    position: absolute;
+    z-index: 2;
+    right: 18px;
+    top: 4px;
+    font: 400 clamp(5rem, 4rem + 5vw, 7.5rem) / 1 var(--font-serif);
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(250 248 242 / 0.5);
+    pointer-events: none;
+  }
+
+  /* Glass info panel overlaps the portrait edge */
+  .doc__info {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    gap: 1rem;
+    margin: -72px 14px 0;
+    padding: 1.35rem 1.25rem 1.4rem;
+    border-radius: 24px;
+    background: linear-gradient(160deg, rgb(250 248 242 / 0.93), rgb(250 248 242 / 0.82));
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    backdrop-filter: blur(20px) saturate(1.6);
+  }
+  .doc__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .pill {
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    background: var(--color-pine);
+    color: var(--color-ivory);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+  .role {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-teal);
+  }
+  .doc__name {
+    margin-top: -0.2rem;
+  }
+  .doc__facts {
+    display: grid;
+    gap: 0.7rem;
+    margin: 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgb(12 59 54 / 0.12);
+  }
+  .doc__facts div {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .doc__facts dt {
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  }
+  .doc__facts dd {
+    margin: 0;
+    color: var(--color-ink);
+  }
+  .doc__info .btn {
+    white-space: normal;
+    text-align: left;
+    padding-block: 0.85rem;
+    line-height: 1.25;
+    font-size: 1rem;
+    justify-content: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px;
+      align-items: start;
+    }
+    .doc__portrait {
+      height: 440px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .cards {
+      gap: 56px;
+      padding-inline: 24px;
+    }
+    .doc__portrait {
+      height: 520px;
+      border-radius: 32px;
+    }
+    /* Staggered editorial offset: second doctor sits lower */
+    .doc:nth-child(2) {
+      margin-top: 88px;
+    }
+    .doc__info {
+      margin: -88px 24px 0;
+      padding: 1.6rem 1.6rem 1.7rem;
+    }
+  }
+</style>

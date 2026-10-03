@@ -1,0 +1,126 @@
+---
+import Icon from './Icon.astro';
+import { clinic } from '../data/site';
+---
+
+<section class="trust surface-pine on-dark" data-ambient aria-label="Clinic at a glance">
+  <div class="trust__bg" aria-hidden="true">
+    <span class="orb" style="--s:520px; --c:rgb(15 118 110 / .45); left:8%; top:-60%; --dur:32s"></span>
+    <span class="orb" style="--s:420px; --c:rgb(15 118 110 / .3); right:4%; bottom:-70%; --dur:38s"></span>
+    <div class="dots"></div>
+  </div>
+
+  <div class="container-site">
+    <dl class="trust__grid">
+      <div class="stat reveal" style="--i:0">
+        <dt class="stat__label">Google Rating</dt>
+        <dd class="stat__value">
+          <span class="stat__stars" aria-hidden="true">
+            {Array.from({ length: 5 }).map(() => <Icon name="star" size={15} class="star" />)}
+          </span>
+          <span class="num" data-count="5.0" data-decimals="1">{clinic.rating.value}</span>
+        </dd>
+      </div>
+      <div class="stat reveal" style="--i:1">
+        <dt class="stat__label">Reviews</dt>
+        <dd class="stat__value">
+          <span class="num"><span data-count="467" data-decimals="0">467</span>+</span>
+        </dd>
+      </div>
+      <div class="stat reveal" style="--i:2">
+        <dt class="stat__label">Clinic Leads</dt>
+        <dd class="stat__value">
+          <span class="num" data-count="2" data-decimals="0">2</span>
+        </dd>
+      </div>
+      <div class="stat reveal" style="--i:3">
+        <dt class="stat__label">Lucknow</dt>
+        <dd class="stat__value">
+          <span class="num num--place">Gomti Nagar</span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<style>
+  .trust {
+    position: relative;
+    overflow: clip;
+    padding-block: clamp(44px, 6vw, 72px);
+  }
+  .trust__bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .trust__grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1.6rem 0.5rem;
+    text-align: center;
+  }
+  /* Hairline dividers: 2×2 on mobile, a single row from tablet up */
+  .stat:nth-child(odd) {
+    border-right: 1px solid rgb(250 248 242 / 0.12);
+  }
+  .stat:nth-child(-n + 2) {
+    border-bottom: 1px solid rgb(250 248 242 / 0.12);
+  }
+  .stat__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgb(250 248 242 / 0.66);
+  }
+  .stat__value {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .stat__stars {
+    display: inline-flex;
+    gap: 2px;
+    color: var(--color-sand);
+  }
+  .stat__stars :global(.star) {
+    fill: currentColor;
+    stroke-width: 1.5;
+  }
+  .num {
+    font: 400 clamp(2.75rem, 2rem + 3vw, 4.5rem) / 1 var(--font-serif);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ivory);
+  }
+  .num--place {
+    font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+    line-height: 1.15;
+    padding-top: 0.55rem;
+  }
+
+  @media (min-width: 768px) {
+    .trust__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .stat {
+      padding-block: 0.5rem;
+      border: 0 !important;
+    }
+    .stat + .stat {
+      border-left: 1px solid rgb(250 248 242 / 0.12) !important;
+    }
+  }
+</style>

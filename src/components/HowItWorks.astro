@@ -1,0 +1,185 @@
+---
+import { steps } from '../data/site';
+---
+
+<section id="how-it-works" class="section surface-ivory" data-section data-ambient aria-labelledby="how-title">
+  <div class="bg" aria-hidden="true">
+    <span class="orb" style="--s:560px; --c:rgb(15 118 110 / .14); right:-160px; top:-40px; --dur:36s"></span>
+    <span class="orb" style="--s:480px; --c:rgb(233 223 201 / 1); left:-140px; bottom:-60px; --dur:42s"></span>
+  </div>
+
+  <div class="container-site relative">
+    <header class="head reveal">
+      <p class="eyebrow">How it works</p>
+      <h2 id="how-title" class="h2">A clear path, from first assessment onward.</h2>
+    </header>
+
+    <div class="timeline reveal" data-timeline>
+      <ol class="steps">
+        {
+          steps.map((s, i) => (
+            <li class="step" style={`--i:${i}`}>
+              <span class="step__node" aria-hidden="true">{s.n}</span>
+              {i < steps.length - 1 && (
+                <span class="step__line" aria-hidden="true">
+                  <span class="step__fill" />
+                </span>
+              )}
+              <div class="step__card glass">
+                <h3 class="step__title">{s.title}</h3>
+                <p class="step__body">{s.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .relative {
+    position: relative;
+  }
+  .head {
+    display: grid;
+    gap: 1.1rem;
+    max-width: 40rem;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+
+  .timeline {
+    position: relative;
+  }
+  .steps {
+    display: grid;
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Connector between one node and the next — vertical on mobile, horizontal from tablet up.
+     Each segment draws in sequence, then the next node activates. */
+  .step__line {
+    position: absolute;
+    left: 27px;
+    top: 58px;
+    bottom: -22px;
+    width: 2px;
+    border-radius: 2px;
+    background: rgb(12 59 54 / 0.12);
+    overflow: hidden;
+  }
+  .step__fill {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--color-teal), var(--teal-light));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 520ms var(--ease-inout);
+    transition-delay: calc(450ms + var(--i) * 560ms);
+  }
+  .timeline.is-in .step__fill {
+    transform: scaleY(1);
+  }
+  :global(html:not(.js)) .step__fill {
+    transform: none;
+  }
+
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+  .step__node {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1.5px solid rgb(12 59 54 / 0.25);
+    background: var(--color-ivory);
+    color: var(--color-pine);
+    font: 400 1.125rem/1 var(--font-serif);
+    transition:
+      background-color 500ms ease,
+      color 500ms ease,
+      border-color 500ms ease,
+      transform 600ms var(--ease-soft),
+      box-shadow 600ms ease;
+    transition-delay: calc(var(--i) * 560ms);
+  }
+  .timeline.is-in .step__node {
+    background: var(--color-teal);
+    border-color: var(--color-teal);
+    color: #fff;
+    transform: scale(1.04);
+    box-shadow: 0 0 0 7px rgb(15 118 110 / 0.12);
+  }
+  :global(html:not(.js)) .step__node {
+    background: var(--color-teal);
+    color: #fff;
+  }
+
+  .step__card {
+    padding: 1.2rem 1.25rem 1.3rem;
+    border-radius: 20px;
+  }
+  .step__title {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-pine);
+  }
+  .step__body {
+    margin-top: 0.55rem;
+    color: color-mix(in srgb, var(--color-ink) 78%, transparent);
+  }
+
+  /* Horizontal on tablet/desktop: the track sits behind the nodes */
+  @media (min-width: 768px) {
+    .steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+    }
+    .step__line {
+      left: 64px;
+      right: -20px;
+      top: 27px;
+      bottom: auto;
+      width: auto;
+      height: 2px;
+    }
+    .step__fill {
+      background: linear-gradient(90deg, var(--color-teal), var(--teal-light));
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    .timeline.is-in .step__fill {
+      transform: scaleX(1);
+    }
+    :global(html:not(.js)) .step__fill {
+      transform: none;
+    }
+    .step {
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+    .step__card {
+      padding: 1.5rem 1.5rem 1.6rem;
+      min-height: 150px;
+    }
+  }
+</style>

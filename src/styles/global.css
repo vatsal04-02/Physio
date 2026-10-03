@@ -1,0 +1,521 @@
+/* ==========================================================================
+   Geeta Krishna Physiotherapy — design system
+   Tokens, glass surfaces, buttons and the motion system (design.md §2–§37).
+   ========================================================================== */
+
+@import '@fontsource/dm-serif-display/latin-400.css';
+@import '@fontsource/dm-serif-display/latin-400-italic.css';
+@import '@fontsource-variable/manrope/wght.css';
+@import 'tailwindcss';
+
+/* ---------- Tokens ---------- */
+
+@theme static {
+  --color-teal: #0f766e; /* Deep Teal   — brand accent */
+  --color-sand: #e9dfc9; /* Warm Sand   — soft sections */
+  --color-cta: #ea580c; /* CTA Orange  — actions only */
+  --color-ivory: #faf8f2; /* Warm White  — main background */
+  --color-ink: #1f2a2a; /* Dark Slate  — main text */
+  --color-pine: #0c3b36; /* Deep Pine   — dark sections */
+
+  --font-serif: 'DM Serif Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root {
+  /* Motion tokens (design.md §30) */
+  --dur-fast: 170ms;
+  --dur-normal: 260ms;
+  --dur-reveal: 650ms;
+  --dur-editorial: 850ms;
+
+  --header-h: 84px;
+  --teal-light: color-mix(in srgb, #0f766e 55%, white); /* tint of brand teal for dark surfaces */
+  --focus-ring: #0f766e;
+  color-scheme: light;
+}
+
+/* ---------- Base ---------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--header-h);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    font-family: var(--font-sans);
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-ivory);
+    color: var(--color-ink);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  html.menu-open {
+    overflow: hidden;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.012em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  ::selection {
+    background: var(--color-teal);
+    color: var(--color-ivory);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  .on-dark :focus-visible {
+    --focus-ring: var(--color-sand);
+  }
+}
+
+/* ---------- Layout helpers ---------- */
+
+.container-site {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+@media (min-width: 640px) {
+  .container-site {
+    padding-inline: 24px;
+  }
+}
+@media (min-width: 1024px) {
+  .container-site {
+    padding-inline: 32px;
+  }
+}
+
+/* 64–88px mobile, 96–128px desktop (design.md §5) */
+.section {
+  position: relative;
+  overflow: clip;
+  padding-block: clamp(64px, 8vw + 24px, 120px);
+}
+.section-tight {
+  padding-block: clamp(48px, 6vw + 16px, 88px);
+}
+
+.surface-ivory {
+  background: var(--color-ivory);
+}
+.surface-sand {
+  background: var(--color-sand);
+}
+.surface-pine {
+  background: var(--color-pine);
+  color: var(--color-ivory);
+}
+
+/* ---------- Typography ---------- */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+}
+@media (min-width: 640px) {
+  .eyebrow {
+    letter-spacing: 0.18em;
+  }
+}
+.eyebrow::before {
+  content: '';
+  flex: none;
+  width: 28px;
+  height: 1.5px;
+  background: currentColor;
+  opacity: 0.7;
+}
+.on-dark .eyebrow {
+  color: var(--color-sand);
+}
+
+.display {
+  font-size: clamp(2.375rem, 1.5rem + 3.9vw, 4.25rem); /* 38 → 68 */
+  line-height: 1.04;
+  letter-spacing: -0.018em;
+}
+.h2 {
+  font-size: clamp(1.875rem, 1.25rem + 2.7vw, 3.25rem); /* 30 → 52 */
+  line-height: 1.08;
+}
+.h3 {
+  font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem); /* 22 → 30 */
+  line-height: 1.15;
+}
+.lead {
+  font-size: clamp(1rem, 0.94rem + 0.32vw, 1.1875rem);
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--color-ink) 78%, transparent);
+}
+.on-dark .lead {
+  color: rgb(250 248 242 / 0.74);
+}
+.small {
+  font-size: 0.875rem;
+}
+
+.accent-italic {
+  font-style: italic;
+  color: var(--color-teal);
+}
+.on-dark .accent-italic {
+  color: var(--color-sand);
+}
+
+/* Visible marker for details the clinic still has to confirm */
+.tbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.7rem;
+  border: 1px dashed currentColor;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.5;
+  opacity: 0.78;
+}
+
+/* ---------- Buttons (design.md §26) ---------- */
+
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: currentColor;
+  --btn-border: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 52px;
+  padding: 0 1.6rem;
+  border: 1.5px solid var(--btn-border);
+  border-radius: 12px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font: 700 1.0625rem/1 var(--font-sans);
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-fast) var(--ease-soft),
+    background-color var(--dur-normal) ease,
+    border-color var(--dur-normal) ease,
+    color var(--dur-normal) ease,
+    box-shadow var(--dur-normal) ease;
+}
+.btn .icon-arrow {
+  transition: transform var(--dur-normal) var(--ease-soft);
+}
+.btn:hover {
+  transform: translateY(-1px);
+}
+.btn:hover .icon-arrow {
+  transform: translateX(3px);
+}
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* White on CTA orange is 3.55:1 — it passes WCAG AA only as "large text", so primary labels are
+   bold and >= 14pt (18.7px). Keep this size if you retheme the button. */
+.btn-primary {
+  --btn-bg: var(--color-cta);
+  --btn-fg: #fff;
+  font-size: 1.17rem;
+  box-shadow: 0 10px 22px -10px rgb(234 88 12 / 0.6);
+}
+.btn-primary:hover {
+  --btn-bg: #d94e09;
+  box-shadow: 0 14px 26px -10px rgb(234 88 12 / 0.7);
+}
+.btn-secondary {
+  --btn-bg: var(--color-teal);
+  --btn-fg: #fff;
+}
+.btn-secondary:hover {
+  --btn-bg: #0d665f;
+}
+.btn-outline {
+  --btn-fg: var(--color-teal);
+  --btn-border: var(--color-teal);
+}
+.btn-outline:hover {
+  --btn-bg: rgb(15 118 110 / 0.08);
+}
+/* Glass outline for dark sections */
+.btn-glass {
+  --btn-fg: var(--color-ivory);
+  --btn-border: rgb(250 248 242 / 0.28);
+  --btn-bg: rgb(250 248 242 / 0.06);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.btn-glass:hover {
+  --btn-bg: rgb(250 248 242 / 0.14);
+  --btn-border: rgb(250 248 242 / 0.5);
+}
+.btn-sm {
+  min-height: 46px;
+  padding: 0 1.1rem;
+  font-size: 0.9375rem;
+}
+.btn-primary.btn-sm {
+  font-size: 1.17rem;
+}
+.btn-block {
+  width: 100%;
+}
+
+/* Text link with sliding arrow */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--color-teal);
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color var(--dur-normal) ease;
+}
+.link-arrow .icon {
+  transition: transform var(--dur-normal) var(--ease-soft);
+}
+.link-arrow:hover {
+  border-color: currentColor;
+}
+.link-arrow:hover .icon {
+  transform: translate(3px, -1px);
+}
+.on-dark .link-arrow {
+  color: var(--color-sand);
+}
+
+/* ---------- Glass surfaces ---------- */
+/* Real photography / pine / teal sit behind these. Blur is reserved for a handful of
+   surfaces at a time and drops on small screens to protect scroll performance. */
+
+.glass {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.74), rgb(255 255 255 / 0.4));
+  border: 1px solid rgb(255 255 255 / 0.78);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 14px 34px -14px rgb(12 59 54 / 0.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+}
+.glass-dark {
+  background: linear-gradient(135deg, rgb(250 248 242 / 0.13), rgb(250 248 242 / 0.04));
+  border: 1px solid rgb(250 248 242 / 0.16);
+  box-shadow:
+    inset 0 1px 0 rgb(250 248 242 / 0.14),
+    0 18px 40px -18px rgb(0 0 0 / 0.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  backdrop-filter: blur(18px) saturate(1.35);
+}
+@media (max-width: 639px) {
+  .glass {
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    backdrop-filter: blur(12px) saturate(1.4);
+  }
+  .glass-dark {
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    backdrop-filter: blur(12px) saturate(1.3);
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgb(250 248 242 / 0.94);
+  }
+  .glass-dark {
+    background: rgb(12 59 54 / 0.9);
+  }
+}
+
+/* ---------- Ambient decoration (circles + fine dots only — design.md §28) ---------- */
+
+.orb {
+  position: absolute;
+  width: var(--s, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, var(--c, rgb(15 118 110 / 0.2)), transparent 68%);
+  animation: orb-drift var(--dur, 30s) var(--ease-inout) infinite alternate;
+}
+.dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, var(--dot, rgb(12 59 54 / 0.16)) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+.on-dark .dots {
+  --dot: rgb(250 248 242 / 0.16);
+}
+
+/* Animations on decorative layers only run while their section is on screen (JS toggles .is-live) */
+.js [data-ambient]:not(.is-live) :is(.orb, .drift) {
+  animation-play-state: paused;
+}
+
+@keyframes orb-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(28px, -22px, 0) scale(1.06);
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0);
+  }
+}
+
+/* ---------- Entrances ---------- */
+
+/* Hero stagger — pure CSS so CTAs never depend on JavaScript (design.md §10) */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.rise {
+  animation: rise 700ms var(--ease-soft) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Scroll reveal — only hidden when JS is running, and always revealed by the observer */
+.js .reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity var(--dur-reveal) var(--ease-soft),
+    transform var(--dur-reveal) var(--ease-soft);
+  transition-delay: calc(var(--i, 0) * 100ms);
+}
+.js .reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+.js .reveal-scale {
+  transform: translate3d(0, 12px, 0) scale(1.01);
+}
+
+/* ---------- Misc ---------- */
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: var(--color-pine);
+  color: var(--color-ivory);
+  font-weight: 700;
+  transform: translateY(-160%);
+  transition: transform var(--dur-normal) var(--ease-soft);
+}
+.skip-link:focus {
+  transform: none;
+}
+
+.icon {
+  flex: none;
+}
+
+/* ---------- Reduced motion (design.md §37) ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

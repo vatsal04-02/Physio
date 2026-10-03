@@ -1,0 +1,329 @@
+---
+import ClinicImage from './ClinicImage.astro';
+import GoniometerArt from './GoniometerArt.astro';
+import Icon from './Icon.astro';
+import { clinic, hours, links } from '../data/site';
+---
+
+<section id="top" class="hero" data-section data-ambient aria-labelledby="hero-title">
+  <!-- Ambient background: soft circles + drifting rings (design.md §8, §28) -->
+  <div class="hero__bg" aria-hidden="true">
+    <span class="orb" style="--s:640px; --c:rgb(15 118 110 / .2); right:-120px; top:-60px; --dur:34s"></span>
+    <span class="orb" style="--s:480px; --c:rgb(233 223 201 / .9); left:-160px; bottom:-120px; --dur:40s"></span>
+    <svg class="hero__rings drift" viewBox="0 0 800 800" focusable="false">
+      <g fill="none" stroke="#0F766E" stroke-opacity=".2">
+        <circle cx="400" cy="400" r="150"></circle>
+        <circle cx="400" cy="400" r="240" stroke-dasharray="3 10"></circle>
+        <circle cx="400" cy="400" r="330"></circle>
+        <circle cx="400" cy="400" r="390" stroke-dasharray="1 9"></circle>
+      </g>
+    </svg>
+    <div class="dots" style="mask-image: radial-gradient(ellipse at 80% 40%, #000 0%, transparent 60%); -webkit-mask-image: radial-gradient(ellipse at 80% 40%, #000 0%, transparent 60%);"></div>
+  </div>
+
+  <div class="container-site hero__grid">
+    <div class="hero__copy">
+      <p class="eyebrow rise" style="--d:120ms">Local Physiotherapy • Gomti Nagar</p>
+
+      <h1 id="hero-title" class="display hero__title">
+        <span class="rise" style="--d:220ms">Move with <em class="accent-italic">less pain.</em></span>
+        <span class="rise" style="--d:320ms">Get back to everyday life.</span>
+      </h1>
+
+      <p class="lead hero__lead rise" style="--d:420ms">
+        Assessment-led physiotherapy in Lucknow, with clear guidance from Dr. Sandeep Tiwari and Dr. Mahesh Tiwari.
+      </p>
+
+      <div id="hero-cta" class="hero__cta rise" style="--d:520ms" data-hero-cta>
+        <a class="btn btn-primary" href={links.whatsapp} target="_blank" rel="noopener noreferrer" data-track="whatsapp_click" data-location="hero">
+          <Icon name="message-circle" size={20} />
+          WhatsApp the Clinic
+          <Icon name="arrow-right" size={18} class="icon-arrow" />
+        </a>
+        <a class="btn btn-outline" href={links.tel} data-track="phone_click" data-location="hero">
+          <Icon name="phone" size={18} />
+          Call the Clinic
+        </a>
+      </div>
+
+      <div class="rating glass rise" style="--d:620ms">
+        <span class="stars" aria-hidden="true">
+          {Array.from({ length: 5 }).map(() => <Icon name="star" size={16} class="star" />)}
+        </span>
+        <span class="rating__text">
+          <strong>{clinic.rating.value}</strong> · {clinic.rating.count} Google reviews
+        </span>
+        <span class="sr-only">Rated {clinic.rating.value} out of 5 stars from {clinic.rating.count} Google reviews</span>
+      </div>
+    </div>
+
+    <div class="hero__visual">
+      <div class="frame" style="animation-delay:350ms">
+        <ClinicImage slot="hero" alt="Inside Geeta Krishna Physiotherapy, Gomti Nagar, Lucknow" sizes="(min-width:1024px) 560px, 100vw" priority>
+          <GoniometerArt />
+          <span class="ph-tag" data-placeholder>Clinic photo · [TBD - clinic to provide]</span>
+        </ClinicImage>
+        <span class="frame__sheen" aria-hidden="true"></span>
+      </div>
+
+      <div class="chip-location glass rise" style="--d:760ms">
+        <Icon name="map-pin" size={16} />
+        <span>Gomti Nagar, Lucknow</span>
+      </div>
+
+      <div class="hours-card glass rise" style="--d:820ms">
+        <p class="hours-card__label"><Icon name="clock" size={14} /> Clinic Hours</p>
+        <p class="hours-card__main">{hours.days} · {hours.sessions[0]}</p>
+        <p class="hours-card__sub">{hours.sessions[1]} · {hours.closed}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: clip;
+    padding-top: calc(var(--header-h) + 20px);
+    padding-bottom: clamp(56px, 7vw, 92px);
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .hero__rings {
+    position: absolute;
+    right: -260px;
+    top: -120px;
+    width: 780px;
+    animation: spin-slow 180s linear infinite;
+  }
+
+  .hero__grid {
+    position: relative;
+    display: grid;
+    gap: 44px;
+    align-items: center;
+  }
+
+  /* ---- Copy ---- */
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .hero__title {
+    margin-top: 1.1rem;
+    color: var(--color-ink);
+  }
+  .hero__title > span {
+    display: block;
+  }
+  .hero__lead {
+    max-width: 34rem;
+    margin-top: 1.4rem;
+  }
+  .hero__cta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 2rem;
+  }
+  .hero__cta .btn {
+    width: 100%;
+  }
+
+  .rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding: 0.6rem 1rem 0.6rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+  }
+  .stars {
+    display: inline-flex;
+    gap: 2px;
+    color: var(--star, #c8932a);
+  }
+  .stars :global(.star) {
+    fill: currentColor;
+    stroke-width: 1.5;
+  }
+  .rating strong {
+    font: 400 1.25rem/1 var(--font-serif);
+  }
+
+  /* ---- Visual ---- */
+  .hero__visual {
+    position: relative;
+    padding-bottom: 28px;
+  }
+  .frame {
+    position: relative;
+    height: clamp(340px, 92vw, 460px);
+    overflow: hidden;
+    border-radius: 150px 150px 28px 28px;
+    background: radial-gradient(120% 80% at 50% 0%, #14574f 0%, var(--color-pine) 56%, #082e2a 100%);
+    box-shadow:
+      0 40px 70px -36px rgb(12 59 54 / 0.6),
+      inset 0 0 0 1px rgb(250 248 242 / 0.1);
+    animation: settle 900ms var(--ease-soft) both;
+    isolation: isolate;
+  }
+  .frame :global(.clinic-img) {
+    animation: settle-img 1100ms var(--ease-soft) both;
+    animation-delay: 350ms;
+  }
+  @keyframes settle-img {
+    from {
+      transform: scale(1.03);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  .frame__sheen {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(115deg, rgb(255 255 255 / 0.1), transparent 34%);
+  }
+  .ph-tag {
+    position: absolute;
+    z-index: 3;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100% - 36px);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px dashed rgb(233 223 201 / 0.5);
+    background: rgb(12 59 54 / 0.55);
+    color: var(--color-sand);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .chip-location {
+    position: absolute;
+    z-index: 4;
+    top: 62px;
+    right: -6px;
+    display: none;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-pine);
+    animation-name: rise, float-y;
+    animation-duration: 700ms, 7s;
+    animation-delay: var(--d), 1.6s;
+    animation-iteration-count: 1, infinite;
+    animation-timing-function: var(--ease-soft), ease-in-out;
+    animation-fill-mode: both, none;
+  }
+  .chip-location :global(.icon) {
+    color: var(--color-teal);
+  }
+
+  .hours-card {
+    position: absolute;
+    z-index: 4;
+    left: 14px;
+    bottom: 0;
+    padding: 0.9rem 1.1rem 0.95rem;
+    border-radius: 18px;
+    line-height: 1.35;
+    animation-name: rise, float-y;
+    animation-duration: 700ms, 8s;
+    animation-delay: var(--d), 1.8s;
+    animation-iteration-count: 1, infinite;
+    animation-timing-function: var(--ease-soft), ease-in-out;
+    animation-fill-mode: both, none;
+  }
+  .hours-card p {
+    margin: 0;
+  }
+  .hours-card__label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.35rem !important;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-teal);
+  }
+  .hours-card__main {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+  .hours-card__sub {
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+  }
+
+  @media (min-width: 640px) {
+    .hero__cta {
+      flex-direction: row;
+      width: auto;
+    }
+    .hero__cta .btn {
+      width: auto;
+    }
+    .frame {
+      height: 480px;
+      border-radius: 220px 220px 32px 32px;
+    }
+    .chip-location {
+      display: inline-flex;
+    }
+    .hours-card {
+      left: -10px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero {
+      padding-top: calc(var(--header-h) + 28px);
+    }
+    .hero__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 32px;
+    }
+    .hero__copy {
+      grid-column: 1 / span 7;
+    }
+    .hero__visual {
+      grid-column: 8 / span 5;
+      margin-right: -8px;
+    }
+    .frame {
+      height: clamp(500px, 74vh, 640px);
+      border-radius: 260px 260px 36px 36px;
+    }
+    .hours-card {
+      left: -64px;
+      bottom: 18px;
+    }
+    .chip-location {
+      right: -22px;
+      top: 78px;
+    }
+    .hero__lead {
+      margin-top: 1.6rem;
+    }
+  }
+</style>

@@ -1,0 +1,122 @@
+---
+import Icon from './Icon.astro';
+import { principles } from '../data/site';
+---
+
+<section id="why" class="section surface-pine on-dark" data-section data-ambient aria-labelledby="why-title">
+  <div class="bg" aria-hidden="true">
+    <span class="orb" style="--s:640px; --c:rgb(15 118 110 / .55); right:-180px; top:-120px; --dur:34s"></span>
+    <span class="orb" style="--s:520px; --c:rgb(15 118 110 / .35); left:-200px; bottom:-160px; --dur:44s"></span>
+    <div class="dots"></div>
+  </div>
+
+  <div class="container-site grid">
+    <header class="head reveal">
+      <p class="eyebrow">Why this approach</p>
+      <h2 id="why-title" class="h2">Physiotherapy that starts with understanding.</h2>
+      <p class="lead">
+        Every plan begins with listening, so the care you receive fits the person — not just the pain.
+      </p>
+      <a class="link-arrow" href="#doctors">
+        Meet the clinic leads
+        <Icon name="arrow-right" size={18} />
+      </a>
+    </header>
+
+    <ol class="items">
+      {
+        principles.map((p, i) => (
+          <li class="item reveal glass-dark" style={`--i:${i}`}>
+            <span class="item__num" aria-hidden="true">{p.n}</span>
+            <h3 class="item__title">{p.title}</h3>
+            <p class="item__body">{p.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .grid {
+    position: relative;
+    display: grid;
+    gap: clamp(36px, 5vw, 64px);
+  }
+  .head {
+    display: grid;
+    justify-items: start;
+    gap: 1.1rem;
+    align-content: start;
+  }
+  .items {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .item {
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem 1.4rem 1.6rem;
+    border-radius: 24px;
+  }
+  /* Oversized, low-opacity numerals (design.md §13) */
+  .item__num {
+    position: absolute;
+    right: 1.1rem;
+    top: 0.4rem;
+    font: 400 clamp(4.5rem, 3.6rem + 3vw, 6.25rem) / 1 var(--font-serif);
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(250 248 242 / 0.22);
+    pointer-events: none;
+    user-select: none;
+  }
+  .item__title {
+    position: relative;
+    margin-top: 3.9rem;
+    font-size: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
+  }
+  .item__body {
+    position: relative;
+    margin-top: 0.7rem;
+    max-width: 26rem;
+    font-size: 0.9688rem;
+    color: rgb(250 248 242 / 0.74);
+  }
+
+  @media (min-width: 640px) {
+    .items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+      gap: 32px;
+    }
+    .head {
+      grid-column: 1 / span 5;
+      position: sticky;
+      top: calc(var(--header-h) + 16px);
+    }
+    .items {
+      grid-column: 7 / span 6;
+    }
+    /* Staggered offset for the right column — asymmetry, not a flat 2×2 */
+    .item:nth-child(even) {
+      margin-top: 36px;
+    }
+    .item {
+      padding: 1.75rem 1.6rem 1.9rem;
+    }
+  }
+</style>
