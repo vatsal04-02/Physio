@@ -6,6 +6,8 @@
  * prices, testimonials, outcomes or home-visit availability.
  */
 
+import type { IconName } from './icons';
+
 export const TBD = '[TBD - confirm with clinic]';
 
 export const clinic = {
@@ -33,9 +35,19 @@ export const hours = {
   closed: 'Sunday closed',
 } as const;
 
+/** Machine-readable hours for the live "Open now" pill. Always evaluated in clinic time (IST). */
+export const schedule = {
+  timeZone: 'Asia/Kolkata',
+  days: [1, 2, 3, 4, 5, 6], // Mon–Sat (JS numbering: Sunday = 0)
+  sessions: [
+    ['09:00', '13:00'],
+    ['16:00', '20:00'],
+  ],
+} as const;
+
 /* ---------- Contact links ---------- */
 
-const GENERIC_MESSAGE =
+export const GENERIC_MESSAGE =
   'Hello Geeta Krishna Physiotherapy,\n\nI found you through your website and would like to enquire about physiotherapy services.\n\nThank you.';
 
 /** WhatsApp deep link with an optional pre-filled message. */
@@ -85,27 +97,27 @@ export interface Condition {
   blurb: string;
   /** Used in the WhatsApp pre-fill: "…would like to know more about {ask}." */
   ask: string;
-  icon: 'bone' | 'activity' | 'footprints' | 'hand' | 'zap' | 'dumbbell' | 'person-standing' | 'flame' | 'stethoscope' | 'heart-pulse' | 'shield-check' | 'layers';
+  icon: IconName;
 }
 
 export const conditions: Condition[] = [
   { title: 'Back Pain', blurb: 'Stiffness, aches and everyday movement.', ask: 'physiotherapy for back pain', icon: 'bone' },
-  { title: 'Neck Pain', blurb: 'Neck and upper-back discomfort.', ask: 'physiotherapy for neck pain', icon: 'activity' },
-  { title: 'Shoulder Pain / Frozen Shoulder', blurb: 'Shoulder stiffness and restricted movement.', ask: 'physiotherapy for shoulder pain / frozen shoulder', icon: 'hand' },
+  { title: 'Neck Pain', blurb: 'Neck and upper-back discomfort.', ask: 'physiotherapy for neck pain', icon: 'user-round' },
+  { title: 'Shoulder Pain / Frozen Shoulder', blurb: 'Shoulder stiffness and restricted movement.', ask: 'physiotherapy for shoulder pain / frozen shoulder', icon: 'accessibility' },
   { title: 'Knee Pain / Arthritis', blurb: 'Knee and joint discomfort.', ask: 'physiotherapy for knee pain / arthritis', icon: 'footprints' },
   { title: 'Hip Pain', blurb: 'Hip discomfort and mobility concerns.', ask: 'physiotherapy for hip pain', icon: 'person-standing' },
   { title: 'Sciatica', blurb: 'Pain that travels down the leg.', ask: 'physiotherapy for sciatica', icon: 'zap' },
   { title: 'Slip Disc', blurb: 'Disc-related back and leg symptoms.', ask: 'physiotherapy for slip disc', icon: 'layers' },
-  { title: 'Sports Injuries', blurb: 'Strains, sprains and activity-related injuries.', ask: 'physiotherapy for sports injuries', icon: 'dumbbell' },
+  { title: 'Sports Injuries', blurb: 'Strains, sprains and activity-related injuries.', ask: 'physiotherapy for sports injuries', icon: 'bandage' },
   { title: 'Post-Surgical Rehabilitation', blurb: 'Guided rehabilitation after surgery.', ask: 'post-surgical rehabilitation', icon: 'heart-pulse' },
-  { title: 'Therapeutic Exercise', blurb: 'Guided movement and strengthening.', ask: 'therapeutic exercise', icon: 'activity' },
-  { title: 'Balance & Fall Prevention', blurb: 'Steadiness and balance support.', ask: 'balance and fall prevention', icon: 'shield-check' },
-  { title: 'Heat Therapy', blurb: 'Heat-based therapy for comfort.', ask: 'heat therapy', icon: 'flame' },
+  { title: 'Therapeutic Exercise', blurb: 'Guided movement and strengthening.', ask: 'therapeutic exercise', icon: 'dumbbell' },
+  { title: 'Balance & Fall Prevention', blurb: 'Steadiness and balance support.', ask: 'balance and fall prevention', icon: 'scale' },
+  { title: 'Heat Therapy', blurb: 'Heat-based therapy for comfort.', ask: 'heat therapy', icon: 'thermometer-sun' },
   { title: 'Consultation', blurb: 'Talk through your concern with the clinic.', ask: 'a consultation', icon: 'stethoscope' },
 ];
 
-/** "Care at a glance" band — short editorial labels, not another card grid. */
-export const glance = ['Back pain', 'Neck pain', 'Knee pain', 'Shoulder pain', 'Sports injuries', 'Rehabilitation'] as const;
+/** Marquee ticker between the hero and the conditions grid — all drawn from the verified service list. */
+export const ticker = ['Back Pain', 'Sciatica', 'Frozen Shoulder', 'Slip Disc', 'Arthritis', 'Sports Injuries'] as const;
 
 /* ---------- Why this approach (PRD §13) ---------- */
 
@@ -131,6 +143,7 @@ export const doctors = [
     n: '01',
     slot: 'doctor-sandeep',
     name: 'Dr. Sandeep Tiwari',
+    short: 'Dr. Sandeep',
     initials: 'ST',
     qualification: 'MPT (PT)',
     role: 'Clinic Lead',
@@ -141,6 +154,7 @@ export const doctors = [
     n: '02',
     slot: 'doctor-mahesh',
     name: 'Dr. Mahesh Tiwari',
+    short: 'Dr. Mahesh',
     initials: 'MT',
     qualification: 'MPT (PT)',
     role: 'Clinic Lead',

@@ -1,10 +1,11 @@
 ---
+import DarkFx from './DarkFx.astro';
 import Icon from './Icon.astro';
-import { clinic, hours, links } from '../data/site';
+import { GENERIC_MESSAGE, clinic, concernMessage, conditions, hours, links } from '../data/site';
 const { address } = clinic;
 ---
 
-<section id="contact" class="cta on-dark" data-section data-ambient data-hide-sticky aria-labelledby="contact-title">
+<section id="contact" class="cta curve on-dark" data-section data-ambient data-hide-sticky aria-labelledby="contact-title">
   <div class="bg" aria-hidden="true">
     <svg class="rings" viewBox="0 0 900 900" focusable="false" aria-hidden="true">
       <g fill="none" stroke="#E9DFC9" stroke-opacity=".14">
@@ -14,9 +15,8 @@ const { address } = clinic;
         <circle cx="450" cy="450" r="410" stroke-dasharray="1 9"></circle>
       </g>
     </svg>
-    <span class="orb" style="--s:560px; --c:rgb(45 156 146 / .5); left:-140px; top:-160px; --dur:34s"></span>
-    <span class="orb" style="--s:480px; --c:rgb(12 59 54 / .9); right:-120px; bottom:-160px; --dur:40s"></span>
   </div>
+  <DarkFx flip />
 
   <div class="container-site">
     <div class="panel glass-dark reveal">
@@ -35,6 +35,39 @@ const { address } = clinic;
           Call the Clinic
         </a>
       </div>
+
+
+      <!-- Not a booking system: this only builds a ready-to-send WhatsApp message. Nothing is stored.
+           The option values hold the full message, so it also works with JavaScript off. -->
+      <form
+        id="concern-form"
+        class="concern"
+        action={`https://wa.me/${clinic.phone.whatsapp}`}
+        method="get"
+        target="_blank"
+        data-concern-form
+        data-wa={clinic.phone.whatsapp}
+      >
+        <p class="concern__title">Or tell us your concern first</p>
+        <div class="concern__row">
+          <div class="field">
+            <label for="concern-select">Your concern</label>
+            <select id="concern-select" name="text" data-concern-select>
+              <option value={GENERIC_MESSAGE}>Not sure yet</option>
+              {conditions.map((c) => <option value={concernMessage(c.ask)} data-concern={c.title}>{c.title}</option>)}
+            </select>
+          </div>
+          <div class="field">
+            <label for="concern-name">Your name <span>(optional)</span></label>
+            <input id="concern-name" type="text" autocomplete="given-name" maxlength="40" placeholder="e.g. Ritu" data-concern-name />
+          </div>
+          <button type="submit" class="btn btn-primary" data-track="whatsapp_click" data-location="concern-form">
+            Get assessed this week
+            <Icon name="arrow-right" size={18} class="icon-arrow" />
+          </button>
+        </div>
+        <p class="concern__note">Opens WhatsApp with your message ready to send. Nothing is stored on this site.</p>
+      </form>
 
       <p class="fine">
         <a href={links.tel} data-track="phone_click" data-location="contact-cta-number">{clinic.phone.display}</a>
@@ -69,10 +102,11 @@ const { address } = clinic;
 
 <style>
   .cta {
+    --surface: #0f766e; /* top colour of the band — the dome above it uses the same */
     position: relative;
-    overflow: clip;
     padding-block: clamp(64px, 4.5vw + 34px, 96px);
-    background: linear-gradient(135deg, #0f766e 0%, #0c5a53 45%, var(--color-pine) 100%);
+    padding-top: calc(clamp(64px, 4.5vw + 34px, 96px) + var(--curve));
+    background-image: linear-gradient(180deg, #0f766e 0%, #0c5a53 45%, var(--color-pine) 100%);
     color: var(--color-ivory);
   }
   .bg {
@@ -108,6 +142,115 @@ const { address } = clinic;
   .panel .lead {
     max-width: 32rem;
   }
+
+  /* Concern form: a WhatsApp message composer, styled as a quiet glass inset */
+  .concern {
+    display: grid;
+    gap: 0.9rem;
+    width: 100%;
+    max-width: 780px;
+    margin-top: 0.75rem;
+    padding: 1.1rem;
+    border-radius: 20px;
+    border: 1px solid rgb(250 248 242 / 0.16);
+    background: rgb(12 59 54 / 0.35);
+    text-align: left;
+    scroll-margin-top: calc(var(--header-h) + 24px);
+  }
+  .concern.is-flash {
+    animation: flash-ring 1.4s ease-out 1;
+  }
+  @keyframes flash-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgb(250 248 242 / 0.55);
+    }
+    100% {
+      box-shadow: 0 0 0 18px rgb(250 248 242 / 0);
+    }
+  }
+  .concern__title {
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-sand);
+  }
+  .concern__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr); /* let fields shrink below their intrinsic width */
+    gap: 0.75rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  .field label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: rgb(250 248 242 / 0.8);
+  }
+  .field label span {
+    font-weight: 500;
+    opacity: 0.7;
+  }
+  .field select,
+  .field input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 50px;
+    padding: 0 0.9rem;
+    border: 1px solid rgb(250 248 242 / 0.28);
+    border-radius: 12px;
+    background: rgb(250 248 242 / 0.08);
+    color: var(--color-ivory);
+    font: 600 1rem/1 var(--font-sans);
+    transition: border-color var(--dur-normal) ease, background-color var(--dur-normal) ease;
+  }
+  .field input::placeholder {
+    color: rgb(250 248 242 / 0.45);
+    font-weight: 500;
+  }
+  .field select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.4rem;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23E9DFC9' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+  }
+  .field select option {
+    color: var(--color-ink);
+    background: var(--color-ivory);
+  }
+  .field select:hover,
+  .field input:hover {
+    border-color: rgb(250 248 242 / 0.5);
+  }
+  .concern .btn {
+    width: 100%;
+  }
+  .concern__note {
+    font-size: 0.8125rem;
+    color: rgb(250 248 242 / 0.62);
+  }
+  @media (min-width: 768px) {
+    .concern {
+      padding: 1.25rem 1.35rem;
+    }
+    .concern__row {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr) auto;
+      align-items: end;
+    }
+    .concern .btn {
+      width: auto;
+    }
+  }
+
   .buttons {
     display: flex;
     flex-direction: column;
@@ -193,6 +336,16 @@ const { address } = clinic;
       grid-template-columns: repeat(3, auto);
       justify-content: space-between;
       gap: 2rem;
+    }
+  }
+
+  /* Narrowest phones (≤359px): keep the 18.7px button labels, give them the room instead */
+  @media (max-width: 359px) {
+    .panel {
+      padding-inline: 1rem;
+    }
+    .concern {
+      padding: 0.9rem;
     }
   }
 

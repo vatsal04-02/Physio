@@ -2,12 +2,12 @@
 import { steps } from '../data/site';
 ---
 
-<section id="how-it-works" class="section surface-sand" data-section data-ambient aria-labelledby="how-title">
+<section id="how-it-works" class="section curve surface-sand" data-section data-ambient aria-labelledby="how-title">
 
   <div class="container-site relative">
     <header class="head reveal">
       <p class="eyebrow">06 / How it works</p>
-      <h2 id="how-title" class="h2">A clear path, from first assessment onward.</h2>
+      <h2 id="how-title" class="h2">Three steps. No jargon, no confusion.</h2>
     </header>
 
     <div class="timeline reveal" data-timeline>
@@ -132,6 +132,14 @@ import { steps } from '../data/site';
     border-radius: 16px;
     background: rgb(250 248 242 / 0.8);
     border: 1px solid rgb(12 59 54 / 0.1);
+    transition: transform var(--dur-normal) var(--ease-soft), border-color var(--dur-normal) ease, box-shadow var(--dur-normal) ease;
+  }
+  @media (hover: hover) {
+    .step__card:hover {
+      transform: translateY(-6px);
+      border-color: rgb(15 118 110 / 0.7);
+      box-shadow: 0 0 0 1px rgb(15 118 110 / 0.25), 0 0 24px rgb(15 118 110 / 0.2);
+    }
   }
   .step__title {
     font-family: var(--font-sans);

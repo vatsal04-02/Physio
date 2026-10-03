@@ -33,6 +33,8 @@
   --dur-editorial: 850ms;
 
   --header-h: 76px;
+  --section-pad: clamp(64px, 4.5vw + 34px, 100px);
+  --curve: 28px; /* depth of the curved edge between sections */
   --teal-light: color-mix(in srgb, #0f766e 55%, white); /* tint of brand teal for dark surfaces */
   --focus-ring: #0f766e;
   color-scheme: light;
@@ -102,6 +104,30 @@
   }
 }
 
+/* ---------- Scrollbar ---------- */
+
+html {
+  scrollbar-color: var(--color-teal) var(--color-ivory);
+  scrollbar-width: thin;
+}
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ivory);
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid var(--color-ivory);
+    border-radius: 999px;
+    background: var(--color-teal);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-pine);
+  }
+}
+
 /* ---------- Layout helpers ---------- */
 
 .container-site {
@@ -124,22 +150,73 @@
 /* 64–80px mobile, up to ~100px desktop — tightened per the refinement brief */
 .section {
   position: relative;
-  overflow: clip;
-  padding-block: clamp(64px, 4.5vw + 34px, 100px);
+  padding-block: var(--section-pad);
 }
 .section-tight {
   padding-block: clamp(44px, 4vw + 24px, 72px);
 }
 
+/* Surfaces expose their colour as --surface so a curved edge can reuse it. */
 .surface-ivory {
-  background: var(--color-ivory);
+  --surface: var(--color-ivory);
+  background: var(--surface);
 }
 .surface-sand {
-  background: var(--color-sand);
+  --surface: var(--color-sand);
+  background: var(--surface);
 }
 .surface-pine {
-  background: var(--color-pine);
+  --surface: var(--color-pine);
+  background: var(--surface);
   color: var(--color-ivory);
+}
+
+/* Curved dividers. A .curve section rises over the bottom padding of the one above and its top edge
+   is a soft dome, so light and dark bands never meet in a hard cut.
+   The dome is a painted pseudo-element: nothing is ever clipped to a rounded rectangle (doing that
+   to a whole section made scrolling drop frames — see README "Performance"). */
+@media (min-width: 768px) {
+  :root {
+    --curve: 44px;
+  }
+}
+.curve {
+  position: relative;
+  margin-top: calc(var(--curve) * -1);
+  /* paint the body of the section below the dome zone; the dome itself comes from ::before */
+  background-color: transparent;
+  background-image: linear-gradient(var(--surface), var(--surface));
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 100% calc(100% - var(--curve) + 1px);
+}
+.curve::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--curve);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: var(--surface);
+  pointer-events: none;
+}
+.section.curve {
+  padding-top: calc(var(--section-pad) + var(--curve));
+  /* land anchor links so the dome tucks under the header and the content sits where it did before */
+  scroll-margin-top: calc(var(--curve) * -0.75);
+}
+/* Ambient layers clip themselves, so sections never need overflow clipping. */
+.bg,
+.fx {
+  overflow: clip;
+}
+.curve > .bg,
+.curve > .fx {
+  /* follow the dome so texture never shows in the transparent corners or leaves a seam.
+     Safe to round here: these are leaf layers with no content or glass inside them. */
+  border-top-left-radius: 50% var(--curve);
+  border-top-right-radius: 50% var(--curve);
 }
 
 /* ---------- Typography ---------- */
@@ -253,7 +330,7 @@
   transition: transform var(--dur-normal) var(--ease-soft);
 }
 .btn:hover {
-  transform: translateY(-1px);
+  transform: scale(1.03);
 }
 .btn:hover .icon-arrow {
   transform: translateX(3px);
@@ -272,7 +349,7 @@
 }
 .btn-primary:hover {
   --btn-bg: #d94e09;
-  box-shadow: 0 14px 26px -10px rgb(234 88 12 / 0.7);
+  box-shadow: 0 20px 34px -10px rgb(234 88 12 / 0.75);
 }
 .btn-secondary {
   --btn-bg: var(--color-teal);
@@ -292,9 +369,7 @@
 .btn-glass {
   --btn-fg: var(--color-ivory);
   --btn-border: rgb(250 248 242 / 0.28);
-  --btn-bg: rgb(250 248 242 / 0.06);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  --btn-bg: rgb(250 248 242 / 0.08);
 }
 .btn-glass:hover {
   --btn-bg: rgb(250 248 242 / 0.14);
@@ -310,6 +385,18 @@
 }
 .btn-block {
   width: 100%;
+}
+
+/* Narrowest phones (≤359px, e.g. 320px): primary labels must stay ≥18.7px for contrast, so give them
+   room by trimming padding and dropping the decorative arrow instead of letting buttons overflow. */
+@media (max-width: 359px) {
+  .btn {
+    gap: 0.5rem;
+    padding-inline: 0.9rem;
+  }
+  .btn .icon-arrow {
+    display: none;
+  }
 }
 
 /* Text link with sliding arrow */
@@ -349,31 +436,26 @@
   -webkit-backdrop-filter: blur(16px) saturate(1.5);
   backdrop-filter: blur(16px) saturate(1.5);
 }
+/* Large panels on dark bands sit over flat gradients, so a real blur adds nothing visible — but a
+   big backdrop-filter is the single most expensive thing on this page while scrolling (measured:
+   ~16% of frames dropped). They keep the glass look (translucent gradient, hairline, inner
+   highlight) and skip the blur. Real blur stays on the header, hero cards and small photo chips. */
 .glass-dark {
-  background: linear-gradient(135deg, rgb(250 248 242 / 0.13), rgb(250 248 242 / 0.04));
-  border: 1px solid rgb(250 248 242 / 0.16);
+  background: linear-gradient(135deg, rgb(250 248 242 / 0.15), rgb(250 248 242 / 0.06));
+  border: 1px solid rgb(250 248 242 / 0.18);
   box-shadow:
-    inset 0 1px 0 rgb(250 248 242 / 0.14),
+    inset 0 1px 0 rgb(250 248 242 / 0.16),
     0 18px 40px -18px rgb(0 0 0 / 0.5);
-  -webkit-backdrop-filter: blur(18px) saturate(1.35);
-  backdrop-filter: blur(18px) saturate(1.35);
 }
 @media (max-width: 639px) {
   .glass {
     -webkit-backdrop-filter: blur(12px) saturate(1.4);
     backdrop-filter: blur(12px) saturate(1.4);
   }
-  .glass-dark {
-    -webkit-backdrop-filter: blur(12px) saturate(1.3);
-    backdrop-filter: blur(12px) saturate(1.3);
-  }
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass {
     background: rgb(250 248 242 / 0.94);
-  }
-  .glass-dark {
-    background: rgb(12 59 54 / 0.9);
   }
 }
 
@@ -385,8 +467,9 @@
   aspect-ratio: 1;
   border-radius: 50%;
   pointer-events: none;
+  /* static on purpose: a soft radial gradient stands in for blur(), and not animating it keeps
+     the layer out of the compositor's per-frame work */
   background: radial-gradient(circle at 50% 50%, var(--c, rgb(15 118 110 / 0.2)), transparent 68%);
-  animation: orb-drift var(--dur, 30s) var(--ease-inout) infinite alternate;
 }
 .dots {
   position: absolute;
@@ -401,26 +484,43 @@
   --dot: rgb(250 248 242 / 0.16);
 }
 
-/* Animations on decorative layers only run while their section is on screen (JS toggles .is-live) */
-.js [data-ambient]:not(.is-live) :is(.orb, .drift) {
+/* Looping animations only run while their section is on screen (JS toggles .is-live) */
+.js [data-ambient]:not(.is-live) .drift {
   animation-play-state: paused;
 }
 
-@keyframes orb-drift {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
   }
-  to {
-    transform: translate3d(28px, -22px, 0) scale(1.06);
+  50% {
+    transform: translate3d(0, -9px, 0);
   }
 }
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Film grain: one tiny pre-rendered noise tile, static, no blend modes (cheap to composite) */
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.09;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
+}
+
 /* ---------- Entrances ---------- */
 
 /* Hero stagger — pure CSS so CTAs never depend on JavaScript (design.md §10) */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translate3d(0, 16px, 0);
+    transform: translate3d(0, 24px, 0);
   }
   to {
     opacity: 1;
@@ -438,18 +538,18 @@
   }
 }
 .rise {
-  animation: rise 700ms var(--ease-soft) both;
+  animation: rise 700ms ease-out both;
   animation-delay: var(--d, 0ms);
 }
 
 /* Scroll reveal — only hidden when JS is running, and always revealed by the observer */
 .js .reveal {
   opacity: 0;
-  transform: translate3d(0, 18px, 0);
+  transform: translate3d(0, 24px, 0);
   transition:
-    opacity var(--dur-reveal) var(--ease-soft),
-    transform var(--dur-reveal) var(--ease-soft);
-  transition-delay: calc(var(--i, 0) * 100ms);
+    opacity var(--dur-reveal) ease-out,
+    transform var(--dur-reveal) ease-out;
+  transition-delay: calc(var(--i, 0) * 70ms);
 }
 .js .reveal.is-in {
   opacity: 1;

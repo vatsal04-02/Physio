@@ -1,10 +1,12 @@
 ---
+import DarkFx from './DarkFx.astro';
 import Icon from './Icon.astro';
 import { clinic } from '../data/site';
 ---
 
-<section class="trust surface-pine on-dark" aria-label="Clinic at a glance">
-  <div class="container-site">
+<section class="trust curve surface-pine on-dark" data-ambient aria-label="Clinic at a glance">
+  <DarkFx />
+  <div class="container-site trust__inner">
     <dl class="trust__grid">
       <div class="stat reveal" style="--i:0">
         <dd class="stat__value">
@@ -38,8 +40,11 @@ import { clinic } from '../data/site';
 <style>
   .trust {
     position: relative;
-    padding-block: 8px;
-    background: linear-gradient(100deg, #0c3b36 0%, #0d4a43 50%, #0c3b36 100%);
+    /* extra bottom room: the ticker below curves up over it */
+    padding: calc(var(--curve) + 6px) 0 calc(var(--curve) + 4px);
+  }
+  .trust__inner {
+    position: relative;
   }
   .trust__grid {
     display: grid;

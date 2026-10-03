@@ -1,20 +1,18 @@
 ---
+import DarkFx from './DarkFx.astro';
 import Icon from './Icon.astro';
 import { clinic, hours, links } from '../data/site';
 const { address } = clinic;
 ---
 
-<section id="visit" class="section surface-pine on-dark" data-section data-ambient data-hide-sticky aria-labelledby="visit-title">
-  <div class="bg" aria-hidden="true">
-    <span class="orb" style="--s:600px; --c:rgb(15 118 110 / .5); right:-160px; top:-120px; --dur:36s"></span>
-    <span class="orb" style="--s:480px; --c:rgb(15 118 110 / .3); left:-160px; bottom:-140px; --dur:42s"></span>
-    <div class="dots"></div>
-  </div>
+<section id="visit" class="section curve surface-pine on-dark" data-section data-ambient data-hide-sticky aria-labelledby="visit-title">
+  <div class="bg" aria-hidden="true"><div class="dots"></div></div>
+  <DarkFx />
 
   <div class="container-site grid">
     <div class="info reveal">
       <p class="eyebrow">10 / Visit us</p>
-      <h2 id="visit-title" class="h2">Find the clinic in Gomti Nagar.</h2>
+      <h2 id="visit-title" class="h2">In your neighbourhood, not across town.</h2>
 
       <address class="addr">
         <p class="addr__name">{clinic.name}</p>
@@ -245,10 +243,11 @@ const { address } = clinic;
   }
   .map__open {
     position: absolute;
-    left: 50%;
+    inset-inline: 0;
     bottom: 16px;
     z-index: 2;
-    transform: translateX(-50%);
+    width: fit-content;
+    margin-inline: auto;
     background: rgb(12 59 54 / 0.6);
     transition: background-color var(--dur-normal) ease, border-color var(--dur-normal) ease;
   }

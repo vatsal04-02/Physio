@@ -43,12 +43,17 @@ document.addEventListener('click', (event) => {
 
 const header = qs('[data-header]');
 const progress = qs('[data-progress]');
+const parallax = qs('[data-parallax]');
 let scrollTick = false;
 
 function updateScroll(): void {
   scrollTick = false;
   const y = window.scrollY;
   header?.classList.toggle('is-scrolled', y > 24);
+  // Hero photo drifts down slower than the page (capped so the oversized layer never shows an edge)
+  if (parallax && !reduceMotion && y < window.innerHeight * 1.3) {
+    parallax.style.setProperty('--py', `${Math.min(y * 0.06, 28).toFixed(1)}px`);
+  }
   if (progress) {
     const max = root.scrollHeight - window.innerHeight;
     progress.style.setProperty('--p', String(max > 0 ? Math.min(1, y / max) : 0));
@@ -186,7 +191,7 @@ if ('IntersectionObserver' in window) {
 
 if (!reduceMotion && 'IntersectionObserver' in window) {
   const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-  qsa('[data-count]').forEach((el) => {
+  qsa('.num [data-count], .num[data-count]').forEach((el) => {
     const target = parseFloat(el.dataset.count ?? '');
     const decimals = Number(el.dataset.decimals ?? 0);
     if (Number.isNaN(target)) return;
@@ -244,26 +249,135 @@ if (stickyCta && 'IntersectionObserver' in window) {
   stickyCta?.classList.add('is-visible');
 }
 
-/* ---------- FAQ accordion ---------- */
+/* ---------- FAQ accordion — one open at a time ---------- */
 
-qsa<HTMLButtonElement>('[data-faq-btn]').forEach((btn) => {
+const faqButtons = qsa<HTMLButtonElement>('[data-faq-btn]');
+faqButtons.forEach((btn) => {
   btn.addEventListener('click', () => {
     const open = btn.getAttribute('aria-expanded') !== 'true';
-    btn.setAttribute('aria-expanded', String(open));
-    btn.closest('.item')?.classList.toggle('is-open', open);
+    for (const other of faqButtons) {
+      const isOpen = other === btn && open;
+      other.setAttribute('aria-expanded', String(isOpen));
+      other.closest('.item')?.classList.toggle('is-open', isOpen);
+    }
     if (open) track('faq_open', { question_index: Number(btn.dataset.faqIndex ?? 0) });
   });
 });
 
-/* ---------- Review slider (only rendered when 2+ approved reviews exist) ---------- */
+/* ---------- Review slider: dots, arrows, 5s autoplay (only exists once 2+ approved reviews do) ---------- */
 
 qsa('[data-slider]').forEach((slider) => {
-  const track_ = qs('[data-slider-track]', slider);
-  if (!track_) return;
-  const go = (dir: 1 | -1) =>
-    track_.scrollBy({ left: dir * track_.clientWidth, behavior: reduceMotion ? 'auto' : 'smooth' });
-  qs('[data-slider-prev]', slider)?.addEventListener('click', () => go(-1));
-  qs('[data-slider-next]', slider)?.addEventListener('click', () => go(1));
+  const viewport = qs('[data-slider-track]', slider);
+  const controls = qs('.slider__ctrl', slider);
+  const dotsWrap = qs('[data-slider-dots]', slider);
+  const pauseBtn = qs<HTMLButtonElement>('[data-slider-pause]', slider);
+  if (!viewport || !controls || !dotsWrap) return;
+  const slides = Array.from(viewport.children) as HTMLElement[];
+
+  let pages = 1;
+  let index = 0;
+  let timer = 0;
+  let userPaused = reduceMotion; // never auto-advance for people who asked for less motion
+  let hovering = false;
+  let focused = false;
+  let onScreen = true;
+
+  const metrics = () => {
+    const gap = parseFloat(getComputedStyle(viewport).columnGap) || 0;
+    const step = slides[0].offsetWidth + gap;
+    const perView = Math.max(1, Math.round((viewport.clientWidth + gap) / step));
+    return { step, pages: Math.max(1, slides.length - perView + 1) };
+  };
+  const paint = () => {
+    Array.from(dotsWrap.children).forEach((d, i) => d.setAttribute('aria-current', String(i === index)));
+  };
+  const schedule = () => {
+    window.clearInterval(timer);
+    if (pages > 1 && !userPaused && !hovering && !focused && onScreen && !document.hidden) {
+      timer = window.setInterval(() => goTo(index + 1), 5000);
+    }
+  };
+  const goTo = (i: number) => {
+    const m = metrics();
+    index = (i + m.pages) % m.pages;
+    viewport.scrollTo({ left: index * m.step, behavior: reduceMotion ? 'auto' : 'smooth' });
+    paint();
+  };
+  const build = () => {
+    pages = metrics().pages;
+    controls.hidden = pages <= 1;
+    dotsWrap.replaceChildren(
+      ...Array.from({ length: pages }, (_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'dot';
+        dot.setAttribute('aria-label', `Go to review ${i + 1}`);
+        dot.addEventListener('click', () => {
+          goTo(i);
+          schedule();
+          track('review_interaction', { action: 'dot' });
+        });
+        return dot;
+      }),
+    );
+    index = Math.min(index, pages - 1);
+    paint();
+    schedule();
+  };
+
+  viewport.addEventListener(
+    'scroll',
+    () => {
+      const i = Math.round(viewport.scrollLeft / metrics().step);
+      if (i !== index && i < pages) {
+        index = i;
+        paint();
+      }
+    },
+    { passive: true },
+  );
+  qs('[data-slider-prev]', slider)?.addEventListener('click', () => {
+    goTo(index - 1);
+    schedule();
+  });
+  qs('[data-slider-next]', slider)?.addEventListener('click', () => {
+    goTo(index + 1);
+    schedule();
+  });
+  pauseBtn?.addEventListener('click', () => {
+    userPaused = !userPaused;
+    pauseBtn.setAttribute('aria-pressed', String(userPaused));
+    pauseBtn.setAttribute('aria-label', userPaused ? 'Resume automatic slides' : 'Pause automatic slides');
+    schedule();
+  });
+  if (pauseBtn && userPaused) {
+    pauseBtn.setAttribute('aria-pressed', 'true');
+    pauseBtn.setAttribute('aria-label', 'Resume automatic slides');
+  }
+
+  // Pause while the pointer is over it, while anything inside has focus, off screen, or in a background tab
+  slider.addEventListener('pointerenter', () => ((hovering = true), schedule()));
+  slider.addEventListener('pointerleave', () => ((hovering = false), schedule()));
+  slider.addEventListener('focusin', () => ((focused = true), schedule()));
+  slider.addEventListener('focusout', () => ((focused = false), schedule()));
+  document.addEventListener('visibilitychange', schedule);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      onScreen = Boolean(entry?.isIntersecting);
+      schedule();
+    }).observe(slider);
+  }
+
+  let resizeTimer = 0;
+  window.addEventListener(
+    'resize',
+    () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(build, 150);
+    },
+    { passive: true },
+  );
+  build();
 });
 
 /* ---------- Pointer-tracked highlight on glass cards (fine pointers only) ---------- */
@@ -298,6 +412,96 @@ if ('IntersectionObserver' in window) {
     { threshold: 0.35 },
   );
   qsa('[data-section]').forEach((s) => viewObserver.observe(s));
+}
+
+/* ---------- Live "Open now / Closed" pill (always evaluated in clinic time, IST) ---------- */
+
+const statusEl = qs('[data-open-status]');
+const statusText = statusEl ? qs('[data-status-text]', statusEl) : null;
+if (statusEl && statusText && statusEl.dataset.schedule) {
+  type Schedule = { timeZone: string; days: number[]; sessions: [string, string][] };
+  const cfg = JSON.parse(statusEl.dataset.schedule) as Schedule;
+  const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const toMin = (hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return h * 60 + m;
+  };
+  const sessions = cfg.sessions.map(([a, b]) => [toMin(a), toMin(b)] as const);
+  const clock = (min: number) => {
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return `${h % 12 || 12}${m ? `:${String(m).padStart(2, '0')}` : ''} ${h < 12 ? 'AM' : 'PM'}`;
+  };
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: cfg.timeZone,
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  });
+
+  const renderStatus = () => {
+    const parts = formatter.formatToParts(new Date());
+    const part = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+    const day = WEEKDAYS.indexOf(part('weekday'));
+    const now = Number(part('hour')) * 60 + Number(part('minute'));
+
+    let state: 'open' | 'closed' = 'closed';
+    let text = '';
+    const current = cfg.days.includes(day) ? sessions.find(([a, b]) => now >= a && now < b) : undefined;
+    const upcoming = cfg.days.includes(day) ? sessions.find(([a]) => now < a) : undefined;
+
+    if (current) {
+      state = 'open';
+      text = `Open now · until ${clock(current[1])}`;
+    } else if (upcoming) {
+      text = `Closed now · opens ${clock(upcoming[0])}`;
+    } else {
+      // after the last session, or a closed day: find the next open day
+      let ahead = 1;
+      while (ahead < 7 && !cfg.days.includes((day + ahead) % 7)) ahead++;
+      const label = ahead === 1 ? 'tomorrow' : DAY_NAMES[(day + ahead) % 7];
+      text = `Closed now · opens ${label} ${clock(sessions[0][0])}`;
+    }
+    statusEl.setAttribute('data-state', state);
+    statusText.textContent = text;
+  };
+  renderStatus();
+  window.setInterval(renderStatus, 30_000);
+  document.addEventListener('visibilitychange', () => !document.hidden && renderStatus());
+}
+
+/* ---------- Concern form: a WhatsApp message composer (no booking backend, nothing stored) ---------- */
+
+const concernForm = qs<HTMLFormElement>('[data-concern-form]');
+const concernSelect = qs<HTMLSelectElement>('[data-concern-select]');
+const concernName = qs<HTMLInputElement>('[data-concern-name]');
+if (concernForm && concernSelect) {
+  // A condition card scrolls to the form with that concern chosen; without JS it opens WhatsApp directly.
+  document.addEventListener('click', (event) => {
+    const card = (event.target as Element | null)?.closest<HTMLAnchorElement>('a.card[data-concern]');
+    if (!card || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
+    const option = Array.from(concernSelect.options).find((o) => o.dataset.concern === card.dataset.concern);
+    if (!option) return;
+    event.preventDefault();
+    concernSelect.value = option.value;
+    concernForm.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+    concernForm.classList.remove('is-flash');
+    void concernForm.offsetWidth; // restart the one-shot highlight
+    concernForm.classList.add('is-flash');
+    window.setTimeout(() => concernSelect.focus({ preventScroll: true }), reduceMotion ? 0 : 650);
+  });
+
+  concernForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = concernName?.value.trim().replace(/\s+/g, ' ') ?? '';
+    let message = concernSelect.value;
+    if (name) message = message.replace('\n\nI found you', `\n\nMy name is ${name}. I found you`);
+    const url = `https://wa.me/${concernForm.dataset.wa}?text=${encodeURIComponent(message)}`;
+    const opened = window.open(url, '_blank', 'noopener');
+    if (!opened) window.location.href = url; // popup blocked
+  });
 }
 
 export {};

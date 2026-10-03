@@ -6,7 +6,7 @@ const footerNav = nav.filter((n) => n.label !== 'Pricing');
 const year = new Date().getFullYear();
 ---
 
-<footer class="footer on-dark">
+<footer class="footer curve on-dark">
   <div class="container-site">
     <div class="row">
       <div class="brand">
@@ -40,9 +40,9 @@ const year = new Date().getFullYear();
 
 <style>
   .footer {
-    background: var(--color-ink);
+    --surface: var(--color-ink);
     color: rgb(250 248 242 / 0.8);
-    padding-block: 48px calc(40px + env(safe-area-inset-bottom, 0px));
+    padding-block: calc(48px + var(--curve)) calc(40px + env(safe-area-inset-bottom, 0px));
   }
   .row {
     display: grid;

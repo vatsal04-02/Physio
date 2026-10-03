@@ -3,11 +3,11 @@ import Icon from './Icon.astro';
 import { whatWeDo } from '../data/site';
 ---
 
-<section id="what-we-do" class="section-tight surface-ivory block" data-section aria-labelledby="wwd-title">
+<section id="what-we-do" class="section-tight curve surface-ivory block" data-section aria-labelledby="wwd-title">
   <div class="container-site">
     <header class="head reveal">
       <p class="eyebrow">05 / What we do</p>
-      <h2 id="wwd-title" class="h2">Support for pain, movement and recovery.</h2>
+      <h2 id="wwd-title" class="h2">Fix the cause, not just the ache.</h2>
     </header>
 
     <ul class="cols">
@@ -27,7 +27,7 @@ import { whatWeDo } from '../data/site';
 <style>
   .block {
     position: relative;
-    overflow: clip;
+    padding-top: calc(clamp(44px, 4vw + 24px, 72px) + var(--curve));
   }
   .head {
     display: grid;

@@ -31,6 +31,12 @@ import i_building_2 from 'lucide-static/icons/building-2.svg?raw';
 import i_armchair from 'lucide-static/icons/armchair.svg?raw';
 import i_bed_single from 'lucide-static/icons/bed-single.svg?raw';
 import i_signpost from 'lucide-static/icons/signpost.svg?raw';
+import i_accessibility from 'lucide-static/icons/accessibility.svg?raw';
+import i_bandage from 'lucide-static/icons/bandage.svg?raw';
+import i_scale from 'lucide-static/icons/scale.svg?raw';
+import i_thermometer_sun from 'lucide-static/icons/thermometer-sun.svg?raw';
+import i_pause from 'lucide-static/icons/pause.svg?raw';
+import i_play from 'lucide-static/icons/play.svg?raw';
 import i_map from 'lucide-static/icons/map.svg?raw';
 import i_user_round from 'lucide-static/icons/user-round.svg?raw';
 
@@ -65,6 +71,12 @@ export const icons = {
   'armchair': i_armchair,
   'bed-single': i_bed_single,
   'signpost': i_signpost,
+  'accessibility': i_accessibility,
+  'bandage': i_bandage,
+  'scale': i_scale,
+  'thermometer-sun': i_thermometer_sun,
+  'pause': i_pause,
+  'play': i_play,
   'map': i_map,
   'user-round': i_user_round,
 } as const;

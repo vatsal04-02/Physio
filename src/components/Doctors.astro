@@ -5,7 +5,7 @@ import Icon from './Icon.astro';
 import { doctorMessage, doctors, whatsappLink } from '../data/site';
 ---
 
-<section id="doctors" class="section surface-ivory" data-section data-ambient aria-labelledby="doctors-title">
+<section id="doctors" class="section curve surface-ivory" data-section data-ambient aria-labelledby="doctors-title">
   <div class="bg" aria-hidden="true">
     <span class="orb" style="--s:520px; --c:rgb(233 223 201 / 1); left:-180px; top:8%; --dur:44s"></span>
   </div>
@@ -14,7 +14,7 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
     <div class="layout">
     <header class="head reveal">
       <p class="eyebrow">03 / Doctors</p>
-      <h2 id="doctors-title" class="h2">Meet the clinic leads.</h2>
+      <h2 id="doctors-title" class="h2">You’ll know your doctor’s name.</h2>
       <p class="lead">Dr. Sandeep Tiwari and Dr. Mahesh Tiwari lead Geeta Krishna Physiotherapy, both qualified MPT (PT).</p>
     </header>
 
@@ -46,16 +46,17 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
                 </div>
               </dl>
               <a
-                class="ask"
+                class="btn btn-primary ask"
                 href={whatsappLink(doctorMessage(d.name))}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`Ask ${d.name} on WhatsApp`}
                 data-track="whatsapp_click"
                 data-location={`doctor-${i + 1}`}
               >
-                <Icon name="message-circle" size={18} />
-                <span>Ask about care with {d.name}</span>
-                <Icon name="arrow-right" size={16} class="icon-arrow" />
+                <Icon name="message-circle" size={19} />
+                Ask {d.short}
+                <Icon name="arrow-right" size={18} class="icon-arrow" />
               </a>
             </div>
           </article>
@@ -191,26 +192,8 @@ import { doctorMessage, doctors, whatsappLink } from '../data/site';
   }
 
   .ask {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
     justify-self: start;
-    padding: 0.35rem 0;
-    font-size: 0.9375rem;
-    font-weight: 700;
-    color: var(--color-teal);
-    text-decoration: none;
-    border-bottom: 1.5px solid transparent;
-    transition: border-color var(--dur-normal) ease;
-  }
-  .ask:hover {
-    border-color: currentColor;
-  }
-  .ask:hover :global(.icon-arrow) {
-    transform: translateX(3px);
-  }
-  .ask :global(.icon-arrow) {
-    transition: transform var(--dur-normal) var(--ease-soft);
+    min-height: 48px;
   }
 
   @media (min-width: 768px) {

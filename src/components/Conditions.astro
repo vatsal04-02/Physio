@@ -12,7 +12,7 @@ import { concernMessage, conditions, whatsappLink, links } from '../data/site';
     <header class="head reveal">
       <div class="head__title">
         <p class="eyebrow">01 / Conditions</p>
-        <h2 id="conditions-title" class="h2">Start with what you’re feeling.</h2>
+        <h2 id="conditions-title" class="h2">Point to the pain. We’ll take it from there.</h2>
       </div>
       <p class="lead head__lead">
         Choose the concern closest to yours. The clinic will assess your individual condition before recommending care.
@@ -141,9 +141,12 @@ import { concernMessage, conditions, whatsappLink, links } from '../data/site';
   }
   .card:hover,
   .card:focus-visible {
-    transform: translateY(-3px);
-    border-color: rgb(15 118 110 / 0.45);
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.8) inset, 0 16px 26px -18px rgb(12 59 54 / 0.45);
+    transform: translateY(-6px);
+    border-color: rgb(15 118 110 / 0.75);
+    box-shadow:
+      0 0 0 1px rgb(15 118 110 / 0.3),
+      0 0 26px rgb(15 118 110 / 0.22),
+      0 22px 30px -20px rgb(12 59 54 / 0.5);
   }
   .card:hover::before {
     opacity: 1;

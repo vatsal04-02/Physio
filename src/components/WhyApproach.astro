@@ -1,19 +1,18 @@
 ---
+import DarkFx from './DarkFx.astro';
 import Icon from './Icon.astro';
 import { principles } from '../data/site';
 ---
 
-<section id="why" class="section surface-pine on-dark" data-section data-ambient aria-labelledby="why-title">
-  <div class="bg" aria-hidden="true">
-    <span class="orb" style="--s:560px; --c:rgb(15 118 110 / .5); right:-180px; top:-140px; --dur:44s"></span>
-    <div class="dots"></div>
-  </div>
+<section id="why" class="section curve surface-pine on-dark" data-section data-ambient aria-labelledby="why-title">
+  <div class="bg" aria-hidden="true"><div class="dots"></div></div>
+  <DarkFx />
 
   <div class="container-site relative">
     <header class="head reveal">
       <div class="head__title">
         <p class="eyebrow">02 / Why this approach</p>
-        <h2 id="why-title" class="h2">Physiotherapy that starts with understanding.</h2>
+        <h2 id="why-title" class="h2">We listen before we treat.</h2>
       </div>
       <a class="link-arrow head__link" href="#doctors">
         Meet the clinic leads
