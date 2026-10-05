@@ -47,7 +47,7 @@ Put approved photos in `src/assets/clinic/` (`.jpg .jpeg .png .webp .avif`). The
 | `hero` | Hero frame — currently the clinic-entrance photo (`hero.webp`, cropped to the frame with `object-position` in `Hero.astro`). Delete the file and the designed pine panel ("Gomti Nagar's trusted physio clinic" + rating badge) fills the frame instead |
 | `doctor-sandeep`, `doctor-mahesh` | Doctor cards — until they exist, an ST / MT monogram is shown |
 | `doctors-together` | Joint photo beside the doctors' intro (caption is a `[TBD]` until the clinic confirms who is pictured) |
-| `gallery-1`, `gallery-2`, … | The clinic banner. Each one also needs a line in `gallery` in `src/data/site.ts` (label + a plain description for the alt text); `galleryPending` lists what is still to come |
+| `gallery-1`, `gallery-2`, … | The clinic banner. Each one also needs a line in `gallery` in `src/data/site.ts` (label + a plain description for the alt text); `galleryPending` lists what is still to come. Photos **1000 px wide or more** go into the large swipeable viewer (arrows, counter, thumbnails, keyboard; in the order listed); smaller ones sit in the "Treatment sessions" row beneath it at their own size |
 
 Each is converted to AVIF/WebP, given fixed dimensions (no layout shift), and **never up-scaled**: a small source is served at its own size. The supplied treatment and doctor photos are only ~250 px wide, so they are shown at about their native size; send the originals (1200 px+ wide) before putting any of them in a large slot. Photo-overlay labels sit on solid pine so they stay legible on any image.
 No stock or generated imagery is ever substituted. **Patient photos need the patients' consent before publishing.**
@@ -74,6 +74,7 @@ Things to know: the key is visible in the page source, so **restrict it** in Goo
 
 Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3, §41). Search the repo for `TBD` to find each one.
 
+- [ ] Gallery photos `gallery-4` … `gallery-7` (the large viewer): they show identifiable patients, so confirm consent; `gallery-6` has a wall board with fee amounts and a doctor's name that are legible at full size (the site deliberately lists no prices and no such doctor) — crop it, swap it, or confirm the board is current; the same board suggests home visits exist, which would settle the `[TBD]` FAQ answer, but nothing on the page claims it until the clinic confirms
 - [ ] Hero photo: `hero.webp` looks AI-generated/edited (a Gemini sparkle sits bottom-right) and its signboard text differs from the site — hours 9:00–1:30 / 4:30–8:30, "B.Sc. B.P.T." qualifications, a second phone number, "Since 2004" — so swap in a real photograph or confirm the sign with the clinic; both doctor portraits, reception + equipment photos; higher-resolution originals of the supplied photos; confirm who is in the joint doctors photo (and fix its `[TBD]` caption); patient consent for the treatment photos
 - [ ] Doctor specialisation, experience, certifications and bios (`doctors` in `src/data/site.ts`)
 - [ ] Paste the Google Places API key + place ID (see *Live Google reviews*); confirm the three built-in fallback reviews are approved for use

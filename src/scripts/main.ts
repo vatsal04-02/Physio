@@ -6,6 +6,7 @@
  */
 
 import { initBooking } from './booking';
+import { initGallery } from './gallery';
 import { initGoogleReviews } from './google-reviews';
 import { openWhatsApp } from './whatsapp';
 
@@ -282,6 +283,10 @@ faqButtons.forEach((btn) => {
     if (open) track('faq_open', { question_index: Number(btn.dataset.faqIndex ?? 0) });
   });
 });
+
+/* ---------- Clinic photo viewer: arrows, counter, thumbnails ---------- */
+
+qsa('[data-gallery]').forEach((el) => initGallery(el, reduceMotion));
 
 /* ---------- Review slider: dots, arrows, 6s autoplay that pauses on hover/touch ---------- */
 

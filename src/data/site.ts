@@ -167,14 +167,20 @@ export const doctors = [
 
 /* ---------- Clinic gallery (PRD §15) ----------
  * Photos are picked up by filename from src/assets/clinic/ (gallery-1, gallery-2, …). To add one, drop
- * the file in and add a line here with a plain description of what it shows. Slots still waiting on a
- * photo are listed in `galleryPending` and shown as "coming soon".
+ * the file in and add a line here with a plain description of what it shows. Wide photographs (1000px+)
+ * go into the large swipeable viewer in the order listed; smaller ones sit in the "treatment sessions"
+ * row beneath it at their own size. Slots still waiting on a photo are listed in `galleryPending` and
+ * shown as "coming soon".
  */
 
 export const gallery = [
   { slot: 'gallery-1', label: 'Treatment session', alt: 'A physiotherapist in a white coat treating a patient lying on a couch while a colleague looks on from behind' },
   { slot: 'gallery-2', label: 'Treatment area', alt: 'A therapist standing beside a patient lying face down on a wooden treatment couch, with other couches behind' },
   { slot: 'gallery-3', label: 'Treatment session', alt: 'A masked therapist working with a patient lying on a couch in the treatment area' },
+  { slot: 'gallery-4', label: 'The treatment room', alt: 'The treatment room, with patients resting on wooden couches, staff in white coats attending to them and blue curtains behind' },
+  { slot: 'gallery-5', label: 'Therapist with patient', alt: 'A therapist in a white coat standing beside a patient lying on a couch, with a second patient and a staff member seated behind' },
+  { slot: 'gallery-6', label: 'Several sessions at once', alt: 'A therapist working on a patient lying face down while other patients rest on couches with electrotherapy leads attached' },
+  { slot: 'gallery-7', label: 'Hands-on treatment', alt: 'A therapist in a white coat treating a patient’s back in the treatment room, with other patients on couches beside her' },
 ] as const;
 
 export const galleryPending = ['reception', 'equipment'] as const;
