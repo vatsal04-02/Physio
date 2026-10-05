@@ -110,7 +110,8 @@ import { clinic, hours, links, nav } from '../data/site';
     height: 60px;
     padding: 0 10px 0 12px;
     border-radius: 18px;
-    transition: height var(--dur-normal) var(--ease-soft);
+    transform-origin: top center;
+    transition: transform 300ms ease;
   }
   /* Glass layer fades in once the page scrolls: warm-white at rest, frosted when scrolled */
   .bar::before {
@@ -127,10 +128,12 @@ import { clinic, hours, links, nav } from '../data/site';
     -webkit-backdrop-filter: blur(16px) saturate(1.6);
     backdrop-filter: blur(16px) saturate(1.6);
     opacity: 0;
-    transition: opacity var(--dur-normal) ease;
+    transition: opacity 300ms ease;
   }
+  /* Past 40px of scroll the bar tucks up and shrinks a little, and the frosted layer fades in.
+     Transform and opacity only: nothing here changes layout. */
   :global(.site-header.is-scrolled) .bar {
-    height: 54px;
+    transform: translate3d(0, -3px, 0) scale(0.965);
   }
   :global(.site-header.is-scrolled) .bar::before {
     opacity: 1;
@@ -140,7 +143,7 @@ import { clinic, hours, links, nav } from '../data/site';
   .brand {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
+    min-height: 46px;
     gap: 0.7rem;
     color: var(--color-ink);
     text-decoration: none;
@@ -235,8 +238,8 @@ import { clinic, hours, links, nav } from '../data/site';
   .icon-btn {
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
+    width: 46px; /* 46px so the scrolled-state shrink (x0.965) still leaves a 44px+ target */
+    height: 46px;
     border-radius: 11px;
     border: 1px solid rgb(12 59 54 / 0.12);
     background: rgb(255 255 255 / 0.55);
@@ -329,9 +332,6 @@ import { clinic, hours, links, nav } from '../data/site';
     }
     .bar {
       height: 66px;
-    }
-    :global(.site-header.is-scrolled) .bar {
-      height: 56px;
     }
   }
 

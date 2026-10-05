@@ -2,12 +2,12 @@
 
 Premium, mobile-first marketing site for **Geeta Krishna Physiotherapy** (B-1/127 Viram Khand, Gomti Nagar, Lucknow).
 Built to the Master PRD and `design.md`: static Astro, one small TypeScript module, WhatsApp + phone as the conversion path.
-There is **no appointment system** in Phase 1 (deferred to Phase 2 by design).
+There is **no appointment system** in Phase 1: the *Book your visit* form only composes a WhatsApp request that the clinic answers and confirms (no calendar, backend, payment or login).
 
 | | |
 |---|---|
 | Stack | Astro 7 · TypeScript · Tailwind CSS 4 · Lucide icons · self-hosted DM Serif Display + Manrope |
-| Client JS | ~5 KB gzipped (header, active nav, menu, reveals, counters, open-now pill, concern form, FAQ, review slider, map guard, optional live Google reviews) · CSS ~22 KB gzipped |
+| Client JS | ~6 KB gzipped (header, active nav, menu, reveals, counters, open-now pill, concern + booking forms, FAQ, review slider, map guard, optional live Google reviews) · CSS ~23 KB gzipped |
 | Lighthouse (local) | Mobile 100 / 100 / 100 / 100 · Desktop 100 / 100 / 100 / 100 (perf / a11y / best-practices / SEO); mobile LCP 1.7 s, TBT 0, CLS 0 |
 
 ## Commands
@@ -28,9 +28,10 @@ Environment (see `.env.example`):
 ## Where things live
 
 ```
-src/data/site.ts        ALL clinic facts, copy lists, FAQ, pricing, reviews — edit content here
+src/data/site.ts        ALL clinic facts, copy lists, FAQ, reviews, gallery — edit content here
 src/components/         One component per page section (Header, Hero, Conditions, …)
-src/components/Placeholder.astro   The one shared "photograph goes here" slot used by hero, doctors and gallery
+src/components/Placeholder.astro   Shared "photograph goes here" slot (only shown if a gallery photo file is missing)
+src/components/Booking.astro + src/scripts/booking.ts   The "Book your visit" request form
 src/styles/global.css   Design tokens, glass surfaces, buttons, motion system, reduced-motion rules
 src/scripts/main.ts     Progressive enhancement (every feature degrades without JS)
 src/assets/clinic/      Drop real photos here (see below)
@@ -76,34 +77,39 @@ Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3
 - [ ] Hero photo, both doctor portraits, reception + equipment photos; higher-resolution originals of the supplied photos; confirm who is in the joint doctors photo (and fix its `[TBD]` caption); patient consent for the treatment photos
 - [ ] Doctor specialisation, experience, certifications and bios (`doctors` in `src/data/site.ts`)
 - [ ] Paste the Google Places API key + place ID (see *Live Google reviews*); confirm the three built-in fallback reviews are approved for use
-- [ ] Pricing: starting session price (`pricing.confirmedAmount` — until set, the card shows a clearly-marked `₹ XXXX` placeholder), consultation, home visit
-- [ ] FAQ answers: home visits, starting price, session length (`faqs` — unconfirmed ones are excluded from FAQ structured data)
-- [ ] Sign-off on promise-style copy — "Physiotherapy that puts an expiry date on your pain.", "Gomti Nagar's trusted physio clinic", the first built-in review ("within 3 days he became quite normal"), "No surprise bills. Ever." (pricing is still TBD) and "Fix the cause, not just the ache." read as outcome/billing commitments, which PRD §37 steers away from
+- [ ] Home visits: the booking form offers a "Home visit" chip and the FAQ answer is still `[TBD]` — confirm the clinic does them (or remove the chip in `Booking.astro`)
+- [ ] FAQ answers: home visits, session length (`faqs` — unconfirmed ones are excluded from FAQ structured data). The pricing section and the starting-price question were removed; add them back only once the clinic confirms real prices
+- [ ] Sign-off on promise-style copy — "Physiotherapy that puts an expiry date on your pain.", "Gomti Nagar's trusted physio clinic", the first built-in review ("within 3 days he became quite normal"), read as outcome commitments, which PRD §37 steers away from
 - [ ] Clinic's Google Business Profile URL (`links.directions` and `links.reviews` use a Maps search built from the verified address until a place ID is set; the map embed searches for the clinic by name and area — check it lands on the right pin)
 - [ ] Production domain → `PUBLIC_SITE_URL`; confirm title/meta description copy
 - [ ] GA4 + Search Console approval
 
 ## Design & accessibility notes
 
-- **Typography is deliberately restrained:** hero 36→58px, section headings 30→46px, subheadings 21→28px, body 16–18px. Only the hero uses the largest scale.
+- **Typography is deliberately restrained:** hero 36→58px, section headings 30→46px, subheadings 21→28px, body 16–18px on desktop. On phones the scale is fluid: hero `clamp(34px, 9vw, 72px)`, headings `clamp(28px, 7vw, 56px)`, body 15–16px. The `min()` in `global.css` hands over to the desktop scale at ~430px, so tablet and desktop sizes are unchanged (the 56 / 72px ceilings would have enlarged them ~20%).
 - **Photography leads where it exists.** Real photos replace their slot automatically; until then the hero shows a designed typographic panel, the doctors show monograms, and the gallery is one banner holding the photos supplied so far. Decoration is limited to fine lines, dot texture and soft background circles.
 - **Map:** a real, lazy-loaded Google Maps iframe with a translucent teal wash over it. It is covered by a "Tap to explore" layer so a page scroll can't be swallowed by the map on phones; one tap hands it over, tapping elsewhere takes it back. "Open in Google Maps" stays as a plain link.
 - **Glassmorphism** is used sparingly on floating layers only (header, mobile menu, sticky CTA bar, hero hours card, review/contact panels). Blur is capped on small screens and has a solid fallback where `backdrop-filter` is unsupported.
 - **Motion** is CSS keyframes/transitions, native CSS scroll-driven animations, and one IntersectionObserver-driven script — no animation library. Everything animates `transform`/`opacity` only (plus one `clip-path` wipe on the doctor portraits):
-  - **Load:** eyebrow → headline → subtext → CTAs → badges rise in at 90ms steps (pure CSS, so CTAs never wait on JavaScript); the hero photo settles 1.06 → 1.
+  - **Load:** eyebrow → headline → subtext → CTAs → pills → dark card fade up 24px over 0.7s, 120ms apart (pure CSS, so CTAs never wait on JavaScript); the hero photo settles 1.06 → 1.
+  - **Scroll reveal:** an IntersectionObserver adds `.in-view` once per element (then stops watching it). Sections fade up 24px over 0.7s (`ease`); card grids (conditions, approach steps, reviews) stagger by 80ms. The stats count up 5.0 / 467+ / 2 over 1.2s (ease-out), once, when the band comes into view.
   - **Background depth** (`Depth.astro`): warm base → soft teal/sand glow → faint dots → a barely-there 1px grid (large cells, 5–7% alpha, faded toward the edges) → a few oversized thin circles and a hairline. Used on the hero, conditions, "why", gallery and visit sections. On the hero and conditions sections the glow + circles (`.d-far`, ±14px) and the grid (±6px) drift as the section scrolls past; on the dark and gallery sections the same texture stands still (see Performance). Only decorative layers ever move.
-  - **Per-section choreography** (all once per entry): trust numbers rise one after another and the labels trail them; "why" blocks draw their rule, surface the numeral, then bring in the text; doctor portraits wipe down (clip-path) with name/details ~110ms behind; gallery tiles arrive from different directions with captions sliding in after them; the "How it works" line draws as you scroll and the active step lifts 3px with a ring while the previous one settles back; the reviews section plays quote mark → text → rating and stars last; pricing rises; the visit text and map arrive from opposite sides (wide screens).
+  - **Per-section choreography** (all once per entry): trust numbers rise one after another and the labels trail them; "why" blocks draw their rule, surface the numeral, then bring in the text; doctor portraits wipe down (clip-path) with name/details ~110ms behind; gallery tiles arrive from different directions with captions sliding in after them; the "How it works" line draws as you scroll and the active step lifts 3px with a ring while the previous one settles back; the reviews section plays quote mark → text → rating and stars last; the visit text and map arrive from opposite sides (wide screens).
   - **Hero rhythm:** a dotted ring turns once every 28s behind the photo, a trio of dots and a hairline drift ≤10px, and the shadow under the frame breathes. The photograph itself never moves except a ≤28px scroll parallax.
   - **Transition moments (two only):** a soft glow passes behind the "why" content, and the contact band's concentric rings settle into place — both one-shot when the section arrives.
-  - **Hover:** buttons lift 1px and the arrow slides 3px; the two main WhatsApp CTAs get a soft glow that belongs to the button (no pulse); cards lift 2–3px; images zoom at most 1.02; condition cards tip the icon 4°, slide the arrow and pass a teal highlight across in ~260ms; the active nav link gets a thin teal underline; the FAQ opens/closes in 280ms.
+  - **Hover** (0.2–0.25s): buttons lift 1px, the arrow nudges 4px and orange buttons brighten (a white veil fading in, so only opacity animates); the two main WhatsApp CTAs get a soft glow that belongs to the button (no pulse); condition cards lift 4px with a soft shadow, the ↗ slides 3px and a teal highlight passes across; doctor cards lift 2px (desktop); images zoom at most 1.02; the active nav link gets a thin teal underline; the FAQ opens/closes with an animated height and the + turns 45°.
+  - **Header:** past 40px of scroll the bar tucks up and shrinks slightly and its frosted (blurred) layer fades in — transform and opacity only, so nothing reflows.
   - **Ambient:** the ticker between hero and conditions (pauses on hover), a 6s float on the hours card, the hero ring/dots/shadow. Looping animations pause whenever their section is off screen.
-  - `prefers-reduced-motion` turns it all off: reveals show immediately, no parallax or depth drift, no ambient loops, the ticker becomes a static wrapped list, count-up/autoplay stop.
+  - `prefers-reduced-motion` turns it all off: reveals and the hero entrance show immediately, no parallax or depth drift, no ambient loops, no hover movement, the ticker becomes a static wrapped list, count-up/autoplay stop.
+  - **Anchors:** `scroll-behavior: smooth`, and every `section[id]` has `scroll-margin-top` equal to the header height, so headings never land under it.
   - Scroll-driven animations are a progressive enhancement (`animation-timeline: view()/scroll()`); browsers without them simply show the layers still. **Gotcha:** they are written as animation *longhands* — the CSS minifier folds `animation` + `animation-timeline` into one shorthand that Chromium silently rejects.
 - **Dark sections** share one `DarkFx` layer: a static film-grain tile plus a teal and a warm-orange orb at 20% opacity (radial gradients, no `filter: blur`). The orange orb is a deliberate, subtle exception to "orange is for actions only".
 - **Curved dividers:** any section with the `curve` class rises over the padding of the one above with an elliptical top edge, so light/dark bands never meet in a hard cut (pure `border-radius`, no images).
 - **Live "Open now" pill** is computed in the browser against clinic time (Asia/Kolkata), so a visitor abroad still sees the right status. Without JS it shows the plain hours.
-- **Concern form** (inside the contact band) is *not* a booking system: it only builds a ready-to-send WhatsApp message and stores nothing. Tapping a condition card scrolls to it with that concern pre-selected; without JavaScript the card opens WhatsApp directly.
-- **Review slider** appears only once 2+ approved reviews exist: dots, arrows, a pause button, and a 5s autoplay that stops on hover/focus, when off screen, in a background tab, and for reduced-motion users.
+- **Condition cards** open WhatsApp in a new tab with "…I'd like to ask about <Condition>."; the doctors' buttons ("Book with Dr. …") do the same with their own message. The **concern form** in the contact band and the **booking form** only build a ready-to-send WhatsApp message and store nothing.
+- **Book your visit** (`08`): name, +91 phone (exactly 10 digits), concern, visit type, one of the next six open days (Mon–Sat, in clinic time — a visitor abroad still sees clinic dates; today counts only until the last session ends) and a time of day. Invalid input shows inline errors and WhatsApp stays closed; valid input opens one new tab with the request. The copy says *request* throughout; availability is never claimed.
+- **Phones (≤768px):** a fixed bottom bar (Call + WhatsApp the Clinic, 60px plus the safe-area inset) replaces the floating bubble, the page has 76px of bottom padding (the footer's colour is painted into it), and the menu is one scrollable column with the WhatsApp button pinned at the bottom. Touch targets are ≥44px (chips 48px, form fields 52px / 16px text so iOS doesn't zoom).
+- **Review slider:** one card at a time on phones, three across on desktop; dots, arrows, a pause button, and a 6s autoplay that stops on hover, touch, focus, when off screen, in a background tab, and for reduced-motion users.
 - **CTA contrast:** white on the PRD's CTA orange `#EA580C` is 3.55:1, which meets WCAG AA only as *large text*. Primary-button labels are therefore bold and ≥ 14pt (18.7px). If a stricter 4.5:1 is wanted, change `--color-cta` to `#C2410C`.
 - Content rules from PRD §37 are followed: no superlatives, guarantees, urgency or invented statistics.
 
@@ -115,7 +121,8 @@ Scroll smoothness is measured with scripted full-page scrolls in headless Chromi
 |---|---|---|
 | Motion pass (before the depth/choreography pass) | 3–4% | 0% |
 | Depth pass, first cut (every section drifting) | 23–24% | 0.3% |
-| **Shipped** (depth drift on hero + conditions only) | **9–13%** | **0%** |
+| Master update (real photos, map, live reviews) | 9–13% | 0% |
+| **Shipped** (booking, mobile pass, animation pass; page is shorter, so the hero weighs more) | **14–16%** — measured *the same* as the build before the animation pass (A/B, interleaved) | **0.3%** |
 
 So on a software compositor the depth pass still costs desktop scrolling roughly 6–9 percentage points; mobile is unaffected. Extra translated layers should be much cheaper in a GPU-composited browser, but that could not be measured in this environment — check on a real laptop before launch. If you want the old numbers back, set `drift={false}` on the `<Depth>` in `Hero.astro` / `Conditions.astro` (the texture stays, the drift stops) or delete the `.hero__orbit` element.
 
@@ -130,4 +137,4 @@ What the profiling found, and the rules that came out of it:
 
 ## Phase 2 (not built)
 
-Booking, doctor and condition pages, blog and admin are deliberately absent. The component-per-section structure and the single data module are the extension points.
+A real booking system (calendar, confirmations), doctor and condition pages, blog and admin are deliberately absent. The component-per-section structure and the single data module are the extension points.

@@ -65,7 +65,7 @@ import { principles } from '../data/site';
   }
   /* Blocks activate one after another: the rule draws, the numeral surfaces, then the text arrives */
   .item {
-    --d: calc(var(--i, 0) * 150ms);
+    --d: calc(var(--i, 0) * 80ms);
     position: relative;
     overflow: hidden;
     padding: 1.1rem 0 1.4rem;
@@ -102,16 +102,16 @@ import { principles } from '../data/site';
   .item__body {
     transition-delay: calc(var(--d) + 380ms);
   }
-  :global(.js) .item:not(.is-in)::before {
+  :global(.js) .item:not(.in-view)::before {
     transform: scaleX(0);
   }
-  :global(.js) .item:not(.is-in) .item__ghost {
+  :global(.js) .item:not(.in-view) .item__ghost {
     opacity: 0;
     transform: translate3d(0, 16px, 0);
   }
-  :global(.js) .item:not(.is-in) .item__n,
-  :global(.js) .item:not(.is-in) .item__title,
-  :global(.js) .item:not(.is-in) .item__body {
+  :global(.js) .item:not(.in-view) .item__n,
+  :global(.js) .item:not(.in-view) .item__title,
+  :global(.js) .item:not(.in-view) .item__body {
     opacity: 0;
     transform: translate3d(0, 14px, 0);
   }

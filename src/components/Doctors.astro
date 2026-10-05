@@ -142,6 +142,17 @@ import { doctorBookMessage, doctors, doctorsPhoto, whatsappLink } from '../data/
     gap: 1.1rem;
     align-content: start;
   }
+  /* beats the reveal group's `transition: none` so the hover lift is eased */
+  :global(.js) .doc.reveal[data-reveal='group'] {
+    transition: translate 250ms ease;
+  }
+  /* Desktop hover: the whole card lifts 2px (the individual `translate` property, so it never
+     fights the reveal's `transform`) */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .doc:hover {
+      translate: 0 -2px;
+    }
+  }
 
   /* The photograph is the hero of this section */
   .doc__photo {
@@ -281,21 +292,21 @@ import { doctorBookMessage, doctors, doctorsPhoto, whatsappLink } from '../data/
     transition-delay: calc(var(--d) + 110ms);
   }
 
-  /* Hidden states — only when JS is running; the observer adds .is-in once per entry */
-  :global(.js) .doc:not(.is-in) .doc__media {
+  /* Hidden states — only when JS is running; the observer adds .in-view once per entry */
+  :global(.js) .doc:not(.in-view) .doc__media {
     clip-path: inset(0 0 100% 0 round var(--r));
   }
-  :global(.js) .doc:not(.is-in) .doc__scale {
+  :global(.js) .doc:not(.in-view) .doc__scale {
     transform: scale(1.08);
   }
-  :global(.js) .doc:not(.is-in) .doc__photo::before {
+  :global(.js) .doc:not(.in-view) .doc__photo::before {
     opacity: 0;
   }
-  :global(.js) .doc:not(.is-in) .doc__id {
+  :global(.js) .doc:not(.in-view) .doc__id {
     opacity: 0;
     transform: translate3d(0, 8px, 0);
   }
-  :global(.js) .doc:not(.is-in) .doc__info {
+  :global(.js) .doc:not(.in-view) .doc__info {
     opacity: 0;
     transform: translate3d(0, 18px, 0);
   }

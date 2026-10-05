@@ -214,7 +214,7 @@ const pending = galleryPending.join(', ').replace(/, ([^,]*)$/, ' and $1');
       transform 600ms ease-out;
     transition-delay: calc(var(--i, 0) * 110ms + 380ms);
   }
-  :global(.js) .tile:not(.is-in) .tile__cap {
+  :global(.js) .tile:not(.in-view) .tile__cap {
     opacity: 0;
     transform: translate3d(-10px, 0, 0);
   }

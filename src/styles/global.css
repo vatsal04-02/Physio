@@ -29,7 +29,7 @@
   /* Motion tokens (design.md §30) */
   --dur-fast: 170ms;
   --dur-normal: 260ms;
-  --dur-reveal: 650ms;
+  --dur-reveal: 700ms;
   --dur-editorial: 850ms;
 
   --header-h: 76px;
@@ -45,7 +45,6 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: var(--header-h);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     font-family: var(--font-sans);
@@ -97,6 +96,9 @@
     outline: 3px solid var(--focus-ring);
     outline-offset: 3px;
     border-radius: 6px;
+    /* tabbing to something near the edge scrolls it clear of the fixed header (and of the mobile bar below) */
+    scroll-margin-top: calc(var(--header-h) + 8px);
+    scroll-margin-bottom: 24px;
   }
 
   .on-dark :focus-visible {
@@ -203,8 +205,10 @@ html {
 }
 .section.curve {
   padding-top: calc(var(--section-pad) + var(--curve));
-  /* land anchor links so the dome tucks under the header and the content sits where it did before */
-  scroll-margin-top: calc(var(--curve) * -0.75);
+}
+/* Anchor links (and the nav) land with the section clear of the fixed header, so headings never hide under it */
+section[id] {
+  scroll-margin-top: var(--header-h);
 }
 /* Ambient layers clip themselves, so sections never need overflow clipping. */
 .bg,
@@ -275,6 +279,9 @@ html {
 }
 /* Body copy on phones: 15–16px */
 @media (max-width: 767px) {
+  :focus-visible {
+    scroll-margin-bottom: 90px;
+  }
   body {
     font-size: clamp(0.9375rem, 0.88rem + 0.3vw, 1rem);
     /* room under the page for the fixed call / WhatsApp bar so it never covers the footer */
@@ -335,20 +342,20 @@ html {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
-    transform var(--dur-fast) var(--ease-soft),
-    background-color var(--dur-normal) ease,
-    border-color var(--dur-normal) ease,
-    color var(--dur-normal) ease,
-    box-shadow var(--dur-normal) ease;
+    transform 200ms ease,
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease;
 }
 .btn .icon-arrow {
-  transition: transform var(--dur-normal) var(--ease-soft);
+  transition: transform 200ms ease;
 }
 .btn:hover {
   transform: translate3d(0, -1px, 0);
 }
 .btn:hover .icon-arrow {
-  transform: translateX(3px);
+  transform: translateX(4px);
 }
 .btn:active {
   transform: translate3d(0, 0, 0) scale(0.99);
@@ -396,13 +403,28 @@ html {
 /* White on CTA orange is 3.55:1 — it passes WCAG AA only as "large text", so primary labels are
    bold and >= 14pt (18.7px). Keep this size if you retheme the button. */
 .btn-primary {
+  position: relative;
   --btn-bg: var(--color-cta);
   --btn-fg: #fff;
   font-size: 1.17rem;
   box-shadow: 0 10px 22px -10px rgb(234 88 12 / 0.6);
 }
+/* "Brighten on hover" is a white veil whose opacity fades in (opacity only; no colour animation) */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: rgb(255 255 255 / 0.1);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.btn-primary:hover::after,
+.btn-primary:focus-visible::after {
+  opacity: 1;
+}
 .btn-primary:hover {
-  --btn-bg: #d94e09;
   box-shadow: 0 20px 34px -10px rgb(234 88 12 / 0.75);
 }
 .btn-secondary {
@@ -645,7 +667,7 @@ html {
   }
 }
 .rise {
-  animation: rise 700ms ease-out both;
+  animation: rise 700ms ease both;
   animation-delay: var(--d, 0ms);
 }
 
@@ -656,9 +678,9 @@ html {
   opacity: 0;
   transform: translate3d(var(--rx, 0px), var(--ry, 24px), 0) scale(var(--rs, 1));
   transition:
-    opacity var(--dur-reveal) ease-out,
-    transform var(--dur-reveal) ease-out;
-  transition-delay: calc(var(--i, 0) * var(--stagger, 70ms));
+    opacity var(--dur-reveal) ease,
+    transform var(--dur-reveal) ease;
+  transition-delay: calc(var(--i, 0) * var(--stagger, 80ms));
 }
 /* Sideways entrances only where there is spare room beside the content (sections are not clipped, so a
    28px shove on a phone would widen the page). Narrower screens use the default upward reveal. */
@@ -683,7 +705,7 @@ html {
 .js .reveal-scale {
   --rs: 1.01;
 }
-.js .reveal.is-in {
+.js .reveal.in-view {
   opacity: 1;
   transform: none;
 }
@@ -767,5 +789,17 @@ html {
   .js .reveal[data-reveal] {
     opacity: 1;
     transform: none;
+  }
+
+  /* Hover and press feedback keeps its colour changes but stops moving */
+  .btn:hover,
+  .btn:active,
+  .btn:hover .icon-arrow,
+  .card:hover,
+  .card:hover .card__icon,
+  .card:hover .card__arrow,
+  .doc:hover {
+    transform: none !important;
+    translate: none !important;
   }
 }

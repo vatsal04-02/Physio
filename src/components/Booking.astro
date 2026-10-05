@@ -63,7 +63,6 @@ const slots = ['Morning 9 AM–1 PM', 'Evening 4–8 PM'];
                 type="tel"
                 inputmode="numeric"
                 autocomplete="tel-national"
-                maxlength="10"
                 placeholder="10-digit mobile number"
                 required
                 aria-describedby="book-phone-err"
@@ -324,8 +323,11 @@ const slots = ['Morning 9 AM–1 PM', 'Evening 4–8 PM'];
     cursor: pointer;
   }
   .chip > span {
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    column-gap: 0.3em;
     min-height: 48px;
     padding: 0.4rem 0.7rem;
     border: 1.5px solid rgb(12 59 54 / 0.26);

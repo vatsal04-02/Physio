@@ -15,15 +15,15 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     <div class="hero__copy">
       <p class="eyebrow rise" style="--d:0ms">Local Physiotherapy • Gomti Nagar</p>
 
-      <h1 id="hero-title" class="display hero__title rise" style="--d:90ms">
+      <h1 id="hero-title" class="display hero__title rise" style="--d:120ms">
         Physiotherapy that puts an <em class="accent-italic">expiry date</em> on your pain.
       </h1>
 
-      <p class="lead hero__lead rise" style="--d:180ms">
+      <p class="lead hero__lead rise" style="--d:240ms">
         Two MPT doctors. One clear plan. Zero guesswork — in Gomti Nagar, Lucknow.
       </p>
 
-      <div id="hero-cta" class="hero__cta rise" style="--d:270ms" data-hero-cta>
+      <div id="hero-cta" class="hero__cta rise" style="--d:360ms" data-hero-cta>
         <a class="btn btn-primary btn-glow" href={links.whatsapp} target="_blank" rel="noopener noreferrer" data-track="whatsapp_click" data-location="hero">
           <Icon name="message-circle" size={20} />
           WhatsApp the Clinic
@@ -35,7 +35,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
         </a>
       </div>
 
-      <div class="badges rise" style="--d:360ms">
+      <div class="badges rise" style="--d:480ms">
         <div class="rating glass">
           <span class="stars" aria-hidden="true">
             {Array.from({ length: 5 }).map(() => <Icon name="star" size={15} class="star" />)}
@@ -68,7 +68,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
       <span class="hero__marks hero__marks--b drift" aria-hidden="true"></span>
       <span class="hero__under drift" aria-hidden="true"></span>
       <span class="hero__outline" aria-hidden="true"></span>
-      <figure class="frame">
+      <figure class="frame rise" style="--d:600ms">
         <div class="frame__media" data-parallax>
           <div class="frame__scale">
             <!-- Until a real hero photo (src/assets/clinic/hero.*) exists, this designed panel fills the frame. -->
@@ -102,7 +102,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
         </figcaption>
       </figure>
 
-      <div class="hours-card glass drift" style="--d:720ms">
+      <div class="hours-card glass drift" style="--d:760ms">
         <p class="hours-card__label"><Icon name="clock" size={13} /> Clinic Hours</p>
         <p class="hours-card__main">{hours.days} · {hours.sessions[0]}</p>
         <p class="hours-card__sub">{hours.sessions[1]} · {hours.closed}</p>
@@ -395,7 +395,6 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     border-radius: 24px;
     background: var(--color-pine);
     box-shadow: 0 30px 50px -30px rgb(12 59 54 / 0.55);
-    animation: appear 800ms ease-out 150ms both;
     isolation: isolate;
   }
   /* Parallax layer: taller than the frame so it can slide a little without exposing an edge */
@@ -408,15 +407,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
   .frame__scale {
     position: absolute;
     inset: 0;
-    animation: settle-img 1200ms ease-out 150ms both;
-  }
-  @keyframes appear {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    animation: settle-img 1200ms ease-out 600ms both;
   }
   @keyframes settle-img {
     from {

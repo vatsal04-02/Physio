@@ -122,9 +122,9 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
     transition:
-      transform var(--dur-normal) var(--ease-soft),
-      border-color var(--dur-normal) ease,
-      box-shadow var(--dur-normal) ease;
+      transform 250ms ease,
+      border-color 250ms ease,
+      box-shadow 250ms ease;
   }
   /* Hover (all inside ~260ms): a soft teal highlight travels once across the card, the icon tips a few
      degrees and the arrow slides out. The highlight snaps back off-card, so it only ever moves forward. */
@@ -138,16 +138,16 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
   }
   .card:hover,
   .card:focus-visible {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     border-color: rgb(15 118 110 / 0.55);
     box-shadow:
       0 0 0 1px rgb(15 118 110 / 0.16),
-      0 16px 26px -20px rgb(12 59 54 / 0.45);
+      0 18px 28px -18px rgb(12 59 54 / 0.4);
   }
   .card:hover::before,
   .card:focus-visible::before {
     transform: translate3d(110%, 0, 0);
-    transition: transform var(--dur-normal) ease-out;
+    transition: transform 250ms ease-out;
   }
   .card:active {
     transform: translateY(-1px);
@@ -167,9 +167,9 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
     background: rgb(15 118 110 / 0.1);
     color: var(--color-teal);
     transition:
-      transform var(--dur-normal) var(--ease-soft),
-      background-color var(--dur-normal) ease,
-      color var(--dur-normal) ease;
+      transform 250ms ease,
+      background-color 250ms ease,
+      color 250ms ease;
   }
   .card:hover .card__icon,
   .card:focus-visible .card__icon {
@@ -180,8 +180,8 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
   .card :global(.card__arrow) {
     color: rgb(12 59 54 / 0.4);
     transition:
-      transform var(--dur-normal) var(--ease-soft),
-      color var(--dur-normal) ease;
+      transform 250ms ease,
+      color 250ms ease;
   }
   .card:hover :global(.card__arrow),
   .card:focus-visible :global(.card__arrow) {

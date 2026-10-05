@@ -69,7 +69,7 @@ const visible = Math.min(Math.max(count, 1), 3);
         <div class="slider" style={`--k:${visible}`} data-slider role="region" aria-roledescription="carousel" aria-label="Patient reviews" aria-live="off">
           <div class="slider__track" data-slider-track tabindex="0">
             {reviews.map((r, i) => (
-              <figure class="card glass-dark" role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${count}`}>
+              <figure class="card glass-dark" role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${count}`} style={`--ci:${i}`}>
                 <span class="card__mark" aria-hidden="true">“</span>
                 <blockquote>
                   <p class="card__text">{r.quote}</p>
@@ -260,7 +260,7 @@ const visible = Math.min(Math.max(count, 1), 3);
     transition:
       opacity 900ms ease-out,
       transform 1100ms var(--ease-soft);
-    transition-delay: 300ms;
+    transition-delay: calc(300ms + var(--ci, 0) * 80ms);
   }
   .feature,
   .slider {
@@ -268,11 +268,11 @@ const visible = Math.min(Math.max(count, 1), 3);
   }
   .quote blockquote,
   .card blockquote {
-    transition-delay: 460ms;
+    transition-delay: calc(460ms + var(--ci, 0) * 80ms);
   }
   .quote__cite,
   .card figcaption {
-    transition-delay: 580ms;
+    transition-delay: calc(580ms + var(--ci, 0) * 80ms);
   }
   .feature__link {
     transition-delay: 640ms;
@@ -299,34 +299,34 @@ const visible = Math.min(Math.max(count, 1), 3);
     transition-delay: 1040ms;
   }
 
-  :global(.js) .seq:not(.is-in) .top__copy {
+  :global(.js) .seq:not(.in-view) .top__copy {
     opacity: 0;
     transform: translate3d(0, 16px, 0);
   }
-  :global(.js) .seq:not(.is-in) .feature,
-  :global(.js) .seq:not(.is-in) .slider {
+  :global(.js) .seq:not(.in-view) .feature,
+  :global(.js) .seq:not(.in-view) .slider {
     opacity: 0;
     transform: translate3d(0, 22px, 0);
   }
-  :global(.js) .seq:not(.is-in) .feature__mark,
-  :global(.js) .seq:not(.is-in) .card__mark {
+  :global(.js) .seq:not(.in-view) .feature__mark,
+  :global(.js) .seq:not(.in-view) .card__mark {
     opacity: 0;
     transform: scale(0.82);
   }
-  :global(.js) .seq:not(.is-in) .quote blockquote,
-  :global(.js) .seq:not(.is-in) .quote__cite,
-  :global(.js) .seq:not(.is-in) .feature__link,
-  :global(.js) .seq:not(.is-in) .card blockquote,
-  :global(.js) .seq:not(.is-in) .card figcaption {
+  :global(.js) .seq:not(.in-view) .quote blockquote,
+  :global(.js) .seq:not(.in-view) .quote__cite,
+  :global(.js) .seq:not(.in-view) .feature__link,
+  :global(.js) .seq:not(.in-view) .card blockquote,
+  :global(.js) .seq:not(.in-view) .card figcaption {
     opacity: 0;
     transform: translate3d(0, 12px, 0);
   }
-  :global(.js) .seq:not(.is-in) .score__num,
-  :global(.js) .seq:not(.is-in) .score__count {
+  :global(.js) .seq:not(.in-view) .score__num,
+  :global(.js) .seq:not(.in-view) .score__count {
     opacity: 0;
     transform: translate3d(0, 10px, 0);
   }
-  :global(.js) .seq:not(.is-in) .score__stars :global(.star) {
+  :global(.js) .seq:not(.in-view) .score__stars :global(.star) {
     opacity: 0;
     transform: scale(0.8);
   }

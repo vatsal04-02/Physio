@@ -87,18 +87,15 @@ export function initBooking(track: Track): void {
   renderDays();
   document.addEventListener('visibilitychange', () => !document.hidden && renderDays()); // tab left open overnight
 
-  /* ---- Phone: digits only, tolerant of pasted "+91 98386 81421" ---- */
+  /* ---- Phone: digits only (max 10), tolerant of a pasted "+91 98386 81421".
+     Pasting is left alone (blocking it is bad for users and flagged by Lighthouse); whatever lands in the
+     field is cleaned up straight afterwards, which is also why the input has no maxlength attribute. ---- */
   phone.addEventListener('input', () => {
-    const digits = phone.value.replace(/\D/g, '');
-    if (digits !== phone.value) phone.value = digits;
-  });
-  phone.addEventListener('paste', (event) => {
-    let digits = (event.clipboardData?.getData('text') ?? '').replace(/\D/g, '');
+    let digits = phone.value.replace(/\D/g, '');
     if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
     else if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
-    event.preventDefault();
-    phone.value = digits.slice(0, 10);
-    phone.dispatchEvent(new Event('input', { bubbles: true }));
+    digits = digits.slice(0, 10);
+    if (digits !== phone.value) phone.value = digits;
   });
 
   /* ---- Validation with inline errors ---- */

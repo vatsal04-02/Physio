@@ -58,7 +58,7 @@ import { clinic } from '../data/site';
     transform-origin: center;
     transition: transform 1300ms var(--ease-inout);
   }
-  :global(.js) .trust__rule:not(.is-in) {
+  :global(.js) .trust__rule:not(.in-view) {
     transform: scaleX(0);
   }
   .trust__grid {
@@ -92,11 +92,11 @@ import { clinic } from '../data/site';
   .stat__label {
     transition-delay: calc(var(--i, 0) * 90ms + 200ms);
   }
-  :global(.js) .stat:not(.is-in) .stat__value {
+  :global(.js) .stat:not(.in-view) .stat__value {
     opacity: 0;
     transform: translate3d(0, 22px, 0);
   }
-  :global(.js) .stat:not(.is-in) .stat__label {
+  :global(.js) .stat:not(.in-view) .stat__label {
     opacity: 0;
   }
   .stat__value {

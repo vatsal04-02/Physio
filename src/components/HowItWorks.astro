@@ -78,7 +78,7 @@ import { steps } from '../data/site';
     transition: transform calc(var(--t) * 0.5) var(--ease-inout);
     transition-delay: calc(var(--i) * var(--t) + var(--t) * 0.5);
   }
-  .timeline.is-in .step__fill {
+  .timeline.in-view .step__fill {
     transform: scaleY(1);
   }
   :global(html:not(.js)) .step__fill {
@@ -120,7 +120,7 @@ import { steps } from '../data/site';
     opacity: 0;
     pointer-events: none;
   }
-  .timeline.is-in .step__node {
+  .timeline.in-view .step__node {
     background: var(--color-teal);
     border-color: var(--color-teal);
     color: #fff;
@@ -160,9 +160,9 @@ import { steps } from '../data/site';
   }
 
   /* ---- Sequence: only runs once the timeline enters the viewport ---- */
-  .timeline:not(.is-in) .step__node,
-  .timeline:not(.is-in) .step__node::after,
-  .timeline:not(.is-in) .step__card {
+  .timeline:not(.in-view) .step__node,
+  .timeline:not(.in-view) .step__node::after,
+  .timeline:not(.in-view) .step__card {
     animation-play-state: paused;
   }
   .step__node,
@@ -255,7 +255,7 @@ import { steps } from '../data/site';
       transform: scaleX(0);
       transform-origin: left;
     }
-    .timeline.is-in .step__fill {
+    .timeline.in-view .step__fill {
       transform: scaleX(1);
     }
     :global(html:not(.js)) .step__fill {

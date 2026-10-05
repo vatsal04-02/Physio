@@ -55,7 +55,7 @@ let scrollTick = false;
 function updateScroll(): void {
   scrollTick = false;
   const y = window.scrollY;
-  header?.classList.toggle('is-scrolled', y > 24);
+  header?.classList.toggle('is-scrolled', y > 40);
   // Hero photo drifts down slower than the page (capped so the oversized layer never shows an edge)
   if (parallax && !reduceMotion && y < window.innerHeight * 1.3) {
     parallax.style.setProperty('--py', `${Math.min(y * 0.06, 28).toFixed(1)}px`);
@@ -166,7 +166,7 @@ window.matchMedia('(min-width: 1100px)').addEventListener('change', (e) => {
 
 const revealEls = qsa('.reveal');
 if (reduceMotion || !('IntersectionObserver' in window)) {
-  revealEls.forEach((el) => el.classList.add('is-in'));
+  revealEls.forEach((el) => el.classList.add('in-view'));
 } else {
   // A container can wait for a child to scroll into view (data-reveal-on="<selector>") so a
   // multi-step sequence starts when its main element is visible, not when its top edge is.
@@ -175,7 +175,7 @@ if (reduceMotion || !('IntersectionObserver' in window)) {
     (entries, obs) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        revealTarget.get(entry.target)?.classList.add('is-in');
+        revealTarget.get(entry.target)?.classList.add('in-view');
         obs.unobserve(entry.target);
       }
     },
@@ -200,41 +200,41 @@ if ('IntersectionObserver' in window) {
   qsa('[data-ambient]').forEach((el) => ambientObserver.observe(el));
 }
 
-/* ---------- Count-up numerals ---------- */
+/* ---------- Count-up numerals: 0 → value over 1.2s (ease-out) once, when the stats band comes into view ---------- */
 
 if (!reduceMotion && 'IntersectionObserver' in window) {
   const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-  qsa('.num [data-count], .num[data-count]').forEach((el) => {
-    // Read live: google-reviews.ts may replace data-count with the real figure before or during the count
-    const target = () => parseFloat(el.dataset.count ?? '');
+  const counters = qsa('.num [data-count], .num[data-count]');
+  const render = (el: HTMLElement, v: number) => {
     const decimals = Number(el.dataset.decimals ?? 0);
-    if (Number.isNaN(target())) return;
-    const render = (v: number) =>
-      (el.textContent = v.toLocaleString('en-IN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }));
+    el.textContent = v.toLocaleString('en-IN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  };
+  // Read live: google-reviews.ts may replace data-count with the real figure before or during the count
+  const target = (el: HTMLElement) => parseFloat(el.dataset.count ?? '');
+  const live = counters.filter((el) => !Number.isNaN(target(el)));
+  live.forEach((el) => {
     el.dataset.counting = '1';
-    render(0);
-
-    const io = new IntersectionObserver(
+    render(el, 0);
+  });
+  const band = live[0]?.closest('.trust');
+  if (band) {
+    new IntersectionObserver(
       ([entry], obs) => {
         if (!entry?.isIntersecting) return;
         obs.disconnect();
         const start = performance.now();
-        const duration = 1300;
+        const duration = 1200;
         const frame = (now: number) => {
           const t = Math.min(1, (now - start) / duration);
-          render(target() * easeOut(t));
+          live.forEach((el) => render(el, target(el) * easeOut(t)));
           if (t < 1) requestAnimationFrame(frame);
-          else {
-            render(target());
-            el.dataset.counted = '1';
-          }
+          else live.forEach((el) => ((el.dataset.counted = '1'), render(el, target(el))));
         };
         requestAnimationFrame(frame);
       },
-      { threshold: 0.6 },
-    );
-    io.observe(el);
-  });
+      { threshold: 0.4 },
+    ).observe(band);
+  }
 }
 
 /* ---------- Sticky WhatsApp CTA: appears once the hero CTA scrolls away ---------- */
@@ -283,7 +283,9 @@ faqButtons.forEach((btn) => {
   });
 });
 
-/* ---------- Review slider: dots, arrows, 5s autoplay (only exists once 2+ approved reviews do) ---------- */
+/* ---------- Review slider: dots, arrows, 6s autoplay that pauses on hover/touch ---------- */
+
+const AUTOPLAY_MS = 6000;
 
 qsa('[data-slider]').forEach((slider) => {
   const viewport = qs('[data-slider-track]', slider);
@@ -299,6 +301,7 @@ qsa('[data-slider]').forEach((slider) => {
   let timer = 0;
   let userPaused = reduceMotion; // never auto-advance for people who asked for less motion
   let hovering = false;
+  let touching = false;
   let focused = false;
   let onScreen = true;
 
@@ -314,8 +317,8 @@ qsa('[data-slider]').forEach((slider) => {
   };
   const schedule = () => {
     window.clearInterval(timer);
-    if (pages > 1 && !userPaused && !hovering && !focused && onScreen && !document.hidden) {
-      timer = window.setInterval(() => goTo(index + 1), 5000);
+    if (pages > 1 && !userPaused && !hovering && !touching && !focused && onScreen && !document.hidden) {
+      timer = window.setInterval(() => goTo(index + 1), AUTOPLAY_MS);
     }
   };
   const goTo = (i: number) => {
@@ -399,6 +402,10 @@ qsa('[data-slider]').forEach((slider) => {
   // Pause while the pointer is over it, while anything inside has focus, off screen, or in a background tab
   slider.addEventListener('pointerenter', () => ((hovering = true), schedule()));
   slider.addEventListener('pointerleave', () => ((hovering = false), schedule()));
+  // A finger on the slider (swiping or just resting) holds it too; the next advance is a full interval after it lifts
+  slider.addEventListener('touchstart', () => ((touching = true), schedule()), { passive: true });
+  slider.addEventListener('touchend', () => ((touching = false), schedule()), { passive: true });
+  slider.addEventListener('touchcancel', () => ((touching = false), schedule()), { passive: true });
   slider.addEventListener('focusin', () => ((focused = true), schedule()));
   slider.addEventListener('focusout', () => ((focused = false), schedule()));
   document.addEventListener('visibilitychange', schedule);

@@ -108,6 +108,7 @@ function buildCard(tpl: HTMLTemplateElement, r: PlacesReview, i: number, total: 
   const card = tpl.content.firstElementChild?.cloneNode(true) as HTMLElement | undefined;
   if (!card) return null;
   card.setAttribute('aria-label', `${i + 1} of ${total}`);
+  card.style.setProperty('--ci', String(i)); // 80ms stagger between cards
   card.querySelector('[data-text]')!.textContent = text;
 
   const author = card.querySelector<HTMLElement>('[data-author]')!;
