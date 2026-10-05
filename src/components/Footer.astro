@@ -83,7 +83,9 @@ const year = new Date().getFullYear();
     list-style: none;
   }
   .links a {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     padding: 0.35rem 0;
     font-size: 0.9375rem;
     font-weight: 600;
@@ -101,6 +103,9 @@ const year = new Date().getFullYear();
     gap: 1rem;
   }
   .phone {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     font-weight: 700;
     color: var(--color-ivory);
     text-decoration: none;
@@ -133,10 +138,10 @@ const year = new Date().getFullYear();
       justify-content: flex-end;
     }
   }
-  /* Leave room for the fixed mobile CTA bar */
-  @media (max-width: 899px) {
+  /* The page has 76px of bottom padding for the fixed mobile bar; the footer's colour is painted into it */
+  @media (max-width: 767px) {
     .footer {
-      padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 calc(76px + env(safe-area-inset-bottom, 0px)) 0 0 var(--surface);
     }
   }
 </style>

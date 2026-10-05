@@ -484,6 +484,16 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     color: color-mix(in srgb, var(--color-ink) 72%, transparent);
   }
 
+  /* Phones: trust pills at 13px and wrapping, panel padded 20px */
+  @media (max-width: 639px) {
+    .rating,
+    .status {
+      font-size: 0.8125rem;
+    }
+    .panel__inner {
+      padding-inline: 20px;
+    }
+  }
   @media (min-width: 640px) {
     .panel__inner {
       padding: 1.3rem 1.4rem 6.2rem;

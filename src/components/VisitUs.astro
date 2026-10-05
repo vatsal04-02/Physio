@@ -119,6 +119,9 @@ const { address } = clinic;
     font-weight: 700;
   }
   .addr__phone a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     color: var(--color-ivory);
     text-decoration: underline;
     text-underline-offset: 4px;
@@ -148,6 +151,7 @@ const { address } = clinic;
     justify-content: space-between;
     gap: 1rem;
     padding: 0.5rem 0;
+    font-size: 0.875rem; /* 14px: day | time stays two columns on a phone */
     border-top: 1px solid rgb(250 248 242 / 0.1);
   }
   .hours dt {

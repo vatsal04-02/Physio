@@ -52,6 +52,15 @@ const half = Array.from({ length: 4 }).flatMap(() => ticker);
     color: var(--color-teal);
   }
 
+  @media (max-width: 767px) {
+    .ticker__track li {
+      font-size: 15px;
+    }
+    .ticker__track li::after {
+      margin-inline: 1rem;
+      font-size: 0.8125rem;
+    }
+  }
   @media (min-width: 768px) {
     .ticker__track li {
       font-size: 1.625rem;

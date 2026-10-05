@@ -49,34 +49,39 @@ import { clinic, hours, links, nav } from '../data/site';
 
 <div id="mobile-menu" class="mobile-menu on-dark" data-menu inert aria-hidden="true">
   <div class="mobile-menu__panel glass-dark" role="dialog" aria-modal="true" aria-label="Site menu">
-    <nav aria-label="Mobile">
-      <ul>
-        {
-          nav.map((item, i) => (
-            <li style={`--i:${i}`}>
-              <a href={item.href} data-menu-link>
-                <span class="num">{String(i + 1).padStart(2, '0')}</span>
-                <span class="label">{item.label}</span>
-                <Icon name="arrow-up-right" size={20} class="go" />
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-    <div class="mobile-menu__foot" style={`--i:${nav.length}`}>
-      <p class="hours">
-        <Icon name="clock" size={16} />
-        {hours.days} · {hours.sessions.join(' · ')} · {hours.closed}
-      </p>
-      <div class="buttons">
-        <a class="btn btn-primary btn-block" href={links.whatsapp} target="_blank" rel="noopener noreferrer" data-track="whatsapp_click" data-location="menu">
-          <Icon name="message-circle" size={20} /> WhatsApp the Clinic
-        </a>
+    <!-- One scrollable column: the links, the hours and the call button -->
+    <div class="mobile-menu__scroll">
+      <nav aria-label="Mobile">
+        <ul>
+          {
+            nav.map((item, i) => (
+              <li style={`--i:${i}`}>
+                <a href={item.href} data-menu-link>
+                  <span class="num">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="label">{item.label}</span>
+                  <Icon name="arrow-up-right" size={20} class="go" />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <div class="mobile-menu__extra" style={`--i:${nav.length}`}>
+        <p class="hours">
+          <Icon name="clock" size={16} />
+          {hours.days} · {hours.sessions.join(' · ')} · {hours.closed}
+        </p>
         <a class="btn btn-glass btn-block" href={links.tel} data-track="phone_click" data-location="menu">
           <Icon name="phone" size={18} /> Call the Clinic
         </a>
       </div>
+    </div>
+
+    <!-- Pinned: always visible, however long the list is or however short the screen -->
+    <div class="mobile-menu__foot">
+      <a class="btn btn-primary btn-block" href={links.whatsapp} target="_blank" rel="noopener noreferrer" data-track="whatsapp_click" data-location="menu">
+        <Icon name="message-circle" size={20} /> WhatsApp the Clinic
+      </a>
     </div>
   </div>
 </div>
@@ -135,6 +140,7 @@ import { clinic, hours, links, nav } from '../data/site';
   .brand {
     display: inline-flex;
     align-items: center;
+    min-height: 44px;
     gap: 0.7rem;
     color: var(--color-ink);
     text-decoration: none;
@@ -229,8 +235,8 @@ import { clinic, hours, links, nav } from '../data/site';
   .icon-btn {
     display: grid;
     place-items: center;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 11px;
     border: 1px solid rgb(12 59 54 / 0.12);
     background: rgb(255 255 255 / 0.55);
@@ -350,23 +356,32 @@ import { clinic, hours, links, nav } from '../data/site';
     opacity: 1;
     transition-delay: 0s;
   }
+  .mobile-menu {
+    grid-template-rows: minmax(0, 1fr);
+  }
   .mobile-menu__panel {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 1.5rem;
+    min-height: 0;
     max-width: 560px;
     width: 100%;
     margin-inline: auto;
-    padding: 1.25rem 1.25rem 1.5rem;
     border-radius: 24px;
     background: linear-gradient(160deg, rgb(12 59 54 / 0.94), rgb(10 48 44 / 0.9));
-    overflow-y: auto;
+    overflow: hidden;
     transform: translate3d(0, -10px, 0) scale(0.985);
     transition: transform var(--dur-normal) var(--ease-soft);
   }
   .mobile-menu[data-open='true'] .mobile-menu__panel {
     transform: none;
+  }
+  .mobile-menu__scroll {
+    flex: 1;
+    min-height: 0;
+    padding: 0.5rem 1.25rem 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
   .mobile-menu ul {
     margin: 0;
@@ -374,6 +389,7 @@ import { clinic, hours, links, nav } from '../data/site';
     list-style: none;
   }
   .mobile-menu li,
+  .mobile-menu__extra,
   .mobile-menu__foot {
     opacity: 0;
     transform: translate3d(0, 10px, 0);
@@ -382,16 +398,19 @@ import { clinic, hours, links, nav } from '../data/site';
       transform var(--dur-normal) var(--ease-soft);
   }
   .mobile-menu[data-open='true'] li,
+  .mobile-menu[data-open='true'] .mobile-menu__extra,
   .mobile-menu[data-open='true'] .mobile-menu__foot {
     opacity: 1;
     transform: none;
     transition-delay: calc(60ms + var(--i, 0) * 35ms);
   }
+  /* 20px links on a 1.4 line with 12px above and below: 52px rows, comfortably over the 44px touch minimum */
   .mobile-menu li a {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.8rem 0.25rem;
+    min-height: 44px;
+    padding: 12px 0.25rem;
     border-bottom: 1px solid rgb(250 248 242 / 0.1);
     color: var(--color-ivory);
     text-decoration: none;
@@ -409,7 +428,7 @@ import { clinic, hours, links, nav } from '../data/site';
   }
   .mobile-menu .label {
     flex: 1;
-    font: 400 1.75rem/1.2 var(--font-serif);
+    font: 400 1.25rem/1.4 var(--font-serif);
   }
   .mobile-menu .go {
     opacity: 0.5;
@@ -422,11 +441,16 @@ import { clinic, hours, links, nav } from '../data/site';
     opacity: 1;
     transform: translate(3px, -2px);
   }
+  .mobile-menu__extra {
+    display: grid;
+    gap: 0.9rem;
+    padding-top: 0.75rem;
+  }
   .mobile-menu .hours {
     display: flex;
     gap: 0.5rem;
     align-items: flex-start;
-    margin-bottom: 1rem;
+    margin: 0;
     font-size: 0.8125rem;
     line-height: 1.5;
     color: rgb(250 248 242 / 0.7);
@@ -434,22 +458,16 @@ import { clinic, hours, links, nav } from '../data/site';
   .mobile-menu .hours :global(.icon) {
     margin-top: 2px;
   }
-  .mobile-menu .buttons {
-    display: grid;
-    gap: 0.75rem;
+  .mobile-menu__foot {
+    flex: none;
+    padding: 0.85rem 1.25rem calc(env(safe-area-inset-bottom, 0px) + 0.85rem);
+    border-top: 1px solid rgb(250 248 242 / 0.12);
+    background: rgb(10 48 44 / 0.96);
   }
 
   @media (min-width: 1100px) {
     .mobile-menu {
       display: none;
-    }
-  }
-  @media (max-height: 620px) {
-    .mobile-menu .label {
-      font-size: 1.4rem;
-    }
-    .mobile-menu li a {
-      padding-block: 0.5rem;
     }
   }
 </style>

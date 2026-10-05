@@ -3,16 +3,17 @@ import Icon from './Icon.astro';
 import { links } from '../data/site';
 ---
 
-<!-- Mobile: fixed bottom bar. Desktop: floating round button (design.md §22). Appears once the hero CTA has scrolled away. -->
+<!-- ≤768px: a fixed bottom bar (Call + WhatsApp the Clinic) and no floating bubble.
+     ≥769px: the floating round button. Appears once the hero CTA has scrolled away (design.md §22). -->
 <div class="sticky-cta" data-sticky-cta>
-  <div class="bar glass">
+  <div class="bar">
     <a class="call btn btn-outline" href={links.tel} data-track="phone_click" data-location="sticky">
       <Icon name="phone" size={18} />
       Call
     </a>
     <a class="wa btn btn-primary" href={links.whatsapp} target="_blank" rel="noopener noreferrer" data-track="whatsapp_click" data-location="sticky">
       <Icon name="message-circle" size={19} />
-      WhatsApp
+      WhatsApp the Clinic
     </a>
   </div>
 
@@ -27,7 +28,7 @@ import { links } from '../data/site';
     position: fixed;
     z-index: 40;
     inset: auto 0 0 0;
-    padding: 0 12px calc(env(safe-area-inset-bottom, 0px) + 12px);
+    padding: 0;
     pointer-events: none;
     transition:
       transform 420ms var(--ease-soft),
@@ -42,25 +43,39 @@ import { links } from '../data/site';
     pointer-events: auto;
   }
 
+  /* ---- Mobile bar: 60px of buttons + the home-indicator inset, flush with the bottom edge ---- */
   .bar {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-    padding: 0.5rem;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgb(250 248 242 / 0.88), rgb(250 248 242 / 0.7));
-    max-width: 560px;
-    margin-inline: auto;
+    grid-template-columns: 1fr 1fr; /* two equal buttons */
+    gap: 8px;
+    width: 100%;
+    height: calc(60px + env(safe-area-inset-bottom, 0px));
+    padding: 4px 12px env(safe-area-inset-bottom, 0px);
+    border-top: 1px solid rgb(12 59 54 / 0.14);
+    background: rgb(250 248 242 / 0.97);
+    box-shadow: 0 -10px 26px -18px rgb(12 59 54 / 0.45);
   }
   .bar .btn {
     width: 100%;
     min-width: 0;
+    height: 52px;
     min-height: 52px;
     padding-inline: 0.5rem;
     gap: 0.45rem;
   }
   .call {
     background: rgb(255 255 255 / 0.6);
+  }
+  /* The label stays at the 18.7px the contrast rule needs, so "WhatsApp the Clinic" wraps to two balanced lines
+     inside its half of the bar instead of shrinking */
+  .wa {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  .wa :global(.icon) {
+    display: none;
   }
   @media (max-width: 349px) {
     .bar .btn :global(.icon) {
@@ -72,10 +87,9 @@ import { links } from '../data/site';
     display: none;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 769px) {
     .sticky-cta {
       inset: auto 28px 28px auto;
-      padding: 0;
     }
     :global(.js) .sticky-cta:not(.is-visible) {
       transform: translate3d(0, 24px, 0) scale(0.9);

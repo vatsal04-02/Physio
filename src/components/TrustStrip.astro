@@ -130,6 +130,19 @@ import { clinic } from '../data/site';
     color: rgb(250 248 242 / 0.66);
   }
 
+  /* Phones: 2 x 2, numerals 28px, labels 11px uppercase */
+  @media (max-width: 767px) {
+    .num {
+      font-size: 28px;
+    }
+    .num--place {
+      font-size: 22px;
+    }
+    .stat__value {
+      min-height: 2.25rem;
+    }
+  }
+
   @media (min-width: 768px) {
     .trust__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
