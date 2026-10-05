@@ -2,7 +2,7 @@
 import ClinicImage from './ClinicImage.astro';
 import Icon from './Icon.astro';
 import { getPhoto } from '../lib/photos';
-import { doctorMessage, doctors, doctorsPhoto, whatsappLink } from '../data/site';
+import { doctorBookMessage, doctors, doctorsPhoto, whatsappLink } from '../data/site';
 ---
 
 <section id="doctors" class="section curve surface-ivory" data-section data-ambient aria-labelledby="doctors-title">
@@ -66,15 +66,15 @@ import { doctorMessage, doctors, doctorsPhoto, whatsappLink } from '../data/site
               </dl>
               <a
                 class="btn btn-primary ask"
-                href={whatsappLink(doctorMessage(d.name))}
+                href={whatsappLink(doctorBookMessage(d.name))}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Ask ${d.name} on WhatsApp`}
+                aria-label={`Book with ${d.name} on WhatsApp`}
                 data-track="whatsapp_click"
                 data-location={`doctor-${i + 1}`}
               >
                 <Icon name="message-circle" size={19} />
-                Ask {d.short}
+                Book with {d.short}
                 <Icon name="arrow-right" size={18} class="icon-arrow" />
               </a>
             </div>

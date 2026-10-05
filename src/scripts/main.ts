@@ -81,7 +81,7 @@ const navList = qs('[data-nav-list]');
 const indicator = qs('[data-nav-indicator]');
 const navLinks = qsa<HTMLAnchorElement>('[data-nav-link]');
 // Sections without their own nav entry highlight their closest parent topic.
-const navAlias: Record<string, string | null> = { top: null, why: 'conditions', clinic: 'doctors', contact: 'pricing' };
+const navAlias: Record<string, string | null> = { top: null, why: 'conditions', clinic: 'doctors', contact: 'reviews' };
 
 function placeIndicator(link: HTMLElement | null): void {
   if (!indicator) return;
@@ -507,10 +507,12 @@ if (statusEl && statusText && statusEl.dataset.schedule) {
     } else if (upcoming) {
       text = `Closed now · opens ${clock(upcoming[0])}`;
     } else {
-      // after the last session, or a closed day: find the next open day
+      // after the last session, or a closed day: find the next open day.
+      // "tomorrow" is only right when today is a working day that has finished; from a closed day
+      // (Sunday) or across one (Saturday night) it is named: "opens Monday 9 AM".
       let ahead = 1;
       while (ahead < 7 && !cfg.days.includes((day + ahead) % 7)) ahead++;
-      const label = ahead === 1 ? 'tomorrow' : DAY_NAMES[(day + ahead) % 7];
+      const label = ahead === 1 && cfg.days.includes(day) ? 'tomorrow' : DAY_NAMES[(day + ahead) % 7];
       text = `Closed now · opens ${label} ${clock(sessions[0][0])}`;
     }
     statusEl.setAttribute('data-state', state);
@@ -521,27 +523,12 @@ if (statusEl && statusText && statusEl.dataset.schedule) {
   document.addEventListener('visibilitychange', () => !document.hidden && renderStatus());
 }
 
-/* ---------- Concern form: a WhatsApp message composer (no booking backend, nothing stored) ---------- */
+/* ---------- Concern form: a WhatsApp message composer (nothing stored) ---------- */
 
 const concernForm = qs<HTMLFormElement>('[data-concern-form]');
 const concernSelect = qs<HTMLSelectElement>('[data-concern-select]');
 const concernName = qs<HTMLInputElement>('[data-concern-name]');
 if (concernForm && concernSelect) {
-  // A condition card scrolls to the form with that concern chosen; without JS it opens WhatsApp directly.
-  document.addEventListener('click', (event) => {
-    const card = (event.target as Element | null)?.closest<HTMLAnchorElement>('a.card[data-concern]');
-    if (!card || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
-    const option = Array.from(concernSelect.options).find((o) => o.dataset.concern === card.dataset.concern);
-    if (!option) return;
-    event.preventDefault();
-    concernSelect.value = option.value;
-    concernForm.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
-    concernForm.classList.remove('is-flash');
-    void concernForm.offsetWidth; // restart the one-shot highlight
-    concernForm.classList.add('is-flash');
-    window.setTimeout(() => concernSelect.focus({ preventScroll: true }), reduceMotion ? 0 : 650);
-  });
-
   concernForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const name = concernName?.value.trim().replace(/\s+/g, ' ') ?? '';

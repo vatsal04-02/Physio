@@ -60,8 +60,14 @@ export function concernMessage(ask: string): string {
   return `Hello Geeta Krishna Physiotherapy,\n\nI found you through the website and would like to know more about ${ask}.\n\nThank you.`;
 }
 
-export function doctorMessage(name: string): string {
-  return `Hello Geeta Krishna Physiotherapy,\n\nI found you through the website and would like to ask about care with ${name}.\n\nThank you.`;
+/** Message for a condition card, e.g. "…I'd like to ask about Back Pain." */
+export function conditionMessage(title: string): string {
+  return `Hello Geeta Krishna Physiotherapy, I found you through the website. I'd like to ask about ${title}.`;
+}
+
+/** Message for a doctor's "Book with" button — the visitor finishes the sentence. */
+export function doctorBookMessage(name: string): string {
+  return `Hello Geeta Krishna Physiotherapy, I'd like to book with ${name}. My concern is: `;
 }
 
 export const links = {
@@ -88,7 +94,6 @@ export const nav = [
   { label: 'Doctors', href: '#doctors' },
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Reviews', href: '#reviews' },
-  { label: 'Pricing', href: '#pricing' },
   { label: 'FAQ', href: '#faq' },
   { label: 'Visit', href: '#visit' },
 ] as const;
@@ -130,14 +135,6 @@ export const principles = [
   { n: '02', title: 'Individualised Care', body: 'Care is based on clinical assessment.' },
   { n: '03', title: 'Clear Next Steps', body: 'Progress and next steps are discussed with you.' },
   { n: '04', title: 'Local & Accessible', body: 'Gomti Nagar, Lucknow.' },
-] as const;
-
-/* ---------- What we do (kept deliberately short — no clinical claims) ---------- */
-
-export const whatWeDo = [
-  { icon: 'activity', title: 'Pain & Mobility', body: 'Support for common pain and movement concerns.' },
-  { icon: 'heart-pulse', title: 'Rehabilitation', body: 'Post-surgical and injury rehabilitation support.' },
-  { icon: 'dumbbell', title: 'Exercise & Recovery', body: 'Therapeutic exercise and guided movement care.' },
 ] as const;
 
 /* ---------- Doctors (PRD §14) — unknown details stay TBD ---------- */
@@ -222,19 +219,6 @@ export const reviews: Review[] = [
   },
 ];
 
-/* ---------- Pricing (PRD §18) — never invent a price ---------- */
-
-export const pricing = {
-  label: 'Physiotherapy',
-  /** Set to the clinic-confirmed amount (e.g. '₹800') and the placeholder disappears. */
-  confirmedAmount: null as string | null,
-  unit: 'per session',
-  extras: [
-    { label: 'Consultation', value: TBD },
-    { label: 'Home visit', value: TBD },
-  ],
-} as const;
-
 /* ---------- FAQ (PRD §20) ----------
  * `confirmed: false` answers are shown as TBD and excluded from FAQPage structured data.
  */
@@ -272,7 +256,6 @@ export const faqs: Faq[] = [
     confirmed: true,
   },
   { q: 'Do you offer home visits?', a: TBD, confirmed: false },
-  { q: 'What is the starting price?', a: TBD, confirmed: false },
   { q: 'How long is a session?', a: TBD, confirmed: false },
 ];
 

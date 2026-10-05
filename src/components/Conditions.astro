@@ -1,7 +1,7 @@
 ---
 import Depth from './Depth.astro';
 import Icon from './Icon.astro';
-import { concernMessage, conditions, whatsappLink, links } from '../data/site';
+import { conditionMessage, conditions, whatsappLink, links } from '../data/site';
 ---
 
 <section id="conditions" class="section surface-ivory" data-section data-ambient aria-labelledby="conditions-title">
@@ -24,7 +24,7 @@ import { concernMessage, conditions, whatsappLink, links } from '../data/site';
           <li class:list={['cell reveal', { 'cell--wide-sm': c.title === 'Consultation' }]} style={`--i:${i % 4}`}>
             <a
               class="card"
-              href={whatsappLink(concernMessage(c.ask))}
+              href={whatsappLink(conditionMessage(c.title))}
               target="_blank"
               rel="noopener noreferrer"
               data-track="condition_click"
