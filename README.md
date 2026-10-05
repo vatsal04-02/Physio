@@ -44,7 +44,7 @@ Put approved photos in `src/assets/clinic/` (`.jpg .jpeg .png .webp .avif`). The
 
 | File name | Where it appears |
 |---|---|
-| `hero` | Hero frame — until it exists, a designed pine panel ("Gomti Nagar's trusted physio clinic") fills the frame |
+| `hero` | Hero frame — currently the clinic-entrance photo (`hero.webp`, cropped to the frame with `object-position` in `Hero.astro`). Delete the file and the designed pine panel ("Gomti Nagar's trusted physio clinic" + rating badge) fills the frame instead |
 | `doctor-sandeep`, `doctor-mahesh` | Doctor cards — until they exist, an ST / MT monogram is shown |
 | `doctors-together` | Joint photo beside the doctors' intro (caption is a `[TBD]` until the clinic confirms who is pictured) |
 | `gallery-1`, `gallery-2`, … | The clinic banner. Each one also needs a line in `gallery` in `src/data/site.ts` (label + a plain description for the alt text); `galleryPending` lists what is still to come |
@@ -74,7 +74,7 @@ Things to know: the key is visible in the page source, so **restrict it** in Goo
 
 Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3, §41). Search the repo for `TBD` to find each one.
 
-- [ ] Hero photo, both doctor portraits, reception + equipment photos; higher-resolution originals of the supplied photos; confirm who is in the joint doctors photo (and fix its `[TBD]` caption); patient consent for the treatment photos
+- [ ] Hero photo: `hero.webp` looks AI-generated/edited (a Gemini sparkle sits bottom-right) and its signboard text differs from the site — hours 9:00–1:30 / 4:30–8:30, "B.Sc. B.P.T." qualifications, a second phone number, "Since 2004" — so swap in a real photograph or confirm the sign with the clinic; both doctor portraits, reception + equipment photos; higher-resolution originals of the supplied photos; confirm who is in the joint doctors photo (and fix its `[TBD]` caption); patient consent for the treatment photos
 - [ ] Doctor specialisation, experience, certifications and bios (`doctors` in `src/data/site.ts`)
 - [ ] Paste the Google Places API key + place ID (see *Live Google reviews*); confirm the three built-in fallback reviews are approved for use
 - [ ] Home visits: the booking form offers a "Home visit" chip and the FAQ answer is still `[TBD]` — confirm the clinic does them (or remove the chip in `Booking.astro`)

@@ -72,7 +72,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
         <div class="frame__media" data-parallax>
           <div class="frame__scale">
             <!-- Until a real hero photo (src/assets/clinic/hero.*) exists, this designed panel fills the frame. -->
-            <ClinicImage photo="hero" alt="Inside Geeta Krishna Physiotherapy, Gomti Nagar, Lucknow" sizes="(min-width:1024px) 560px, 100vw" priority>
+            <ClinicImage photo="hero" alt="The entrance of Geeta Krishna Physiotherapy Centre in Gomti Nagar, with the clinic signboard and a patient being helped along the path" sizes="(min-width:1024px) 560px, 100vw" priority>
               <div class="panel">
                 <span class="panel__dots" aria-hidden="true"></span>
                 <svg class="panel__arcs" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
@@ -403,6 +403,11 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     inset: -7% 0;
     transform: translate3d(0, var(--py, 0px), 0);
     will-change: transform;
+  }
+  /* The entrance photo is wide (4:3) and the frame is nearly square: keep the signboard, the name board and
+     the people at the entrance in view and let the trees on the left fall away */
+  .frame :global(.clinic-img) {
+    object-position: 88% 50%;
   }
   .frame__scale {
     position: absolute;

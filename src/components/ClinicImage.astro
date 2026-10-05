@@ -26,6 +26,7 @@ if (image && widths.length === 0) widths.push(image.width);
       src={image}
       alt={alt}
       formats={['avif', 'webp']}
+      fallbackFormat="jpeg"
       widths={widths}
       sizes={sizes}
       loading={priority ? 'eager' : 'lazy'}
