@@ -5,7 +5,9 @@
  * an inline script in <head>, and every observer below falls back to showing content).
  */
 
+import { initBooking } from './booking';
 import { initGoogleReviews } from './google-reviews';
+import { openWhatsApp } from './whatsapp';
 
 declare global {
   interface Window {
@@ -431,6 +433,10 @@ qsa('[data-slider]').forEach((slider) => {
 
 initGoogleReviews();
 
+/* ---------- Booking request form (WhatsApp message composer) ---------- */
+
+initBooking(track);
+
 /* ---------- Map: hand the embedded map over on tap/click so it never traps page scrolling ---------- */
 
 qsa('[data-map]').forEach((stage) => {
@@ -535,8 +541,7 @@ if (concernForm && concernSelect) {
     let message = concernSelect.value;
     if (name) message = message.replace('\n\nI found you', `\n\nMy name is ${name}. I found you`);
     const url = `https://wa.me/${concernForm.dataset.wa}?text=${encodeURIComponent(message)}`;
-    const opened = window.open(url, '_blank', 'noopener');
-    if (!opened) window.location.href = url; // popup blocked
+    openWhatsApp(url);
   });
 }
 

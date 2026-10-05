@@ -95,6 +95,7 @@ export const nav = [
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Reviews', href: '#reviews' },
   { label: 'FAQ', href: '#faq' },
+  { label: 'Book', href: '#book' },
   { label: 'Visit', href: '#visit' },
 ] as const;
 

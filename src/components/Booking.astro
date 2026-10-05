@@ -1,0 +1,423 @@
+---
+import Depth from './Depth.astro';
+import Icon from './Icon.astro';
+import { clinic, hours, links, schedule } from '../data/site';
+
+/**
+ * Booking *request* form. There is no calendar, backend or payment: it only composes a WhatsApp message
+ * for the clinic to answer and confirm. Nothing is stored. Logic lives in src/scripts/booking.ts.
+ */
+const concerns = [
+  'Back Pain',
+  'Neck Pain',
+  'Shoulder Pain / Frozen Shoulder',
+  'Knee Pain / Arthritis',
+  'Hip Pain',
+  'Sciatica',
+  'Slip Disc',
+  'Sports Injuries',
+  'Post-Surgical Rehabilitation',
+  'Other',
+];
+const slots = ['Morning 9 AM–1 PM', 'Evening 4–8 PM'];
+---
+
+<section id="book" class="section curve surface-sand" data-section data-ambient data-hide-sticky aria-labelledby="book-title">
+  <Depth tone="sand" glow mirror drift={false} />
+
+  <div class="container-site grid">
+    <header class="copy reveal">
+      <p class="eyebrow">08 / Book your visit</p>
+      <h2 id="book-title" class="h2">Book your visit.</h2>
+      <p class="lead">Send a booking request on WhatsApp — the clinic confirms your slot.</p>
+      <p class="copy__hours">
+        <Icon name="clock" size={16} />
+        <span>{hours.days} · {hours.sessions.join(' & ')} · {hours.closed}</span>
+      </p>
+    </header>
+
+    <div class="card reveal" style="--i:1">
+      <form
+        id="book-form"
+        class="book"
+        novalidate
+        data-book-form
+        data-wa={clinic.phone.whatsapp}
+        data-schedule={JSON.stringify(schedule)}
+        aria-describedby="book-note"
+      >
+        <div class="row">
+          <div class="field" data-field="name">
+            <label for="book-name">Name</label>
+            <input id="book-name" name="name" type="text" autocomplete="name" maxlength="60" required aria-describedby="book-name-err" />
+            <p class="err" id="book-name-err" hidden>Please enter your name.</p>
+          </div>
+
+          <div class="field" data-field="phone">
+            <label for="book-phone">Phone</label>
+            <div class="phone">
+              <span class="phone__cc" aria-hidden="true">+91</span>
+              <input
+                id="book-phone"
+                name="phone"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel-national"
+                maxlength="10"
+                placeholder="10-digit mobile number"
+                required
+                aria-describedby="book-phone-err"
+              />
+            </div>
+            <p class="err" id="book-phone-err" hidden>Enter a 10-digit phone number.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field" data-field="concern">
+            <label for="book-concern">Concern</label>
+            <select id="book-concern" name="concern" required aria-describedby="book-concern-err">
+              <option value="" selected disabled>Choose your concern</option>
+              {concerns.map((c) => <option value={c}>{c}</option>)}
+            </select>
+            <p class="err" id="book-concern-err" hidden>Please choose a concern.</p>
+          </div>
+
+          <fieldset class="field" data-field="visit">
+            <legend>Visit type</legend>
+            <div class="chips chips--2">
+              <label class="chip">
+                <input type="radio" name="visit" value="At the clinic" checked />
+                <span>At the clinic</span>
+              </label>
+              <label class="chip">
+                <input type="radio" name="visit" value="Home visit" />
+                <span>Home visit</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+
+        <fieldset class="field" data-field="day">
+          <legend>Preferred day</legend>
+          <div class="chips chips--days" data-days></div>
+          <!-- Cloned by booking.ts once it knows today's date in clinic time (scoped styles travel with the template) -->
+          <template data-day-chip>
+            <label class="chip">
+              <input type="radio" name="day" />
+              <span></span>
+            </label>
+          </template>
+          <noscript><p class="err">This form needs JavaScript — please use WhatsApp or call the clinic instead.</p></noscript>
+          <p class="err" id="book-day-err" hidden>Please pick a day.</p>
+        </fieldset>
+
+        <fieldset class="field" data-field="slot">
+          <legend>Time</legend>
+          <div class="chips chips--2">
+            {
+              slots.map((s) => (
+                <label class="chip">
+                  <input type="radio" name="slot" value={s} />
+                  <span>{s}</span>
+                </label>
+              ))
+            }
+          </div>
+          <p class="err" id="book-slot-err" hidden>Please pick a time.</p>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          <Icon name="message-circle" size={20} />
+          Send request on WhatsApp
+          <Icon name="arrow-right" size={18} class="icon-arrow" />
+        </button>
+
+        <p class="note" id="book-note">
+          This sends a request only — the clinic replies on WhatsApp to confirm your slot. Nothing is stored on this site.
+        </p>
+        <p class="status" data-book-status role="status" aria-live="polite" hidden></p>
+        <p class="alt">Prefer to talk? <a href={links.tel} data-track="phone_click" data-location="booking-form">Call the clinic</a></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr); /* an implicit auto column would grow to the form's widest content */
+    gap: clamp(28px, 5vw, 56px);
+    align-items: start;
+  }
+  .copy {
+    display: grid;
+    justify-items: start;
+    gap: 0.9rem;
+  }
+  .copy__hours {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0.4rem 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+  }
+  .copy__hours :global(.icon) {
+    flex: none;
+    margin-top: 0.2rem;
+    color: var(--color-teal);
+  }
+
+  /* ---- Card ---- */
+  .card {
+    min-width: 0;
+    padding: clamp(1.1rem, 0.6rem + 2.2vw, 2rem);
+    border: 1px solid rgb(12 59 54 / 0.12);
+    border-radius: 24px;
+    background: linear-gradient(145deg, rgb(255 255 255 / 0.88), rgb(250 248 242 / 0.7));
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.9) inset,
+      0 30px 50px -36px rgb(12 59 54 / 0.55);
+  }
+  .book {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.15rem;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.15rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .field label,
+  .field legend {
+    padding: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--color-pine);
+  }
+  .field input,
+  .field select {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    padding: 0 0.95rem;
+    border: 1.5px solid rgb(12 59 54 / 0.26);
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.9);
+    color: var(--color-ink);
+    font: 600 1rem/1.2 var(--font-sans); /* 16px: stops iOS from zooming the page on focus */
+    transition:
+      border-color var(--dur-normal) ease,
+      box-shadow var(--dur-normal) ease;
+  }
+  .field input::placeholder {
+    color: color-mix(in srgb, var(--color-ink) 52%, transparent);
+    font-weight: 500;
+  }
+  .field select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.6rem;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230C3B36' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+  }
+  .field input:hover,
+  .field select:hover {
+    border-color: rgb(15 118 110 / 0.7);
+  }
+  .field input:focus-visible,
+  .field select:focus-visible {
+    outline: none;
+    border-color: var(--color-teal);
+    box-shadow: 0 0 0 3px rgb(15 118 110 / 0.22);
+  }
+  .field [aria-invalid='true'] {
+    border-color: #b3261e;
+  }
+
+  /* +91 prefix sits inside the same bordered box as the number */
+  .phone {
+    display: flex;
+    align-items: stretch;
+    min-height: 52px;
+    border: 1.5px solid rgb(12 59 54 / 0.26);
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.9);
+    overflow: hidden;
+    transition:
+      border-color var(--dur-normal) ease,
+      box-shadow var(--dur-normal) ease;
+  }
+  .phone:hover {
+    border-color: rgb(15 118 110 / 0.7);
+  }
+  .phone:focus-within {
+    border-color: var(--color-teal);
+    box-shadow: 0 0 0 3px rgb(15 118 110 / 0.22);
+  }
+  .phone__cc {
+    display: grid;
+    place-items: center;
+    padding: 0 0.85rem;
+    border-right: 1.5px solid rgb(12 59 54 / 0.16);
+    background: rgb(233 223 201 / 0.55);
+    font-weight: 800;
+    color: var(--color-pine);
+  }
+  .phone input {
+    flex: 1;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .phone input:focus-visible {
+    box-shadow: none;
+  }
+  .field:has([aria-invalid='true']) .phone {
+    border-color: #b3261e;
+  }
+
+  /* ---- Chips (radio buttons that look like pills) ---- */
+  .chips {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .chips--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .chips--days {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-height: calc(48px * 2 + 0.5rem); /* two rows reserved so the page doesn't jump when the dates appear */
+    align-content: start;
+  }
+  .chip {
+    position: relative;
+    display: block;
+    min-width: 0;
+  }
+  .chip input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .chip span {
+    display: grid;
+    place-items: center;
+    min-height: 48px;
+    padding: 0.4rem 0.7rem;
+    border: 1.5px solid rgb(12 59 54 / 0.26);
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.9);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--color-pine);
+    transition:
+      background-color var(--dur-normal) ease,
+      border-color var(--dur-normal) ease,
+      color var(--dur-normal) ease,
+      box-shadow var(--dur-normal) ease;
+  }
+  .chip:hover span {
+    border-color: rgb(15 118 110 / 0.7);
+  }
+  .chip input:checked + span {
+    border-color: var(--color-teal);
+    background: var(--color-teal);
+    color: #fff;
+  }
+  .chip input:focus-visible + span {
+    box-shadow: 0 0 0 3px rgb(15 118 110 / 0.3);
+  }
+
+  /* ---- Messages ---- */
+  .err {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #b3261e;
+  }
+  .err[hidden] {
+    display: none;
+  }
+  .note {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--color-ink) 68%, transparent);
+  }
+  .status {
+    margin: 0;
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+    background: rgb(15 118 110 / 0.1);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--color-pine);
+  }
+  .status[hidden] {
+    display: none;
+  }
+  .alt {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: color-mix(in srgb, var(--color-ink) 78%, transparent);
+  }
+  .alt a {
+    font-weight: 700;
+    color: var(--color-teal);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (min-width: 640px) {
+    .chips--days {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      min-height: 48px;
+    }
+  }
+  @media (min-width: 768px) {
+    .row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 32px;
+    }
+    .copy {
+      grid-column: 1 / span 5;
+      padding-top: 0.5rem;
+    }
+    .card {
+      grid-column: 6 / span 7;
+    }
+  }
+</style>
