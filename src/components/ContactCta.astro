@@ -2,7 +2,6 @@
 import DarkFx from './DarkFx.astro';
 import Icon from './Icon.astro';
 import { GENERIC_MESSAGE, clinic, concernMessage, conditions, hours, links } from '../data/site';
-const { address } = clinic;
 ---
 
 <section id="contact" class="cta curve on-dark" data-section data-ambient data-hide-sticky aria-labelledby="contact-title">
@@ -21,7 +20,7 @@ const { address } = clinic;
   <div class="container-site">
     <div class="panel glass-dark reveal">
       <p class="eyebrow">Get in touch</p>
-      <h2 id="contact-title" class="h2">Not sure where to start?</h2>
+      <h2 id="contact-title" class="h2">Still deciding?</h2>
       <p class="lead">Tell us what you’re experiencing and we’ll help you take the next step.</p>
 
       <div class="buttons">
@@ -74,28 +73,6 @@ const { address } = clinic;
         <span aria-hidden="true">·</span>
         {hours.days} {hours.sessions.join(' & ')} · {hours.closed}
       </p>
-    </div>
-
-    <div class="visit reveal" style="--i:1">
-      <p class="visit__title">Before you visit</p>
-      <dl class="visit__grid">
-        <div>
-          <dt><Icon name="map-pin" size={14} /> Location</dt>
-          <dd>{address.street}<br />Gomti Nagar, {address.city}</dd>
-        </div>
-        <div>
-          <dt><Icon name="clock" size={14} /> Timings</dt>
-          <dd>{hours.days}<br />{hours.sessions.join(' · ')}</dd>
-        </div>
-        <div>
-          <dt><Icon name="phone" size={14} /> Contact</dt>
-          <dd><a href={links.tel} data-track="phone_click" data-location="before-you-visit">{clinic.phone.display}</a></dd>
-        </div>
-      </dl>
-      <a class="link-arrow visit__link" href={links.directions} target="_blank" rel="noopener noreferrer" data-track="directions_click" data-location="before-you-visit">
-        Get Directions
-        <Icon name="arrow-right" size={18} />
-      </a>
     </div>
   </div>
 </section>
@@ -262,70 +239,6 @@ const { address } = clinic;
   }
   .fine span {
     margin-inline: 0.25rem;
-  }
-
-  /* Before you visit — a compact fact strip, not a second Visit section */
-  .visit {
-    display: grid;
-    gap: 1rem;
-    max-width: 880px;
-    margin: 1.25rem auto 0;
-    padding: 1.1rem 0.25rem 0;
-  }
-  .visit__title {
-    font-size: 0.6875rem;
-    font-weight: 800;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-sand);
-  }
-  .visit__grid {
-    display: grid;
-    gap: 0.9rem;
-    margin: 0;
-  }
-  .visit__grid dt {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.2rem;
-    font-size: 0.6875rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgb(250 248 242 / 0.6);
-  }
-  .visit__grid dd {
-    margin: 0;
-    font-size: 0.9688rem;
-    line-height: 1.5;
-    color: var(--color-ivory);
-  }
-  .visit__grid a {
-    font-weight: 700;
-    color: var(--color-ivory);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-color: rgb(250 248 242 / 0.4);
-  }
-  .visit__link {
-    justify-self: start;
-  }
-  @media (min-width: 768px) {
-    .visit {
-      grid-template-columns: auto 1fr auto;
-      align-items: end;
-      gap: 2rem;
-    }
-    .visit__title {
-      align-self: start;
-      padding-top: 0.2rem;
-    }
-    .visit__grid {
-      grid-template-columns: repeat(3, auto);
-      justify-content: space-between;
-      gap: 2rem;
-    }
   }
 
   /* Narrowest phones (≤359px): keep the 18.7px button labels, give them the room instead */

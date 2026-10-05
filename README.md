@@ -45,9 +45,11 @@ Put approved photos in `src/assets/clinic/` (`.jpg .jpeg .png .webp .avif`). The
 | File name | Where it appears |
 |---|---|
 | `hero` | Hero frame — currently the clinic-entrance photo (`hero.webp`, cropped to the frame with `object-position` in `Hero.astro`). Delete the file and the designed pine panel ("Gomti Nagar's trusted physio clinic" + rating badge) fills the frame instead |
-| `doctor-sandeep`, `doctor-mahesh` | Doctor cards — until they exist, an ST / MT monogram is shown |
+| `doctor-sandeep`, `doctor-mahesh` | Doctor cards — currently head-and-shoulders crops of the supplied pair image (left Dr. Sandeep Tiwari, right Dr. Mahesh Tiwari; `object-position` in `Doctors.astro` keeps the face in frame). Delete a file and that card falls back to its ST / MT monogram |
 | `doctors-together` | Joint photo beside the doctors' intro (caption is a `[TBD]` until the clinic confirms who is pictured) |
 | `gallery-1`, `gallery-2`, … | The clinic banner. Each one also needs a line in `gallery` in `src/data/site.ts` (label + a plain description for the alt text); `galleryPending` lists what is still to come. Photos **1000 px wide or more** go into the large swipeable viewer (arrows, counter, thumbnails, keyboard; in the order listed); smaller ones sit in the "Treatment sessions" row beneath it at their own size |
+
+Every photo that goes through `ClinicImage` also gets the `.clinic-photo` class: one warm grade (`sepia .12, saturate 1.06, contrast 1.02`) so photos from different cameras sit together. Remove the rule in `ClinicImage.astro` to turn it off.
 
 Each is converted to AVIF/WebP, given fixed dimensions (no layout shift), and **never up-scaled**: a small source is served at its own size. The supplied treatment and doctor photos are only ~250 px wide, so they are shown at about their native size; send the originals (1200 px+ wide) before putting any of them in a large slot. Photo-overlay labels sit on solid pine so they stay legible on any image.
 No stock or generated imagery is ever substituted. **Patient photos need the patients' consent before publishing.**
@@ -74,6 +76,7 @@ Things to know: the key is visible in the page source, so **restrict it** in Goo
 
 Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3, §41). Search the repo for `TBD` to find each one.
 
+- [ ] Doctor portraits: the supplied pair image looks AI-generated/enhanced (a Gemini sparkle sits in the right-hand photo; it falls outside the crops used). Patients will see these faces at the clinic, so swap in unretouched photographs of the doctors if these are not genuine
 - [ ] Gallery photos `gallery-4` … `gallery-7` (the large viewer): they show identifiable patients, so confirm consent; `gallery-6` has a wall board with fee amounts and a doctor's name that are legible at full size (the site deliberately lists no prices and no such doctor) — crop it, swap it, or confirm the board is current; the same board suggests home visits exist, which would settle the `[TBD]` FAQ answer, but nothing on the page claims it until the clinic confirms
 - [ ] Hero photo: `hero.webp` looks AI-generated/edited (a Gemini sparkle sits bottom-right) and its signboard text differs from the site — hours 9:00–1:30 / 4:30–8:30, "B.Sc. B.P.T." qualifications, a second phone number, "Since 2004" — so swap in a real photograph or confirm the sign with the clinic; both doctor portraits, reception + equipment photos; higher-resolution originals of the supplied photos; confirm who is in the joint doctors photo (and fix its `[TBD]` caption); patient consent for the treatment photos
 - [ ] Doctor specialisation, experience, certifications and bios (`doctors` in `src/data/site.ts`)
@@ -82,7 +85,7 @@ Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3
 - [ ] FAQ answers: home visits, session length (`faqs` — unconfirmed ones are excluded from FAQ structured data). The pricing section and the starting-price question were removed; add them back only once the clinic confirms real prices
 - [ ] Sign-off on promise-style copy — "Physiotherapy that puts an expiry date on your pain.", "Gomti Nagar's trusted physio clinic", the first built-in review ("within 3 days he became quite normal"), read as outcome commitments, which PRD §37 steers away from
 - [ ] Clinic's Google Business Profile URL (`links.directions` and `links.reviews` use a Maps search built from the verified address until a place ID is set; the map embed searches for the clinic by name and area — check it lands on the right pin)
-- [ ] Production domain → `PUBLIC_SITE_URL`; confirm title/meta description copy
+- [ ] Production domain → `PUBLIC_SITE_URL` (for the current deployment: `https://physio-two-umber.vercel.app`; canonical, sitemap and `og:image` are built from it); confirm title/meta description copy. The meta description says "460+ Google reviews" and the structured data says 467 (the figure on the page) — update both as the count grows. A bespoke `og-image.jpg` was not supplied, so social previews keep using the generated `og.png`
 - [ ] GA4 + Search Console approval
 
 ## Design & accessibility notes
@@ -113,6 +116,15 @@ Everything below is intentionally left as `[TBD - confirm with clinic]` (PRD §3
 - **Review slider:** one card at a time on phones, three across on desktop; dots, arrows, a pause button, and a 6s autoplay that stops on hover, touch, focus, when off screen, in a background tab, and for reduced-motion users.
 - **CTA contrast:** white on the PRD's CTA orange `#EA580C` is 3.55:1, which meets WCAG AA only as *large text*. Primary-button labels are therefore bold and ≥ 14pt (18.7px). If a stricter 4.5:1 is wanted, change `--color-cta` to `#C2410C`.
 - Content rules from PRD §37 are followed: no superlatives, guarantees, urgency or invented statistics.
+
+### Elevation pass
+
+- **Hero:** the entrance photo drifts 1 → 1.08 and back (Ken Burns, 12s, ease-in-out, alternate) after its entrance settles; transform only, paused while the hero is off screen, off under reduced motion. The rating pill and the hours card float over it. The frame keeps its near-square shape — the photo is landscape and a 4:5 crop would lose the signboard.
+- **Hindi line** under the hero subtext: Tiro Devanagari Hindi italic, teal, 90% of the subtext size. The webfont is **subset to that one line (13 KB instead of 100 KB)** — if the wording changes, regenerate it with the command in the comment above the `@font-face` in `global.css` (the full font is a dev dependency for that purpose).
+- **Body map** (top of *01 / Conditions*): six pulsing hotspots (Neck, Shoulder, Back, Hip, Knee, Leg; 44px touch areas) scroll to the condition card with the matching title and ring it in orange for 1.2s. The mapping lives in `BodyMap.astro`, and the build fails if a target title disappears from `conditions`. Reduced motion: no pulse, the ring shows still.
+- **Doctor intro video:** drop `public/doctor-intro.mp4` in and a rounded 16:9 player (native controls, `preload="none"`) appears in *03 / Doctors* at the next build; without the file nothing is rendered. Add captions before publishing a spoken video.
+- **Fonts** are self-hosted (`font-display: swap`), so there is no Google Fonts preconnect; the page preconnects to `www.google.com` for the map embed only.
+- **Structured data** (`Physiotherapy` JSON-LD) carries the address, phone, hours and an `aggregateRating` of 5.0 / 467 — the site's own figures. Google does not show star snippets for a business's reviews of itself; the markup is there for completeness.
 
 ## Performance notes
 

@@ -8,6 +8,17 @@
 @import '@fontsource-variable/manrope/wght.css';
 @import 'tailwindcss';
 
+/* Devanagari serif italic, subset to the hero's Hindi line only (13 KB instead of 100 KB). If that line ever changes,
+   regenerate it:  python3 -m fontTools.subset node_modules/@fontsource/tiro-devanagari-hindi/files/tiro-devanagari-hindi-devanagari-400-italic.woff2 \
+     --text="<the new line>" --layout-features='*' --flavor=woff2 --output-file=src/assets/fonts/tiro-devanagari-hindi-hero-italic.woff2 */
+@font-face {
+  font-family: 'Tiro Devanagari Hindi';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/tiro-devanagari-hindi-hero-italic.woff2') format('woff2');
+}
+
 /* ---------- Tokens ---------- */
 
 @theme static {
@@ -269,8 +280,11 @@ section[id] {
   font-size: clamp(1.3125rem, 1.1rem + 0.6vw, 1.75rem); /* 21 → 28 */
   line-height: 1.2;
 }
+:root {
+  --lead-fs: clamp(1rem, 0.95rem + 0.2vw, 1.125rem); /* 16 → 18 */
+}
 .lead {
-  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem); /* 16 → 18 */
+  font-size: var(--lead-fs);
   line-height: 1.65;
   color: color-mix(in srgb, var(--color-ink) 78%, transparent);
 }
@@ -287,8 +301,8 @@ section[id] {
     /* room under the page for the fixed call / WhatsApp bar so it never covers the footer */
     padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
   }
-  .lead {
-    font-size: clamp(0.9375rem, 0.88rem + 0.4vw, 1rem);
+  :root {
+    --lead-fs: clamp(0.9375rem, 0.88rem + 0.4vw, 1rem);
   }
 }
 .small {

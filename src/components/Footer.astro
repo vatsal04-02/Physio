@@ -34,6 +34,7 @@ const year = new Date().getFullYear();
     <div class="legal">
       <p>{hours.days} {hours.sessions.join(' & ')} · {hours.closed}</p>
       <p>© {year} {clinic.name}</p>
+      <p class="credit">Website by FlowHQ</p>
     </div>
   </div>
 </footer>
@@ -127,6 +128,12 @@ const year = new Date().getFullYear();
   }
   .legal p {
     margin: 0;
+  }
+  /* Plain-text credit on its own quiet line */
+  .credit {
+    flex-basis: 100%;
+    font-size: 0.75rem;
+    color: rgb(250 248 242 / 0.4);
   }
 
   @media (min-width: 900px) {

@@ -269,7 +269,7 @@ export const faqs: Faq[] = [
 /* ---------- SEO (PRD §34) ---------- */
 
 export const seo = {
-  title: 'Physiotherapist in Gomti Nagar, Lucknow | Geeta Krishna Physiotherapy',
+  title: 'Geeta Krishna Physiotherapy | Physiotherapist in Gomti Nagar, Lucknow',
   description:
-    'Geeta Krishna Physiotherapy in Gomti Nagar, Lucknow. Physiotherapy for back pain, neck pain, knee pain, sports injuries, rehabilitation and more. Contact the clinic via WhatsApp or phone.',
+    'Physiotherapy in Gomti Nagar, Lucknow by two MPT doctors. 5.0 rated from 460+ Google reviews. Back pain, sciatica, frozen shoulder, sports injuries. Book on WhatsApp.',
 } as const;

@@ -5,6 +5,7 @@
  * an inline script in <head>, and every observer below falls back to showing content).
  */
 
+import { initBodyMap } from './bodymap';
 import { initBooking } from './booking';
 import { initGallery } from './gallery';
 import { initGoogleReviews } from './google-reviews';
@@ -283,6 +284,10 @@ faqButtons.forEach((btn) => {
     if (open) track('faq_open', { question_index: Number(btn.dataset.faqIndex ?? 0) });
   });
 });
+
+/* ---------- Body map: hotspot → condition card ---------- */
+
+qsa('[data-bodymap]').forEach((el) => initBodyMap(el, reduceMotion));
 
 /* ---------- Clinic photo viewer: arrows, counter, thumbnails ---------- */
 

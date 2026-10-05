@@ -15,23 +15,26 @@ const ogImage = new URL('og.png', Astro.site).href;
 const gaId = import.meta.env.PUBLIC_GA_ID;
 
 // Structured data: only supported types, only verified facts (PRD §34).
+// The review figure is the site's own ("467+" on the page); schema.org needs a plain number, so the plus is dropped.
+const reviewCount = clinic.rating.count.replace(/\D/g, '');
 const businessSchema = {
   '@context': 'https://schema.org',
   '@type': 'Physiotherapy',
   '@id': `${canonical}#clinic`,
   name: clinic.name,
   url: canonical,
-  telephone: clinic.phone.tel,
+  telephone: clinic.phone.display,
   image: ogImage,
   description,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: `${clinic.address.street}, ${clinic.address.area}`,
+    streetAddress: clinic.address.street,
     addressLocality: clinic.address.city,
-    addressRegion: 'Uttar Pradesh',
+    addressRegion: clinic.address.region,
     postalCode: clinic.address.postalCode,
     addressCountry: 'IN',
   },
+  openingHours: ['Mo-Sa 09:00-13:00', 'Mo-Sa 16:00-20:00'],
   openingHoursSpecification: [
     {
       '@type': 'OpeningHoursSpecification',
@@ -46,6 +49,11 @@ const businessSchema = {
       closes: '20:00',
     },
   ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: clinic.rating.value,
+    reviewCount,
+  },
   hasMap: links.directions,
   employee: [
     { '@type': 'Person', name: 'Dr. Sandeep Tiwari', jobTitle: 'Clinic Lead' },
@@ -76,7 +84,7 @@ const faqSchema = {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="theme-color" content="#FAF8F2" />
+    <meta name="theme-color" content="#0C3B36" />
     <meta name="format-detection" content="telephone=no" />
 
     <meta property="og:type" content="website" />
@@ -93,6 +101,9 @@ const faqSchema = {
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- The Visit section's map embed comes from Google. Fonts are self-hosted (below), so there is nothing to preconnect to for them. -->
+    <link rel="preconnect" href="https://www.google.com" />
 
     <link rel="preload" href={manropeLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={dmSerifLatin} as="font" type="font/woff2" crossorigin />

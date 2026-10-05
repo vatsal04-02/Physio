@@ -3,9 +3,12 @@ import Depth from './Depth.astro';
 import ClinicImage from './ClinicImage.astro';
 import Icon from './Icon.astro';
 import { clinic, hours, links, schedule } from '../data/site';
+import { getPhoto } from '../lib/photos';
 
 // Server-rendered fallback for the live pill (no JS / before hydration): the plain hours.
 const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
+// The slow drift belongs to the photograph; the designed fallback panel stays still
+const hasPhoto = Boolean(getPhoto('hero'));
 ---
 
 <section id="top" class="hero" data-section data-ambient aria-labelledby="hero-title">
@@ -22,6 +25,8 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
       <p class="lead hero__lead rise" style="--d:240ms">
         Two MPT doctors. One clear plan. Zero guesswork — in Gomti Nagar, Lucknow.
       </p>
+
+      <p class="hero__hi rise" style="--d:300ms" lang="hi">दर्द से राहत, सही इलाज के साथ।</p>
 
       <div id="hero-cta" class="hero__cta rise" style="--d:360ms" data-hero-cta>
         <a class="btn btn-primary btn-glow" href={links.whatsapp} target="_blank" rel="noopener noreferrer" data-track="whatsapp_click" data-location="hero">
@@ -71,6 +76,7 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
       <figure class="frame rise" style="--d:600ms">
         <div class="frame__media" data-parallax>
           <div class="frame__scale">
+            <div class:list={['frame__kb', { 'frame__kb--photo drift': hasPhoto }]}>
             <!-- Until a real hero photo (src/assets/clinic/hero.*) exists, this designed panel fills the frame. -->
             <ClinicImage photo="hero" alt="The entrance of Geeta Krishna Physiotherapy Centre in Gomti Nagar, with the clinic signboard and a patient being helped along the path" sizes="(min-width:1024px) 560px, 100vw" priority>
               <div class="panel">
@@ -95,11 +101,25 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
                 </div>
               </div>
             </ClinicImage>
+            </div>
           </div>
         </div>
-        <figcaption class="frame__cap">
-          <Icon name="map-pin" size={13} /> Viram Khand, Gomti Nagar
-        </figcaption>
+        <div class="frame__top">
+          <!-- The same figures as the pill beside the headline, kept on the photograph (hidden from screen readers: it is a repeat) -->
+          {
+            hasPhoto && (
+              <p class="frame__rating" aria-hidden="true">
+                <Icon name="star" size={13} class="frame__star" />
+                <strong data-live-rating>{clinic.rating.value}</strong>
+                <span class="frame__sep">·</span>
+                <span><span data-live-count>{clinic.rating.count}</span> Google reviews</span>
+              </p>
+            )
+          }
+          <p class="frame__cap">
+            <Icon name="map-pin" size={13} /> Viram Khand, Gomti Nagar
+          </p>
+        </div>
       </figure>
 
       <div class="hours-card glass drift" style="--d:760ms">
@@ -139,6 +159,16 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
   .hero__lead {
     max-width: 30rem;
     margin-top: 1.1rem;
+  }
+  /* Devanagari line under the subtext: serif italic, teal, 90% of the subtext size */
+  .hero__hi {
+    margin: 0.55rem 0 0;
+    font-family: 'Tiro Devanagari Hindi', 'Noto Serif Devanagari', 'Kohinoor Devanagari', var(--font-serif), serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: calc(var(--lead-fs) * 0.9);
+    line-height: 1.6;
+    color: var(--color-teal);
   }
   .hero__cta {
     display: flex;
@@ -414,6 +444,20 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
     inset: 0;
     animation: settle-img 1200ms ease-out 600ms both;
   }
+  .frame__kb {
+    position: absolute;
+    inset: 0;
+  }
+  /* Ken Burns: after the entrance settles, the photograph drifts 1 → 1.08 and back over 12s (transform only; paused off screen) */
+  .frame__kb--photo {
+    transform-origin: 60% 45%;
+    animation: kb-drift 12s ease-in-out 1800ms infinite alternate;
+  }
+  @keyframes kb-drift {
+    to {
+      transform: scale(1.08);
+    }
+  }
   @keyframes settle-img {
     from {
       transform: scale(1.06);
@@ -422,12 +466,46 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
       transform: scale(1);
     }
   }
-  .frame__cap {
+  /* Chips floating over the photograph: rating on the left, place on the right; on the narrowest phones the chip drops to a second line */
+  .frame__top {
     position: absolute;
     z-index: 3;
-    right: 12px;
-    top: 12px;
+    inset: 12px 12px auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px 8px;
+    pointer-events: none;
+  }
+  .frame__rating {
     display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0.3rem 0.75rem 0.3rem 0.6rem;
+    border-radius: 999px;
+    background: rgb(12 59 54 / 0.72);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ivory);
+  }
+  .frame__rating strong {
+    font: 400 0.9375rem/1 var(--font-serif);
+  }
+  .frame__rating :global(.frame__star) {
+    fill: var(--color-sand);
+    color: var(--color-sand);
+    stroke-width: 1.5;
+  }
+  .frame__sep {
+    opacity: 0.6;
+  }
+  .frame__cap {
+    display: inline-flex;
+    margin: 0 0 0 auto;
     align-items: center;
     gap: 0.35rem;
     padding: 0.3rem 0.7rem;
@@ -478,6 +556,12 @@ const fallback = `${hours.days} · ${hours.sessions.join(' · ')}`;
   .hours-card__sub {
     font-size: 0.8125rem;
     color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .frame__kb--photo {
+      animation: none;
+    }
   }
 
   /* Phones: trust pills at 13px and wrapping, panel padded 20px */

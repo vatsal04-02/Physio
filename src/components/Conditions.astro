@@ -1,5 +1,6 @@
 ---
 import Depth from './Depth.astro';
+import BodyMap from './BodyMap.astro';
 import Icon from './Icon.astro';
 import { conditionMessage, conditions, whatsappLink, links } from '../data/site';
 ---
@@ -17,6 +18,8 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
         Choose the concern closest to yours. The clinic will assess your individual condition before recommending care.
       </p>
     </header>
+
+    <BodyMap />
 
     <ul class="grid">
       {
@@ -94,7 +97,52 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
     list-style: none;
   }
   .cell {
+    position: relative;
     display: flex;
+  }
+  /* Body-map landing: an orange ring pulses around the card for 1.2s (transform + opacity only) */
+  .cell::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    z-index: 2;
+    border: 2px solid var(--color-cta);
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cell.is-flash::after {
+      animation: card-flash 1200ms ease-out both;
+    }
+  }
+  /* Reduced motion: the same ring, held still for the same 1.2s */
+  @media (prefers-reduced-motion: reduce) {
+    .cell.is-flash::after {
+      opacity: 1;
+    }
+  }
+  @keyframes card-flash {
+    0% {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    15% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    40% {
+      opacity: 0.35;
+      transform: scale(1.03);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.06);
+    }
   }
   .cell--wide-sm {
     grid-column: 1 / -1;
