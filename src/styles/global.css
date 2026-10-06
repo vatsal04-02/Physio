@@ -640,21 +640,6 @@ section[id] {
       animation-timeline: view();
     }
   }
-  @supports (animation-timeline: scroll()) {
-    /* Hero photo drifts down slower than the page (replaces the JS fallback where supported) */
-    @keyframes hero-parallax {
-      to {
-        transform: translate3d(0, 28px, 0);
-      }
-    }
-    .frame__media {
-      animation-name: hero-parallax;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: scroll(root);
-      animation-range: 0px 470px;
-    }
-  }
 }
 
 /* ---------- Entrances ---------- */

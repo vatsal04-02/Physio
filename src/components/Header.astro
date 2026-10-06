@@ -138,6 +138,43 @@ import { clinic, hours, links, nav } from '../data/site';
   :global(.site-header.is-scrolled) .bar::before {
     opacity: 1;
   }
+  /* While the bar floats over the hero video a blur behind it would be recomputed for every video frame (measured:
+     the only thing in the hero that cost scrolling smoothness), so there it is a near-opaque warm white instead. */
+  :global(.site-header.is-over-video) .bar::before {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: linear-gradient(135deg, rgb(250 248 242 / 0.94), rgb(250 248 242 / 0.9));
+  }
+
+  /* Over the hero video (before the page scrolls) the bar is transparent with light type; once it scrolls it turns
+     into the frosted light bar above. Without JavaScript it never learns it has scrolled, so it stays frosted. */
+  :global(.js .site-header:not(.is-scrolled)) .brand {
+    color: var(--color-ivory);
+  }
+  :global(.js .site-header:not(.is-scrolled)) .brand__sub {
+    color: var(--color-sand);
+  }
+  :global(.js .site-header:not(.is-scrolled)) .primary-nav a {
+    color: rgb(250 248 242 / 0.88);
+  }
+  :global(.js .site-header:not(.is-scrolled)) .primary-nav a:hover,
+  :global(.js .site-header:not(.is-scrolled)) .primary-nav a[aria-current='true'] {
+    color: #fff;
+  }
+  :global(.js .site-header:not(.is-scrolled)) .nav-indicator {
+    background: var(--color-sand);
+  }
+  :global(.js .site-header:not(.is-scrolled)) .icon-btn--menu {
+    border-color: rgb(250 248 242 / 0.34);
+    background: rgb(12 59 54 / 0.42);
+    color: var(--color-ivory);
+  }
+  :global(.js .site-header:not(.is-scrolled)) .icon-btn--menu:hover {
+    background: rgb(12 59 54 / 0.7);
+  }
+  :global(html:not(.js)) .bar::before {
+    opacity: 1;
+  }
 
   /* Brand */
   .brand {

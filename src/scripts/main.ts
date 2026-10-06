@@ -9,6 +9,7 @@ import { initBodyMap } from './bodymap';
 import { initBooking } from './booking';
 import { initGallery } from './gallery';
 import { initGoogleReviews } from './google-reviews';
+import { initHeroVideo } from './hero-video';
 import { openWhatsApp } from './whatsapp';
 
 declare global {
@@ -49,19 +50,12 @@ document.addEventListener('click', (event) => {
 
 const header = qs('[data-header]');
 const progress = qs('[data-progress]');
-// Where the browser supports native scroll-driven animations the hero parallax is pure CSS
-// (compositor-only); this small JS version is only the fallback.
-const parallax = typeof CSS !== 'undefined' && CSS.supports('animation-timeline: scroll()') ? null : qs('[data-parallax]');
 let scrollTick = false;
 
 function updateScroll(): void {
   scrollTick = false;
   const y = window.scrollY;
   header?.classList.toggle('is-scrolled', y > 40);
-  // Hero photo drifts down slower than the page (capped so the oversized layer never shows an edge)
-  if (parallax && !reduceMotion && y < window.innerHeight * 1.3) {
-    parallax.style.setProperty('--py', `${Math.min(y * 0.06, 28).toFixed(1)}px`);
-  }
   if (progress) {
     const max = root.scrollHeight - window.innerHeight;
     progress.style.setProperty('--p', String(max > 0 ? Math.min(1, y / max) : 0));
@@ -78,6 +72,14 @@ window.addEventListener(
   { passive: true },
 );
 updateScroll();
+
+// The header drops its blur while it floats over the hero video (see Header.astro)
+const heroEl = qs('[data-hero]');
+if (header && heroEl && 'IntersectionObserver' in window) {
+  new IntersectionObserver((entries) => header.classList.toggle('is-over-video', entries.some((e) => e.isIntersecting)), {
+    rootMargin: '-72px 0px 0px 0px',
+  }).observe(heroEl);
+}
 
 /* ---------- Active section + sliding nav indicator ---------- */
 
@@ -284,6 +286,10 @@ faqButtons.forEach((btn) => {
     if (open) track('faq_open', { question_index: Number(btn.dataset.faqIndex ?? 0) });
   });
 });
+
+/* ---------- Hero background video ---------- */
+
+qsa('[data-hero]').forEach((el) => initHeroVideo(el, reduceMotion));
 
 /* ---------- Body map: hotspot → condition card ---------- */
 

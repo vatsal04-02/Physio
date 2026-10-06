@@ -18,7 +18,7 @@ const image = getPhoto(name);
 // instead of blurry up-scaled copies.
 const widths = image ? [480, 768, 1100, 1600].filter((w) => w <= image.width) : [];
 // ...but a mid-sized source (a 730px portrait, say) is also offered at its own width for dense screens
-if (image && image.width <= 1100 && !widths.includes(image.width)) widths.push(image.width);
+if (image && image.width <= 1600 && !widths.includes(image.width)) widths.push(image.width);
 ---
 
 {
