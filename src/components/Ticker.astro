@@ -16,8 +16,7 @@ const half = Array.from({ length: 4 }).flatMap(() => ticker);
 
 <style>
   .ticker {
-    padding: calc(var(--curve) + 12px) 0 14px;
-    border-bottom: 1px solid rgb(12 59 54 / 0.1);
+    padding: calc(var(--curve) + 12px) 0 calc(var(--curve) + 8px); /* room for the dome of the next section */
   }
   .ticker__viewport {
     overflow: hidden;

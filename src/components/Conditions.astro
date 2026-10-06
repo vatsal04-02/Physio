@@ -5,13 +5,13 @@ import Icon from './Icon.astro';
 import { conditionMessage, conditions, whatsappLink, links } from '../data/site';
 ---
 
-<section id="conditions" class="section surface-ivory" data-section data-ambient aria-labelledby="conditions-title">
+<section id="conditions" class="section curve surface-tint" data-section data-ambient aria-labelledby="conditions-title">
   <Depth tone="light" glow mirror />
 
   <div class="container-site relative">
     <header class="head reveal">
       <div class="head__title">
-        <p class="eyebrow">01 / Conditions</p>
+        <p class="eyebrow">02 / Conditions</p>
         <h2 id="conditions-title" class="h2">Point to the pain. We’ll take it from there.</h2>
       </div>
       <p class="lead head__lead">
@@ -24,7 +24,7 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
     <ul class="grid">
       {
         conditions.map((c, i) => (
-          <li class:list={['cell reveal', { 'cell--wide-sm': c.title === 'Consultation' }]} style={`--i:${i % 4}`}>
+          <li class="cell reveal" style={`--i:${i % 3}`}>
             <a
               class="card"
               href={whatsappLink(conditionMessage(c.title))}
@@ -143,9 +143,6 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
       opacity: 0;
       transform: scale(1.06);
     }
-  }
-  .cell--wide-sm {
-    grid-column: 1 / -1;
   }
   .cell--cta {
     grid-column: 1 / -1;
@@ -312,11 +309,8 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
     }
-    .cell--wide-sm {
-      grid-column: auto;
-    }
     .cell--cta {
-      grid-column: span 2;
+      grid-column: 1 / -1;
     }
     .card {
       min-height: 124px;
@@ -342,11 +336,7 @@ import { conditionMessage, conditions, whatsappLink, links } from '../data/site'
       padding-bottom: 0.3rem;
     }
     .grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .cell--cta {
-      grid-column: span 3;
+      gap: 16px;
     }
     .card__title {
       font-size: 1.125rem;

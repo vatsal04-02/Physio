@@ -10,7 +10,6 @@ import { initBooking } from './booking';
 import { initGallery } from './gallery';
 import { initGoogleReviews } from './google-reviews';
 import { initHeroVideo } from './hero-video';
-import { openWhatsApp } from './whatsapp';
 
 declare global {
   interface Window {
@@ -550,22 +549,6 @@ if (statusEl && statusText && statusEl.dataset.schedule) {
   renderStatus();
   window.setInterval(renderStatus, 30_000);
   document.addEventListener('visibilitychange', () => !document.hidden && renderStatus());
-}
-
-/* ---------- Concern form: a WhatsApp message composer (nothing stored) ---------- */
-
-const concernForm = qs<HTMLFormElement>('[data-concern-form]');
-const concernSelect = qs<HTMLSelectElement>('[data-concern-select]');
-const concernName = qs<HTMLInputElement>('[data-concern-name]');
-if (concernForm && concernSelect) {
-  concernForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const name = concernName?.value.trim().replace(/\s+/g, ' ') ?? '';
-    let message = concernSelect.value;
-    if (name) message = message.replace('\n\nI found you', `\n\nMy name is ${name}. I found you`);
-    const url = `https://wa.me/${concernForm.dataset.wa}?text=${encodeURIComponent(message)}`;
-    openWhatsApp(url);
-  });
 }
 
 export {};

@@ -18,7 +18,7 @@ const hasIntroVideo = existsSync(join(process.cwd(), 'public', 'doctor-intro.mp4
   <div class="container-site relative">
     <div class="layout">
     <header class="head reveal">
-      <p class="eyebrow">03 / Doctors</p>
+      <p class="eyebrow">04 / Doctors</p>
       <h2 id="doctors-title" class="h2">Meet the doctors behind your recovery.</h2>
       <p class="lead">Dr. Sandeep Tiwari and Dr. Mahesh Tiwari lead Geeta Krishna Physiotherapy, both qualified MPT (PT).</p>
       {
@@ -166,7 +166,7 @@ const hasIntroVideo = existsSync(join(process.cwd(), 'public', 'doctor-intro.mp4
      fights the reveal's `transform`) */
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .doc:hover {
-      translate: 0 -2px;
+      translate: 0 -5px;
     }
   }
 
@@ -188,6 +188,21 @@ const hasIntroVideo = existsSync(join(process.cwd(), 'public', 'doctor-intro.mp4
     transition: opacity 900ms ease-out;
     transition-delay: calc(var(--d) + 250ms);
     pointer-events: none;
+  }
+  /* The lifted shadow is a second layer that fades in, so hovering only ever animates opacity + transform */
+  .doc__photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: var(--r);
+    box-shadow: 0 40px 60px -26px rgb(12 59 54 / 0.7);
+    opacity: 0;
+    transition: opacity 320ms ease;
+    pointer-events: none;
+  }
+  .doc:hover .doc__photo::after {
+    opacity: 1;
   }
   .doc__media {
     position: absolute;

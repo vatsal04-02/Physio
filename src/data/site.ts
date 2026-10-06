@@ -90,12 +90,12 @@ export const links = {
 /* ---------- Navigation ---------- */
 
 export const nav = [
+  { label: 'Book', href: '#book' },
   { label: 'Conditions', href: '#conditions' },
   { label: 'Doctors', href: '#doctors' },
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Reviews', href: '#reviews' },
   { label: 'FAQ', href: '#faq' },
-  { label: 'Book', href: '#book' },
   { label: 'Visit', href: '#visit' },
 ] as const;
 
@@ -115,15 +115,8 @@ export const conditions: Condition[] = [
   { title: 'Neck Pain', blurb: 'Neck and upper-back discomfort.', ask: 'physiotherapy for neck pain', icon: 'user-round' },
   { title: 'Shoulder Pain / Frozen Shoulder', blurb: 'Shoulder stiffness and restricted movement.', ask: 'physiotherapy for shoulder pain / frozen shoulder', icon: 'accessibility' },
   { title: 'Knee Pain / Arthritis', blurb: 'Knee and joint discomfort.', ask: 'physiotherapy for knee pain / arthritis', icon: 'footprints' },
-  { title: 'Hip Pain', blurb: 'Hip discomfort and mobility concerns.', ask: 'physiotherapy for hip pain', icon: 'person-standing' },
   { title: 'Sciatica', blurb: 'Pain that travels down the leg.', ask: 'physiotherapy for sciatica', icon: 'zap' },
-  { title: 'Slip Disc', blurb: 'Disc-related back and leg symptoms.', ask: 'physiotherapy for slip disc', icon: 'layers' },
   { title: 'Sports Injuries', blurb: 'Strains, sprains and activity-related injuries.', ask: 'physiotherapy for sports injuries', icon: 'bandage' },
-  { title: 'Post-Surgical Rehabilitation', blurb: 'Guided rehabilitation after surgery.', ask: 'post-surgical rehabilitation', icon: 'heart-pulse' },
-  { title: 'Therapeutic Exercise', blurb: 'Guided movement and strengthening.', ask: 'therapeutic exercise', icon: 'dumbbell' },
-  { title: 'Balance & Fall Prevention', blurb: 'Steadiness and balance support.', ask: 'balance and fall prevention', icon: 'scale' },
-  { title: 'Heat Therapy', blurb: 'Heat-based therapy for comfort.', ask: 'heat therapy', icon: 'thermometer-sun' },
-  { title: 'Consultation', blurb: 'Talk through your concern with the clinic.', ask: 'a consultation', icon: 'stethoscope' },
 ];
 
 /** Marquee ticker between the hero and the conditions grid — all drawn from the verified service list. */

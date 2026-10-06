@@ -48,6 +48,8 @@
   --curve: 28px; /* depth of the curved edge between sections */
   --teal-light: color-mix(in srgb, #0f766e 55%, white); /* tint of brand teal for dark surfaces */
   --focus-ring: #0f766e;
+  /* A whisper of sand over ivory: lets neighbouring light sections alternate without a hard colour change */
+  --sand-tint: color-mix(in srgb, #e9dfc9 46%, #faf8f2);
   color-scheme: light;
 }
 
@@ -176,6 +178,10 @@ html {
 }
 .surface-sand {
   --surface: var(--color-sand);
+  background: var(--surface);
+}
+.surface-tint {
+  --surface: var(--sand-tint);
   background: var(--surface);
 }
 .surface-pine {
@@ -371,8 +377,18 @@ section[id] {
 .btn:hover .icon-arrow {
   transform: translateX(4px);
 }
+/* Press: the button visibly sinks (a quick 4% squeeze), and the orange one darkens, so a tap always registers */
 .btn:active {
-  transform: translate3d(0, 0, 0) scale(0.99);
+  transform: translate3d(0, 1px, 0) scale(0.96);
+  transition-duration: 80ms;
+}
+.btn-primary:active {
+  --btn-bg: #cf4a0a;
+  box-shadow: 0 3px 8px -4px rgb(234 88 12 / 0.7);
+}
+.btn-glass:active,
+.btn-outline:active {
+  --btn-bg: rgb(12 59 54 / 0.2);
 }
 
 /* The two main WhatsApp CTAs get a soft glow behind them. It belongs to the button (so it lifts and
